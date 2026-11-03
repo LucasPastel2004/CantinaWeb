@@ -13,6 +13,7 @@ use App\Core\Auth;
 use App\Core\Session;
 use App\Core\RBAC;
 use App\Models\Ticket;
+use App\Models\Turma;
 use App\Services\PdfService;
 
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
@@ -60,7 +61,15 @@ class TicketsController extends Controller
         $hoje = date('Y-m-d');
         $dataConsumo = $this->normalizarData($_GET['data'] ?? null, $hoje);
         $turnoConsumo = $this->normalizarTurno($_GET['turno'] ?? null);
-        $buscaTermo = trim($_GET['q'] ?? '');
+        $qRaw = $_GET['q'] ?? ($_GET['busca'] ?? '');
+        $buscaTermo = is_string($qRaw) ? trim($qRaw) : '';
+        $turmaId = !empty($_GET['turma_id']) ? (int)$_GET['turma_id'] : null;
+        $statusRaw = isset($_GET['status_ticket']) && is_string($_GET['status_ticket']) ? trim($_GET['status_ticket']) : '';
+        $statusTicket = in_array($statusRaw, ['impresso', 'pendente', 'segunda_via'], true) ? $statusRaw : '';
+
+        // Carga sob demanda (padrão corporativo do sistema)
+        $filtrar = (bool)($this->input('filtrar', false) || isset($_GET['filtrar']));
+        $jaFiltrado = $filtrar || !empty($buscaTermo) || $turmaId !== null || $statusTicket !== '';
 
         // Métricas consolidadas do turno
         $metricas = Ticket::obterMetricasTurno($dataConsumo, $turnoConsumo);
@@ -69,8 +78,18 @@ class TicketsController extends Controller
         $ticketsTurno = Ticket::listarPorTurnoEData($dataConsumo, $turnoConsumo);
         $turmasAgrupadas = Ticket::agruparPorTurma($ticketsTurno);
 
-        // Consulta rápida para emissão de 2ª via
-        $ticketsConsulta = Ticket::buscarParaConsulta($buscaTermo, $dataConsumo, $turnoConsumo, 30);
+        // Turmas do turno para o dropdown de filtros
+        $turmasLista = Turma::listarTodas($turnoConsumo);
+        if (empty($turmasLista)) {
+            $turmasLista = Turma::listarTodas();
+        }
+
+        // Consulta rápida para emissão de 2ª via (Carga Sob Demanda)
+        if ($jaFiltrado) {
+            $ticketsConsulta = Ticket::buscarParaConsulta($buscaTermo, $dataConsumo, $turnoConsumo, 200, $turmaId, $statusTicket);
+        } else {
+            $ticketsConsulta = [];
+        }
 
         $user = Auth::user();
 
@@ -82,6 +101,10 @@ class TicketsController extends Controller
             'dataConsumo'     => $dataConsumo,
             'turnoConsumo'    => $turnoConsumo,
             'buscaTermo'      => $buscaTermo,
+            'turmaId'         => $turmaId,
+            'statusTicket'    => $statusTicket,
+            'turmasLista'     => $turmasLista,
+            'jaFiltrado'      => $jaFiltrado,
             'metricas'        => $metricas,
             'turmasAgrupadas' => $turmasAgrupadas,
             'ticketsConsulta' => $ticketsConsulta,

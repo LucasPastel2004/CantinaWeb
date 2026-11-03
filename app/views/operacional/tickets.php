@@ -23,6 +23,10 @@ $metricas = $metricas ?? [
 $turmasAgrupadas = $turmasAgrupadas ?? [];
 $ticketsConsulta = $ticketsConsulta ?? [];
 $csrf_token = $csrf_token ?? '';
+$jaFiltrado = $jaFiltrado ?? false;
+$turmaId = $turmaId ?? null;
+$statusTicket = $statusTicket ?? '';
+$turmasLista = $turmasLista ?? [];
 
 $dataFmt = date('d/m/Y', strtotime($dataConsumo));
 $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
@@ -241,70 +245,118 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
     </div>
 </div>
 
-<!-- Seção 2: Consulta Rápida e Emissão de 2ª Via -->
+<!-- Seção 2: Consulta Rápida e Emissão de 2ª Via (Carga Sob Demanda) -->
 <div class="card card-enterprise mb-4">
-    <div class="card-header py-2 px-3">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-                <h2 class="h6 mb-0 font-weight-bold text-dark">Consulta Rápida de Tickets &amp; Emissão de 2ª Via</h2>
-                <span class="text-secondary text-microcopy">Localização instantânea para atender alunos que perderam ou danificaram a ficha</span>
-            </div>
-
-            <!-- Campo de Busca Instantânea -->
-            <form method="GET" action="<?php echo $baseUrl; ?>/operacional/tickets" class="d-flex align-items-center gap-2">
-                <input type="hidden" name="data" value="<?php echo htmlspecialchars($dataConsumo, ENT_QUOTES, 'UTF-8'); ?>">
-                <input type="hidden" name="turno" value="<?php echo htmlspecialchars($turnoConsumo, ENT_QUOTES, 'UTF-8'); ?>">
-                <div class="input-group input-group-sm" style="width: 320px;">
-                    <input type="text" 
-                           name="q" 
-                           class="form-control" 
-                           placeholder="Buscar por aluno, matrícula ou código..." 
-                           value="<?php echo htmlspecialchars($buscaTermo, ENT_QUOTES, 'UTF-8'); ?>"
-                           aria-label="Buscar tickets">
-                    <button class="btn btn-enterprise btn-primary" type="submit">
-                        Buscar
-                    </button>
-                    <?php if (!empty($buscaTermo)): ?>
-                        <a href="<?php echo $baseUrl; ?>/operacional/tickets?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 
-                           class="btn btn-enterprise btn-primary" 
-                           title="Limpar busca">
-                            ✕
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </form>
+    <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2 class="h6 mb-0 font-weight-bold text-dark">Consulta Rápida de Tickets &amp; Emissão de 2ª Via</h2>
+            <span class="text-secondary text-microcopy">Localização instantânea para atender alunos que perderam ou danificaram a ficha</span>
         </div>
+        <?php if (!empty($jaFiltrado)): ?>
+            <span class="badge bg-light text-dark border font-tabular" style="font-size: 11px;">
+                <?php echo count($ticketsConsulta); ?> ticket(s) localizado(s)
+            </span>
+        <?php endif; ?>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-enterprise table-hover mb-0 align-middle">
-            <thead>
-                <tr>
-                    <th style="width: 160px;">Código do Ticket</th>
-                    <th style="width: 220px;">Aluno / Matrícula</th>
-                    <th style="width: 140px;">Turma</th>
-                    <th style="width: 220px;">Produto / Salgado</th>
-                    <th style="width: 140px;">Alérgenos</th>
-                    <th style="width: 100px;" class="text-center">Via</th>
-                    <th style="width: 110px;" class="text-center">Status</th>
-                    <th style="width: 150px;" class="text-end pe-3">Ação 2ª Via</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($ticketsConsulta)): ?>
+    <!-- Barra de Filtros e Busca de Tickets (Padrão de Carga Sob Demanda) -->
+    <div class="p-3 bg-light border-bottom">
+        <form method="GET" action="<?php echo $baseUrl; ?>/operacional/tickets" class="row g-2 align-items-end">
+            <input type="hidden" name="data" value="<?php echo htmlspecialchars($dataConsumo, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="turno" value="<?php echo htmlspecialchars($turnoConsumo, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="filtrar" value="1">
+
+            <div class="col-12 col-md-4">
+                <label for="filtroQ" class="form-label text-microcopy text-secondary mb-1 fw-semibold text-uppercase" style="font-size: 10px;">
+                    Buscar por Aluno, Matrícula ou Código
+                </label>
+                <input type="text" 
+                       id="filtroQ"
+                       name="q" 
+                       class="form-control form-control-sm" 
+                       placeholder="Digite nome, matrícula, pedido ou código..." 
+                       value="<?php echo htmlspecialchars($buscaTermo, ENT_QUOTES, 'UTF-8'); ?>"
+                       aria-label="Buscar tickets">
+            </div>
+
+            <div class="col-6 col-md-3">
+                <label for="filtroTurma" class="form-label text-microcopy text-secondary mb-1 fw-semibold text-uppercase" style="font-size: 10px;">
+                    Turma Escolar
+                </label>
+                <select id="filtroTurma" name="turma_id" class="form-select form-select-sm">
+                    <option value="">Todas as Turmas</option>
+                    <?php if (!empty($turmasLista)): ?>
+                        <?php foreach ($turmasLista as $turma): ?>
+                            <option value="<?php echo (int)$turma['id']; ?>" <?php echo ($turmaId === (int)$turma['id']) ? 'selected' : ''; ?>>
+                                <?php 
+                                $serieComplemento = !empty($turma['serie']) ? ' (' . $turma['serie'] . ')' : '';
+                                echo htmlspecialchars($turma['nome_turma'] . $serieComplemento, ENT_QUOTES, 'UTF-8'); 
+                                ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <label for="filtroStatusTicket" class="form-label text-microcopy text-secondary mb-1 fw-semibold text-uppercase" style="font-size: 10px;">
+                    Status do Ticket
+                </label>
+                <select id="filtroStatusTicket" name="status_ticket" class="form-select form-select-sm">
+                    <option value="">Todos os Status</option>
+                    <option value="impresso" <?php echo ($statusTicket === 'impresso') ? 'selected' : ''; ?>>Apenas Impressos</option>
+                    <option value="pendente" <?php echo ($statusTicket === 'pendente') ? 'selected' : ''; ?>>Apenas Pendentes</option>
+                    <option value="segunda_via" <?php echo ($statusTicket === 'segunda_via') ? 'selected' : ''; ?>>Apenas 2ª Via Emitida</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-fill">
+                    Buscar
+                </button>
+                <?php if (!empty($jaFiltrado)): ?>
+                    <a href="<?php echo $baseUrl; ?>/operacional/tickets?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 
+                       class="btn btn-enterprise btn-secondary btn-sm" 
+                       title="Limpar Filtro">
+                        Limpar
+                    </a>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+
+    <?php if (empty($jaFiltrado)): ?>
+        <div class="p-3">
+            <?php 
+            $emptyMessage = 'Não há nada para mostrar aqui';
+            $emptyDescription = 'Utilize os filtros acima ou clique em "Buscar" para listar os tickets deste turno.';
+            require __DIR__ . '/../partials/empty_state.php'; 
+            ?>
+        </div>
+    <?php elseif (empty($ticketsConsulta)): ?>
+        <div class="p-3">
+            <?php 
+            $emptyMessage = 'Nenhum ticket encontrado';
+            $emptyDescription = 'Nenhum ticket localizado com os termos informados para este turno.';
+            require __DIR__ . '/../partials/empty_state.php'; 
+            ?>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-enterprise table-hover mb-0 align-middle">
+                <thead>
                     <tr>
-                        <td colspan="8" class="empty-state py-4 text-center text-secondary">
-                            <div class="text-microcopy">Não há nada para mostrar aqui</div>
-                            <div class="text-secondary" style="font-size: 11px; margin-top: 4px;">
-                                <?php if (!empty($buscaTermo)): ?>
-                                    Nenhum ticket encontrado para o termo "<?php echo htmlspecialchars($buscaTermo, ENT_QUOTES, 'UTF-8'); ?>".
-                                <?php else: ?>
-                                    Nenhum ticket registrado para este turno de consumo.
-                                <?php endif; ?>
-                            </div>
-                        </td>
+                        <th style="width: 160px;">Código do Ticket</th>
+                        <th style="width: 220px;">Aluno / Matrícula</th>
+                        <th style="width: 140px;">Turma</th>
+                        <th style="width: 220px;">Produto / Salgado</th>
+                        <th style="width: 140px;">Alérgenos</th>
+                        <th style="width: 100px;" class="text-center">Via</th>
+                        <th style="width: 110px;" class="text-center">Status</th>
+                        <th style="width: 150px;" class="text-end pe-3">Ação 2ª Via</th>
                     </tr>
-                <?php else: ?>
+                </thead>
+                <tbody>
                     <?php foreach ($ticketsConsulta as $tc): ?>
                         <tr>
                             <td>
@@ -381,10 +433,10 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Corporativo: Emissão de 2ª Via com Justificativa Compulsória (RN-16 e Auditoria) -->

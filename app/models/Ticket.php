@@ -325,13 +325,17 @@ class Ticket extends Model
      * @param string|null $data Consumo (padrão hoje)
      * @param string|null $turno (opcional)
      * @param int $limite
+     * @param int|null $turmaId Filtro opcional por ID da turma
+     * @param string|null $statusFiltro Filtro opcional por status ('impresso', 'pendente', 'segunda_via')
      * @return array
      */
     public static function buscarParaConsulta(
         string $termo,
         ?string $data = null,
         ?string $turno = null,
-        int $limite = 50
+        int $limite = 200,
+        ?int $turmaId = null,
+        ?string $statusFiltro = null
     ): array {
         $termoLimpo = trim($termo);
         $dataConsumo = $data ?? date('Y-m-d');
@@ -344,6 +348,21 @@ class Ticket extends Model
         if ($turno !== null && in_array($turno, ['matutino', 'vespertino'], true)) {
             $whereClausula .= " AND p.turno_consumo = :turno_cons";
             $params['turno_cons'] = $turno;
+        }
+
+        if (!empty($turmaId) && $turmaId > 0) {
+            $whereClausula .= " AND tur.id = :turma_id";
+            $params['turma_id'] = (int)$turmaId;
+        }
+
+        if (!empty($statusFiltro)) {
+            if ($statusFiltro === 'impresso') {
+                $whereClausula .= " AND t.status = 'impresso'";
+            } elseif ($statusFiltro === 'pendente') {
+                $whereClausula .= " AND t.status = 'ativo'";
+            } elseif ($statusFiltro === 'segunda_via') {
+                $whereClausula .= " AND t.numero_via > 1";
+            }
         }
 
         if (!empty($termoLimpo)) {

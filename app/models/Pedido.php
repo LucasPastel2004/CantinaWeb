@@ -1065,7 +1065,7 @@ class Pedido extends Model
 
     /**
      * Consolida a demanda de itens/salgados de um determinado turno e data
-     * Agrupa pedidos agendados ou editados para envio ao fornecedor
+     * Agrupa pedidos agendados, editados ou já entregues para conferência de corte e relatório de fornecedor
      * 
      * @param string $dataConsumo YYYY-MM-DD
      * @param string $turnoConsumo 'matutino' ou 'vespertino'
@@ -1092,7 +1092,7 @@ class Pedido extends Model
                 LEFT JOIN categorias c ON c.id = p.categoria_id
                 WHERE ped.data_consumo = :data 
                   AND ped.turno_consumo = :turno 
-                  AND ped.status IN ('agendado', 'editado')
+                  AND ped.status IN ('agendado', 'editado', 'entregue')
                   AND p.deleted_at IS NULL
                 GROUP BY p.id, p.codigo_interno, p.descricao, p.tipo, p.fracionado_salgado_grande, p.preco_venda, c.nome, c.ordem_exibicao
                 ORDER BY c.ordem_exibicao ASC, p.descricao ASC";
@@ -1200,7 +1200,7 @@ class Pedido extends Model
                       FROM pedidos ped
                       WHERE ped.data_consumo = :data 
                         AND ped.turno_consumo = :turno 
-                        AND ped.status IN ('agendado', 'editado')";
+                        AND ped.status IN ('agendado', 'editado', 'entregue')";
         $totais = self::fetchOne($sqlTotais, [
             'data'  => $dataConsumo,
             'turno' => $turnoConsumo

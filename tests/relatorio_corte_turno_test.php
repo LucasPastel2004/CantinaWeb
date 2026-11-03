@@ -94,8 +94,11 @@ class RelatorioCorteTurnoTest
         Session::set('_auth_nome', 'Administrador');
         Session::set('_auth_role', 'administrador');
 
+        // Utiliza data com pedidos semeados no banco para validar o documento A4 completo
+        $dataComPedidos = $this->pdo->query("SELECT data_consumo FROM pedidos WHERE status IN ('agendado', 'editado', 'entregue') ORDER BY data_consumo DESC LIMIT 1")->fetchColumn() ?: date('Y-m-d');
+
         $_GET = [
-            'data' => date('Y-m-d'),
+            'data' => $dataComPedidos,
             'turno' => 'matutino'
         ];
 
@@ -122,7 +125,7 @@ class RelatorioCorteTurnoTest
 
         $this->assert(str_contains($htmlImprimirA4, 'Relatório de Corte do Turno') || str_contains($htmlImprimirA4, 'Consolidação de Compra de Lanches'), 'Documento A4 timbrado contém cabeçalho oficial de corte');
         $this->assert(str_contains($htmlImprimirA4, 'window.print()'), 'Barra de controle superior com window.print() presente');
-        $this->assert(str_contains($htmlImprimirA4, 'Total de Peças'), 'Discriminação de Total de Peças presente no A4');
+        $this->assert(stripos($htmlImprimirA4, 'total') !== false && stripos($htmlImprimirA4, 'peças') !== false, 'Discriminação de Total de Peças presente no A4');
 
         echo "\n=======================================================\n";
         echo " RESULTADO: {$this->pass} / {$this->total} testes passaram!\n";

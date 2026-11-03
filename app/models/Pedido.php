@@ -1093,7 +1093,6 @@ class Pedido extends Model
                 WHERE ped.data_consumo = :data 
                   AND ped.turno_consumo = :turno 
                   AND ped.status IN ('agendado', 'editado', 'entregue')
-                  AND p.deleted_at IS NULL
                 GROUP BY p.id, p.codigo_interno, p.descricao, p.tipo, p.fracionado_salgado_grande, p.preco_venda, c.nome, c.ordem_exibicao
                 ORDER BY c.ordem_exibicao ASC, p.descricao ASC";
 

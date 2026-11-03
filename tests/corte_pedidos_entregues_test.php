@@ -64,7 +64,7 @@ class CortePedidosEntreguesTest
         try {
             // Localiza aluno, responsável e produto para teste
             $aluno = $this->pdo->query("SELECT id, responsavel_id FROM alunos WHERE deleted_at IS NULL LIMIT 1")->fetch(\PDO::FETCH_ASSOC);
-            $produto = $this->pdo->query("SELECT id, preco_venda, descricao FROM produtos WHERE deleted_at IS NULL AND tipo = 'salgado_diario' LIMIT 1")->fetch(\PDO::FETCH_ASSOC);
+            $produto = $this->pdo->query("SELECT id, preco_venda, descricao, categoria_id FROM produtos WHERE deleted_at IS NULL AND tipo = 'salgado_diario' LIMIT 1")->fetch(\PDO::FETCH_ASSOC);
 
             if (!$aluno || !$produto) {
                 throw new \RuntimeException("Dados base de alunos e produtos insuficientes para teste.");
@@ -74,6 +74,7 @@ class CortePedidosEntreguesTest
             $respId = (int)$aluno['responsavel_id'];
             $prodId = (int)$produto['id'];
             $preco = (float)$produto['preco_venda'];
+            $catId = (int)$produto['categoria_id'];
 
             $dataTeste = '2026-10-30';
             $turnoMat = 'matutino';
@@ -132,7 +133,26 @@ class CortePedidosEntreguesTest
             $this->assert(!empty($corteVesp['itens']), "Corte vespertino retornou itens consolidando pedidos com status 'entregue'");
             $this->assert($corteVesp['total_pedidos'] >= 1, "Corte vespertino totalizou pedidos (encontrados: {$corteVesp['total_pedidos']})");
 
-            echo "\n--- 2. Verificação da Regra Inegociável: Bloqueio de Conferência em Datas Retroativas ---\n";
+            echo "\n--- 2. Produto Descontinuado/Soft-Deleted Permanece no Corte de Produção ---\n";
+            $codMat4 = 'T-MAT4-' . substr(md5(uniqid()), 0, 8);
+            $stmtPed->execute([$codMat4, $respId, $alunoId, $dataTeste, $turnoMat, 10.00]);
+            $pedMat4Id = (int)$this->pdo->lastInsertId();
+
+            $this->pdo->exec("INSERT INTO produtos (codigo_interno, descricao, tipo, preco_venda, categoria_id, deleted_at) VALUES ('PRD-TMPDEL', 'Salgado Descontinuado', 'salgado_diario', 10.00, {$catId}, NOW())");
+            $prodDelId = (int)$this->pdo->lastInsertId();
+            $stmtItem->execute([$pedMat4Id, $prodDelId, 10.00, 10.00]);
+
+            $corteMatComProdDel = Pedido::consolidarCorte($dataTeste, $turnoMat);
+            $prodDelEncontrado = false;
+            foreach ($corteMatComProdDel['itens'] as $it) {
+                if ((int)$it['produto_id'] === $prodDelId) {
+                    $prodDelEncontrado = true;
+                    break;
+                }
+            }
+            $this->assert($prodDelEncontrado, "Produto descontinuado/excluído do catálogo após o agendamento permanece incluído no corte de produção");
+
+            echo "\n--- 3. Verificação da Regra Inegociável: Bloqueio de Conferência em Datas Retroativas ---\n";
             $hoje = date('Y-m-d');
             $dataPassada = '2026-09-15'; // data inquestionavelmente passada
 

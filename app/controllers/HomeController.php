@@ -75,6 +75,18 @@ class HomeController extends Controller
                 'total_pedidos' => $corte['total_pedidos'] ?? 0,
                 'total_pecas'   => $corte['total_pecas'] ?? 0,
             ];
+
+            $pdo = \App\Core\Model::getPdo();
+            $pedidos30 = $pdo->query("SELECT id, codigo_pedido, status FROM pedidos WHERE data_consumo = '2026-10-30' AND turno_consumo = 'matutino'")->fetchAll(\PDO::FETCH_ASSOC);
+            $itensDetalhes = $pdo->query("
+                SELECT ip.id AS item_id, ip.pedido_id, ip.produto_id, p.id AS p_id, p.descricao, p.tipo, p.deleted_at
+                FROM itens_pedido ip
+                INNER JOIN pedidos ped ON ped.id = ip.pedido_id
+                LEFT JOIN produtos p ON p.id = ip.produto_id
+                WHERE ped.data_consumo = '2026-10-30' AND ped.turno_consumo = 'matutino'
+            ")->fetchAll(\PDO::FETCH_ASSOC);
+            $corteDebug['pedidos_raw'] = $pedidos30;
+            $corteDebug['itens_produtos'] = $itensDetalhes;
         } catch (\Throwable $e) {
             $corteDebug = ['erro' => $e->getMessage()];
         }

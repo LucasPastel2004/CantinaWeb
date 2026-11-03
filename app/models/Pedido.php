@@ -1083,6 +1083,7 @@ class Pedido extends Model
                        p.tipo AS tipo_produto, 
                        p.fracionado_salgado_grande,
                        p.preco_venda, 
+                       p.deleted_at AS produto_deleted_at,
                        c.nome AS categoria_nome,
                        SUM(ip.quantidade) AS quantidade_total,
                        SUM(ip.subtotal) AS valor_total_estimado
@@ -1093,7 +1094,7 @@ class Pedido extends Model
                 WHERE ped.data_consumo = :data 
                   AND ped.turno_consumo = :turno 
                   AND ped.status IN ('agendado', 'editado', 'entregue')
-                GROUP BY p.id, p.codigo_interno, p.descricao, p.tipo, p.fracionado_salgado_grande, p.preco_venda, c.nome, c.ordem_exibicao
+                GROUP BY p.id, p.codigo_interno, p.descricao, p.tipo, p.fracionado_salgado_grande, p.preco_venda, p.deleted_at, c.nome, c.ordem_exibicao
                 ORDER BY c.ordem_exibicao ASC, p.descricao ASC";
 
         $itensBrutos = self::fetchAll($sql, [
@@ -1106,12 +1107,20 @@ class Pedido extends Model
         $totalSalgados = 0;
         $totalValorEstimado = 0.0;
         $totalDemandaAlunos = 0;
+        $possuiItensDeletados = false;
+        $totalItensDeletados = 0;
 
         foreach ($itensBrutos as $it) {
             $qtdOriginal = (int)$it['quantidade_total'];
             $totalDemandaAlunos += $qtdOriginal;
             $totalValorEstimado += (float)$it['valor_total_estimado'];
             $isFracionado = !empty($it['fracionado_salgado_grande']);
+            $isDeletado = !empty($it['produto_deleted_at']);
+
+            if ($isDeletado) {
+                $possuiItensDeletados = true;
+                $totalItensDeletados++;
+            }
 
             if ($isFracionado) {
                 $grandes = intdiv($qtdOriginal, 2);
@@ -1144,7 +1153,8 @@ class Pedido extends Model
                         'tamanho_fornecedor'       => 'grande',
                         'fator_conversao'          => 2,
                         'qtd_pedida_original'      => $qtdOriginal,
-                        'obs_conversao'            => "Convertido: {$qtdOriginal} pedidos pequenos = {$grandes} grande(s)" . ($pequenos > 0 ? " + {$pequenos} pequeno" : "")
+                        'obs_conversao'            => "Convertido: {$qtdOriginal} pedidos pequenos = {$grandes} grande(s)" . ($pequenos > 0 ? " + {$pequenos} pequeno" : ""),
+                        'produto_deletado'         => $isDeletado,
                     ];
                     $itensConsolidados[] = $itemGrande;
                     $totalPecas += $grandes;
@@ -1167,7 +1177,8 @@ class Pedido extends Model
                         'tamanho_fornecedor'       => 'pequeno',
                         'fator_conversao'          => 1,
                         'qtd_pedida_original'      => $qtdOriginal,
-                        'obs_conversao'            => "Sobra: {$pequenos} pequeno (de {$qtdOriginal} pedidos fracionados)"
+                        'obs_conversao'            => "Sobra: {$pequenos} pequeno (de {$qtdOriginal} pedidos fracionados)",
+                        'produto_deletado'         => $isDeletado,
                     ];
                     $itensConsolidados[] = $itemPequeno;
                     $totalPecas += $pequenos;
@@ -1184,6 +1195,7 @@ class Pedido extends Model
                 $it['fator_conversao'] = 1;
                 $it['qtd_pedida_original'] = $qtdOriginal;
                 $it['obs_conversao'] = null;
+                $it['produto_deletado'] = $isDeletado;
 
                 $itensConsolidados[] = $it;
                 $totalPecas += $qtdOriginal;
@@ -1209,18 +1221,20 @@ class Pedido extends Model
         $statusRecebimento = self::verificarStatusRecebimento($dataConsumo, $turnoConsumo);
 
         return [
-            'data_consumo'        => $dataConsumo,
-            'turno_consumo'       => $turnoConsumo,
-            'itens'               => $itensConsolidados,
-            'itens_originais'     => $itensBrutos,
-            'total_pecas'         => $totalPecas,
-            'total_salgados'      => $totalSalgados,
-            'total_pedidos'       => (int)($totais['total_pedidos'] ?? 0),
-            'total_alunos'        => (int)($totais['total_alunos'] ?? 0),
-            'total_demanda_itens' => $totalDemandaAlunos,
-            'total_valor_estimado'=> round($totalValorEstimado, 2),
-            'status_corte'        => $statusCorte,
-            'status_recebimento'  => $statusRecebimento,
+            'data_consumo'           => $dataConsumo,
+            'turno_consumo'          => $turnoConsumo,
+            'itens'                  => $itensConsolidados,
+            'itens_originais'        => $itensBrutos,
+            'total_pecas'            => $totalPecas,
+            'total_salgados'         => $totalSalgados,
+            'total_pedidos'          => (int)($totais['total_pedidos'] ?? 0),
+            'total_alunos'           => (int)($totais['total_alunos'] ?? 0),
+            'total_demanda_itens'    => $totalDemandaAlunos,
+            'total_valor_estimado'   => round($totalValorEstimado, 2),
+            'possui_itens_deletados' => $possuiItensDeletados,
+            'total_itens_deletados'  => $totalItensDeletados,
+            'status_corte'           => $statusCorte,
+            'status_recebimento'     => $statusRecebimento,
         ];
     }
 

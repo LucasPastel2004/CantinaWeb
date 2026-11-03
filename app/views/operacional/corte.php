@@ -118,6 +118,16 @@ require __DIR__ . '/../partials/stat_strip.php';
 
 <!-- Tabela de Consolidação de Salgados -->
 <div class="card-enterprise mt-4">
+    <?php if (!empty($dadosCorte['possui_itens_deletados'])): ?>
+        <div class="alert alert-info d-flex align-items-center gap-2 m-3 mb-0" style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 6px; padding: 10px 14px; font-size: 13px;">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="flex-shrink-0" style="color: #2563eb;" aria-hidden="true">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+            </svg>
+            <div>
+                <strong>Produtos Descontinuados do Catálogo:</strong> Esta consolidação inclui itens que foram descontinuados do cardápio após o agendamento do pedido. Eles constam normalmente na grade de produção e são devidamente contabilizados em vendas, custos de fornecedor e relatórios financeiros.
+            </div>
+        </div>
+    <?php endif; ?>
     <div class="card-enterprise-header d-flex justify-content-between align-items-center">
         <div>
             <span class="font-weight-bold text-dark">Demandas de Produção por Salgado</span>
@@ -168,6 +178,11 @@ require __DIR__ . '/../partials/stat_strip.php';
                             </td>
                             <td>
                                 <span class="font-weight-bold text-dark"><?php echo htmlspecialchars($item['descricao'] ?? '', ENT_QUOTES, 'UTF-8'); ?></span>
+                                <?php if (!empty($item['produto_deletado'])): ?>
+                                    <span class="badge bg-light text-secondary border" style="font-size: 10px; font-weight: 600; padding: 2px 6px; margin-left: 6px; vertical-align: middle;">
+                                        Descontinuado do Cardápio
+                                    </span>
+                                <?php endif; ?>
                                 <?php if (!empty($item['fracionado_salgado_grande'])): ?>
                                     <div class="text-secondary text-microcopy mt-1" style="font-size: 11px;">
                                         <span class="badge bg-light text-dark border" style="font-size: 9.5px; font-weight: 600; padding: 1px 5px; border-color: #cbd5e1 !important;">

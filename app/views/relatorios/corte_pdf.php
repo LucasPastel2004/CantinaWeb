@@ -513,10 +513,16 @@ $logoDataUri = \App\Services\PdfService::getLogoDataUri(false);
                     $desc = htmlspecialchars($it['descricao'] ?? ($it['produto_nome'] ?? '-'), ENT_QUOTES, 'UTF-8');
                     $cat = htmlspecialchars($it['categoria_nome'] ?? ($it['categoria'] ?? 'Geral'), ENT_QUOTES, 'UTF-8');
                     $qtd = (int)($it['quantidade_total'] ?? ($it['quantidade'] ?? 0));
+                    $isDeletado = !empty($it['produto_deletado']);
                 ?>
                     <tr>
                         <td class="text-center font-tabular"><?php echo $cod; ?></td>
-                        <td class="text-start"><strong><?php echo $desc; ?></strong></td>
+                        <td class="text-start">
+                            <strong><?php echo $desc; ?></strong>
+                            <?php if ($isDeletado): ?>
+                                <span style="font-size: 6.8pt; color: #64748b; font-weight: normal; margin-left: 4px;">*(Descontinuado do Cardápio)</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-center"><?php echo $cat; ?></td>
                         <td class="text-center font-tabular">
                             <strong><?php echo $qtd; ?> un</strong>
@@ -532,6 +538,12 @@ $logoDataUri = \App\Services\PdfService::getLogoDataUri(false);
             </tr>
         </tfoot>
     </table>
+
+    <?php if (!empty($dadosCorte['possui_itens_deletados'])): ?>
+        <div style="font-size: 7pt; color: #1e40af; background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 4px 8px; margin-bottom: 8px; border-radius: 4px;">
+            <strong>* Observação:</strong> Itens com asterisco foram descontinuados do catálogo escolar após o agendamento do pedido. Constam normalmente para entrega física e contabilização contábil.
+        </div>
+    <?php endif; ?>
 
     <!-- Assinaturas e Rodapé -->
     <div class="footer-assinaturas-box">

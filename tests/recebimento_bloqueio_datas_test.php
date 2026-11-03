@@ -139,9 +139,9 @@ class RecebimentoBloqueioDatasTest
      */
     private function testarBloqueioModelDataFutura(): void
     {
-        echo "\n--- 2. Trava no Model para Data Futura (ex: 2026-10-20) ---\n";
+        echo "\n--- 2. Trava no Model para Data Futura ---\n";
 
-        $dataFutura = '2026-10-20';
+        $dataFutura = date('Y-m-d', strtotime('+7 days'));
         $itensTeste = [
             ['produto_id' => 1, 'qtd_esperada' => 10, 'qtd_entregue' => 10]
         ];
@@ -331,7 +331,7 @@ class RecebimentoBloqueioDatasTest
         echo "\n--- 6. Renderização da View para Data Futura ---\n";
 
         $hoje = date('Y-m-d');
-        $dataFutura = '2026-10-20';
+        $dataFutura = date('Y-m-d', strtotime('+7 days'));
 
         $itensMock = [
             [

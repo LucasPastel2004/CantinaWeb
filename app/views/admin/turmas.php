@@ -18,9 +18,6 @@ $csrfField = $csrf_field ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Turmas Escolares</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Agrupamento de estudantes e sequenciamento de impressão dos tickets térmicos na bobina de 80mm.
-        </p>
     </div>
     <div>
         <button type="button" class="btn btn-enterprise btn-primary" onclick="abrirModalTurma()">
@@ -38,8 +35,7 @@ $csrfField = $csrf_field ?? '';
                 <label for="busca" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                     Buscar por Turma ou Série
                 </label>
-                <input type="text" class="form-control form-control-sm" id="busca" name="busca" 
-                       placeholder="Ex: 6º Ano, Ensino Médio..." value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" class="form-control form-control-sm" id="busca" name="busca" value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="col-6 col-sm-3 col-md-3">
                 <label for="filtro_turno" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
@@ -170,7 +166,7 @@ $csrfField = $csrf_field ?? '';
                             Série / Segmento Escolar <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm" id="turma_serie" name="serie" 
-                               required maxlength="50" placeholder="Ex: Ensino Fundamental II, 6º Ano...">
+                               required maxlength="50">
                     </div>
 
                     <div class="mb-3">
@@ -178,7 +174,7 @@ $csrfField = $csrf_field ?? '';
                             Nome da Turma <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm" id="turma_nome" name="nome_turma" 
-                               required maxlength="50" placeholder="Ex: 6º Ano A, 1º Ano EM...">
+                               required maxlength="50">
                     </div>
 
                     <div class="row g-3">

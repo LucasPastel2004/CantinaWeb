@@ -32,9 +32,6 @@ $totalFaturado = (float)($totais['total_geral_faturado'] ?? 0.0);
                 <span class="bullet text-success">●</span> Turno <?php echo $turnoAtivo; ?> — Sessão #<?php echo (int)($sessaoAberta['id'] ?? 0); ?>
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Confronto assistido entre os valores em dinheiro contados na gaveta física e os registros computados no sistema.
-        </p>
     </div>
 
     <div>
@@ -115,7 +112,7 @@ $totalFaturado = (float)($totais['total_geral_faturado'] ?? 0.0);
                             <span class="input-group-text font-bold">R$</span>
                             <input type="text" name="total_informado_gaveta" id="inputTotalInformado" 
                                    class="form-control form-control-lg font-tabular font-bold input-money" 
-                                   placeholder="0,00" required autofocus 
+                                   required autofocus 
                                    oninput="calcularQuebraSobra();" onkeyup="calcularQuebraSobra();" onchange="calcularQuebraSobra();">
                         </div>
                         <div class="form-text font-11 text-muted">Digite o somatório exato de notas e moedas físicas apuradas.</div>
@@ -132,8 +129,7 @@ $totalFaturado = (float)($totais['total_geral_faturado'] ?? 0.0);
 
                     <div class="mb-3">
                         <label class="form-label font-12 font-semibold">Observações / Justificativa Operacional</label>
-                        <textarea name="observacoes" class="form-control form-control-sm" rows="2" 
-                                  placeholder="Caso haja quebra ou sobra de caixa, registre aqui a justificativa para a gerência..."></textarea>
+                        <textarea name="observacoes" class="form-control form-control-sm" rows="2"></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">

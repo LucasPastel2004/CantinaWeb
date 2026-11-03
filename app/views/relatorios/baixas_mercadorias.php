@@ -52,9 +52,6 @@ $queryParams = http_build_query([
                 </a>
             </div>
             <h1 class="h5 fw-bold text-slate-900 mb-0">Relatório de Baixas de Mercadorias (Perdas & Descarte)</h1>
-            <p class="text-secondary small mb-0">
-                Auditoria cronológica e gerencial de todas as baixas por avaria, vencimento, produto não consumido e ajustes de inventário.
-            </p>
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -119,7 +116,7 @@ $queryParams = http_build_query([
             <div class="row g-2 align-items-end">
                 <div class="col-12 col-md-3">
                     <label for="inputBusca" class="form-label small fw-semibold text-muted mb-1 text-uppercase" style="font-size: 11px;">Busca:</label>
-                    <input type="text" name="busca" id="inputBusca" class="form-control form-control-sm" placeholder="Código, produto, justificativa..." value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="text" name="busca" id="inputBusca" class="form-control form-control-sm" value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-2">

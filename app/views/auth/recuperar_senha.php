@@ -13,9 +13,6 @@ $baseUrl = $baseUrl ?? '';
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Recuperar Senha de Acesso</h2>
-    <p class="text-secondary text-microcopy mb-0">
-        Informe o CPF do titular cadastrado. Um código de segurança de 6 dígitos será enviado ao WhatsApp registrado.
-    </p>
 </div>
 
 <form action="<?php echo $baseUrl; ?>/recuperar-senha/solicitar" method="POST" autocomplete="off" class="auth-form" id="form-recuperar-senha">
@@ -27,7 +24,6 @@ $baseUrl = $baseUrl ?? '';
                class="form-control form-control-enterprise font-tabular" 
                id="cpf" 
                name="cpf" 
-               placeholder="000.000.000-00" 
                maxlength="14" 
                required>
     </div>

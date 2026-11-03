@@ -16,7 +16,6 @@ $dependentes = $dependentes ?? [];
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Meus Dados Cadastrais</h1>
-        <p class="text-secondary text-microcopy mb-0">Informações da conta familiar e dependentes vinculados na instituição.</p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-primary">
@@ -113,9 +112,6 @@ $dependentes = $dependentes ?? [];
 
                 <div class="mt-4 p-3 bg-light rounded-2 border">
                     <span class="text-microcopy text-muted d-block mb-1">Atualização Cadastral</span>
-                    <p class="text-microcopy text-secondary mb-0">
-                        Para inclusão de novos dependentes, transferência de turma ou alteração de CPF, favor procurar a secretaria do Colégio Monteiro Lobato.
-                    </p>
                 </div>
             </div>
         </div>
@@ -144,8 +140,7 @@ $dependentes = $dependentes ?? [];
                                id="senha_atual" 
                                name="senha_atual" 
                                required 
-                               autocomplete="current-password" 
-                               placeholder="Digite sua senha atual">
+                               autocomplete="current-password">
                     </div>
 
                     <div class="mb-3">
@@ -158,8 +153,7 @@ $dependentes = $dependentes ?? [];
                                name="nova_senha" 
                                required 
                                minlength="6" 
-                               autocomplete="new-password" 
-                               placeholder="Mínimo de 6 caracteres">
+                               autocomplete="new-password">
                         <small class="text-microcopy text-muted">Use no mínimo 6 caracteres alfanuméricos.</small>
                     </div>
 
@@ -173,8 +167,7 @@ $dependentes = $dependentes ?? [];
                                name="confirmar_senha" 
                                required 
                                minlength="6" 
-                               autocomplete="new-password" 
-                               placeholder="Repita a nova senha">
+                               autocomplete="new-password">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-2">
@@ -200,16 +193,10 @@ $dependentes = $dependentes ?? [];
             <div class="card-enterprise-body">
                 <div class="mb-3">
                     <strong class="text-dark d-block mb-1" style="font-size: 14px;">Autenticação e Senha</strong>
-                    <p class="text-secondary text-microcopy mb-0">
-                        O acesso ao Portal da Família é individual por responsável legal, autenticado pelo CPF e senha criptografada em padrão Bcrypt.
-                    </p>
                 </div>
 
                 <div class="p-3 bg-light rounded-2 border mb-3">
                     <span class="text-microcopy text-dark d-block mb-1 fw-bold">Esqueceu sua senha?</span>
-                    <p class="text-secondary text-microcopy mb-0">
-                        Caso esqueça sua senha de acesso, na tela inicial de login clique em <strong>"Esqueci minha senha"</strong>. Um código temporário de verificação de 6 dígitos será despachado para o seu WhatsApp cadastrado, permitindo redefini-la rapidamente.
-                    </p>
                 </div>
 
                 <div class="p-3 bg-light rounded-2 border">

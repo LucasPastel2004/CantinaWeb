@@ -19,9 +19,6 @@ $topItem = !empty($itens) ? ($itens[0]['descricao'] ?? '-') : '-';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Vendas por Alimento</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Totalização comercial de alimentos e produtos e ticket médio ponderado.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?php echo $baseUrl; ?>/relatorios/vendas-filtros?data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?>&turno=<?php echo urlencode($turno); ?>&categoria_id=<?php echo (int)$categoriaId; ?>&tipo=<?php echo urlencode($tipo); ?>" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5" title="Abrir painel de filtros avançados com toggles e agrupamentos">

@@ -14,7 +14,6 @@ $baseUrl = $baseUrl ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Relatórios Gerenciais</h1>
-        <p class="text-secondary text-microcopy mb-0">Central de exportações, relatórios analíticos em PDF A4 timbrado e espelhos operacionais.</p>
     </div>
 </div>
 
@@ -29,9 +28,6 @@ $baseUrl = $baseUrl ?? '';
             <div class="card-enterprise-body d-flex flex-column justify-content-between">
                 <div>
                     <h2 class="h6 font-weight-bold text-dark mb-2">Relatório Consolidado de Corte</h2>
-                    <p class="text-secondary text-microcopy mb-3">
-                        Totalização analítica de salgados encomendados por turno, quantidade exata para compra e alunos beneficiados.
-                    </p>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="<?php echo $baseUrl; ?>/operacional/corte/imprimir?data=<?php echo date('Y-m-d'); ?>&turno=matutino" class="btn btn-enterprise btn-primary btn-sm flex-fill text-center" target="_blank" title="Imprimir ou Salvar em PDF">
@@ -55,9 +51,6 @@ $baseUrl = $baseUrl ?? '';
             <div class="card-enterprise-body d-flex flex-column justify-content-between">
                 <div>
                     <h2 class="h6 font-weight-bold text-dark mb-2">Prestação de Contas & Fechamento</h2>
-                    <p class="text-secondary text-microcopy mb-3">
-                        Espelho detalhado de apuração por turno com contagem de gaveta, dinheiro, Pix balcão e quebra/sobra para assinatura.
-                    </p>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="<?php echo $baseUrl; ?>/operacional/caixa" class="btn btn-enterprise btn-primary btn-sm flex-fill text-center">
@@ -78,9 +71,6 @@ $baseUrl = $baseUrl ?? '';
             <div class="card-enterprise-body d-flex flex-column justify-content-between">
                 <div>
                     <h2 class="h6 font-weight-bold text-dark mb-2">Extrato de Movimentações & Perdas</h2>
-                    <p class="text-secondary text-microcopy mb-3">
-                        Rastreabilidade completa de entradas via NF-e XML, baixas de vendas balcão e auditoria de perdas com justificativa.
-                    </p>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="<?php echo $baseUrl; ?>/relatorios/estoque-filtros" class="btn btn-enterprise btn-primary btn-sm flex-fill text-center">

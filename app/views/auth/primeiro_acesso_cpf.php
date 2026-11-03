@@ -14,9 +14,6 @@ $cpfPreenchido = $cpfPreenchido ?? '';
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Primeiro Acesso ao Portal</h2>
-    <p class="text-secondary text-microcopy mb-0">
-        Informe o CPF do titular cadastrado na matrícula escolar para receber o código de 6 dígitos via WhatsApp.
-    </p>
 </div>
 
 <form action="<?php echo $baseUrl; ?>/primeiro-acesso/solicitar" method="POST" autocomplete="off" class="auth-form" id="form-primeiro-acesso-cpf">
@@ -29,7 +26,6 @@ $cpfPreenchido = $cpfPreenchido ?? '';
                id="cpf" 
                name="cpf" 
                value="<?php echo $cpfPreenchido; ?>" 
-               placeholder="000.000.000-00" 
                maxlength="14" 
                required>
         <div class="text-microcopy text-muted mt-1">Apenas os números ou no formato com pontos e traço.</div>

@@ -23,9 +23,6 @@ $baseUrl = $baseUrl ?? '';
             <h1 class="h4 font-weight-bold text-dark mb-1" style="font-size: 18px; font-weight: 700; color: #0f172a;">
                 Despesas Operacionais da Cantina
             </h1>
-            <p class="text-secondary text-microcopy mb-0">
-                Lançamento, controle de vencimentos e classificação contábil das contas a pagar (administrativas, pessoal, vendas e manutenção).
-            </p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <button type="button" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1" onclick="abrirModalNovaDespesa()">
@@ -121,7 +118,7 @@ $baseUrl = $baseUrl ?? '';
 
                 <div class="col-12 col-md-3">
                     <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Buscar Conta / Doc</label>
-                    <input type="text" name="busca" class="form-control form-control-sm" placeholder="Descrição, NF ou comprovante..." value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="text" name="busca" class="form-control form-control-sm" value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="col-12 col-md-1 d-flex gap-1">
@@ -291,12 +288,12 @@ $baseUrl = $baseUrl ?? '';
                     <div class="row g-3">
                         <div class="col-12 col-md-8">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Descrição da Despesa *</label>
-                            <input type="text" name="descricao" id="despesaDescricao" class="form-control form-control-sm" required placeholder="Ex: Conta de Energia Elétrica - Cantina" maxlength="150">
+                            <input type="text" name="descricao" id="despesaDescricao" class="form-control form-control-sm" required maxlength="150">
                         </div>
 
                         <div class="col-12 col-md-4">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Valor (R$) *</label>
-                            <input type="text" name="valor" id="despesaValor" class="form-control form-control-sm input-money font-tabular fw-bold" required placeholder="0,00">
+                            <input type="text" name="valor" id="despesaValor" class="form-control form-control-sm input-money font-tabular fw-bold" required>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -313,12 +310,12 @@ $baseUrl = $baseUrl ?? '';
 
                         <div class="col-12 col-md-6">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Subcategoria / Especificação</label>
-                            <input type="text" name="subcategoria" id="despesaSubcategoria" class="form-control form-control-sm" placeholder="Ex: Energia, Água, Salário Cozinheira, Embalagens">
+                            <input type="text" name="subcategoria" id="despesaSubcategoria" class="form-control form-control-sm">
                         </div>
 
                         <div class="col-12 col-md-4">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Competência (AAAA-MM) *</label>
-                            <input type="text" name="competencia_mes_ano" id="despesaCompetencia" class="form-control form-control-sm font-tabular" required pattern="\d{4}-\d{2}" placeholder="AAAA-MM" value="<?php echo date('Y-m'); ?>">
+                            <input type="text" name="competencia_mes_ano" id="despesaCompetencia" class="form-control form-control-sm font-tabular" required pattern="\d{4}-\d{2}" value="<?php echo date('Y-m'); ?>">
                         </div>
 
                         <div class="col-12 col-md-4">
@@ -353,12 +350,12 @@ $baseUrl = $baseUrl ?? '';
 
                         <div class="col-12 col-md-4">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Nº NF / Comprovante</label>
-                            <input type="text" name="documento_referencia" id="despesaDoc" class="form-control form-control-sm" placeholder="Ex: NF 1492, Cod Barras, Recibo">
+                            <input type="text" name="documento_referencia" id="despesaDoc" class="form-control form-control-sm">
                         </div>
 
                         <div class="col-12">
                             <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Observações Internas</label>
-                            <textarea name="observacoes" id="despesaObservacoes" class="form-control form-control-sm" rows="2" placeholder="Anotações para a conferência financeira..."></textarea>
+                            <textarea name="observacoes" id="despesaObservacoes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
                     </div>
                 </div>

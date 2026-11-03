@@ -44,10 +44,6 @@ $totalFaturado = (float)($totais['total_geral_faturado'] ?? 0.0);
                 <span class="status-indicator status-active"><span class="bullet">●</span> Aberto</span>
             <?php endif; ?>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Aberto por <strong><?php echo htmlspecialchars($operador, ENT_QUOTES, 'UTF-8'); ?></strong> em <?php echo $abertoEm; ?> 
-            <?php if ($isFechado): ?> • Fechado em <?php echo $fechadoEm; ?><?php endif; ?>
-        </p>
     </div>
 
     <div class="d-flex gap-2">

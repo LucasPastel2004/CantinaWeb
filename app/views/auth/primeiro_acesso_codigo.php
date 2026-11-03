@@ -16,9 +16,6 @@ $codigoBloqueado = $codigoBloqueado ?? false;
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Código de Confirmação</h2>
-    <p class="text-secondary text-microcopy mb-0">
-        Enviamos um código de 6 dígitos para o WhatsApp <strong><?php echo htmlspecialchars($maskedPhone, ENT_QUOTES, 'UTF-8'); ?></strong>.
-    </p>
 </div>
 
 <?php if ($mockCode): ?>
@@ -50,7 +47,6 @@ $codigoBloqueado = $codigoBloqueado ?? false;
                    class="form-control form-control-enterprise font-tabular text-center mx-auto" 
                    id="codigo" 
                    name="codigo" 
-                   placeholder="000000" 
                    maxlength="6" 
                    pattern="\d{6}" 
                    style="letter-spacing: 8px; font-size: 22px; font-weight: 700; max-width: 220px;" 

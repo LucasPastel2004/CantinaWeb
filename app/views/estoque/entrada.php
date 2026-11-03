@@ -84,7 +84,6 @@ $produtoPreSel = $produtoPreSel ?? null;
                            list="listaFornecedores" 
                            required 
                            autocomplete="off"
-                           placeholder="Digite ou selecione o fornecedor..."
                            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); carregarProdutosFornecedor(); }">
                     <datalist id="listaFornecedores">
                         <?php foreach ($fornecedores as $forn): ?>
@@ -113,8 +112,7 @@ $produtoPreSel = $produtoPreSel ?? null;
                     <input type="text" 
                            name="numero_documento" 
                            id="inputNumeroDocumento" 
-                           class="form-control form-control-sm" 
-                           placeholder="Ex: NF 1045, Pedido 382, Recibo...">
+                           class="form-control form-control-sm">
                     <div class="form-text" style="font-size: 11px;">Referência documental para conciliação contábil.</div>
                 </div>
 
@@ -124,8 +122,7 @@ $produtoPreSel = $produtoPreSel ?? null;
                     <input type="text" 
                            name="observacoes" 
                            id="inputObservacoes" 
-                           class="form-control form-control-sm" 
-                           placeholder="Ex: Entrega matutina antes do primeiro recreio, conferência realizada por atendente...">
+                           class="form-control form-control-sm">
                 </div>
             </div>
         </div>
@@ -163,7 +160,7 @@ $produtoPreSel = $produtoPreSel ?? null;
                         <span class="input-group-text bg-light text-muted">
                             <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
                         </span>
-                        <input type="text" id="buscaProdutoInput" class="form-control form-control-sm" placeholder="Ex: Coxinha, Suco, 1001..." onkeyup="filtrarProdutosExibidos()">
+                        <input type="text" id="buscaProdutoInput" class="form-control form-control-sm" onkeyup="filtrarProdutosExibidos()">
                         <button type="button" class="btn btn-enterprise btn-secondary btn-sm" onclick="limparBuscaProdutos()">Limpar</button>
                     </div>
                 </div>
@@ -331,7 +328,6 @@ $produtoPreSel = $produtoPreSel ?? null;
                                    min="1" 
                                    step="1" 
                                    required 
-                                   placeholder="Ex: 25" 
                                    style="font-size: 17px; height: 42px; border-color: #cbd5e1;"
                                    oninput="atualizarSimulacaoSaldoModal()">
                             <div class="form-text" style="font-size: 11px;">Unidades físicas recebidas.</div>
@@ -347,7 +343,6 @@ $produtoPreSel = $produtoPreSel ?? null;
                                 <input type="text" 
                                        id="modalInputPrecoCusto" 
                                        class="form-control font-tabular input-money" 
-                                       placeholder="0,00" 
                                        style="font-size: 15px; border-color: #cbd5e1;"
                                        oninput="atualizarSimulacaoSaldoModal()">
                             </div>

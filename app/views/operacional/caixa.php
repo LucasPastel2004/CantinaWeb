@@ -106,9 +106,6 @@ if ($resumoOficial) {
                 <span style="color: <?php echo $situacaoBulletCor; ?>;">●</span> <?php echo $situacaoTexto; ?> — Turno <?php echo ucfirst($turnoAtual); ?>
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Abertura, conciliação de gaveta física, faturamento Cantina Web e prestação de contas do turno.
-        </p>
     </div>
 
     <!-- Alternador de Turno -->
@@ -364,7 +361,7 @@ if ($resumoOficial) {
 
                         <div class="mb-2">
                             <label class="form-label font-11 font-semibold text-secondary">Observações de Abertura (Opcional)</label>
-                            <input type="text" name="observacoes" class="form-control form-control-sm font-12" placeholder="Ex: Abertura do turno matutino sem troco inicial...">
+                            <input type="text" name="observacoes" class="form-control form-control-sm font-12">
                         </div>
                     </div>
                     <div class="modal-footer card-enterprise-footer py-2 px-4 d-flex justify-content-between">
@@ -428,7 +425,7 @@ if ($resumoOficial) {
                             <span class="input-group-text font-bold">R$</span>
                             <input type="text" name="total_informado_gaveta" id="inputTotalInformado" 
                                    class="form-control form-control-lg font-tabular font-bold input-money" 
-                                   placeholder="0,00" required autofocus 
+                                   required autofocus 
                                    oninput="calcularQuebraSobra();" onkeyup="calcularQuebraSobra();" onchange="calcularQuebraSobra();">
                         </div>
                         <div class="form-text font-11 text-muted">Informe as cédulas e moedas físicas presentes na gaveta. Se não houver dinheiro físico, informe 0,00.</div>
@@ -445,8 +442,7 @@ if ($resumoOficial) {
 
                     <div class="mb-2">
                         <label class="form-label font-11 font-semibold text-secondary">Observações / Justificativa Operacional (Opcional)</label>
-                        <textarea name="observacoes" class="form-control form-control-sm font-12" rows="2" 
-                                  placeholder="Caso haja diferença ou observações sobre o encerramento do turno, registre aqui..."></textarea>
+                        <textarea name="observacoes" class="form-control form-control-sm font-12" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer card-enterprise-footer py-2 px-4 d-flex justify-content-between">
@@ -496,7 +492,6 @@ if ($resumoOficial) {
                             </svg>
                         </span>
                         <input type="text" id="recargaInputBusca" class="form-control form-control-sm font-13" 
-                               placeholder="Digite nome do responsável, CPF ou nome/matrícula do aluno..." 
                                autocomplete="off" autofocus>
                         <button type="button" class="btn btn-enterprise btn-secondary btn-sm" id="recargaBtnLimparBusca" style="display: none;">
                             Limpar
@@ -581,7 +576,7 @@ if ($resumoOficial) {
                             <div class="input-group">
                                 <span class="input-group-text font-bold font-14">R$</span>
                                 <input type="text" id="recargaInputValor" class="form-control form-control-lg font-tabular font-bold input-money" 
-                                       placeholder="0,00" required>
+                                       required>
                             </div>
                             <div class="form-text font-11 text-muted">
                                 O valor será creditado imediatamente na carteira familiar e computado na prestação de contas.
@@ -600,8 +595,7 @@ if ($resumoOficial) {
 
                     <div class="mb-3">
                         <label class="form-label font-11 font-semibold text-secondary">Observações da Recarga (Opcional)</label>
-                        <input type="text" id="recargaInputObservacoes" class="form-control form-control-sm font-12" 
-                               placeholder="Ex: Pagamento confirmado pelo responsável...">
+                        <input type="text" id="recargaInputObservacoes" class="form-control form-control-sm font-12">
                     </div>
                 </div>
 

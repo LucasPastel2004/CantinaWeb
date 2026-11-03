@@ -38,9 +38,6 @@ $fimAno            = date('Y-12-31');
                 <span class="code-tag font-tabular">DRE Unificado (Vendas, Custódia de Carteira & Caixa Real)</span>
             </div>
             <h1 class="h4 font-weight-bold mb-0 text-dark">Painel Financeiro & DRE Gerencial Unificado</h1>
-            <p class="text-secondary text-microcopy mb-0 mt-1">
-                Apuração unificada sem duplicidade: contabiliza recargas reais na conta, consumo de saldo em lanches, vendas diretas no balcão, custos (CMV) e despesas operacionais.
-            </p>
         </div>
     </div>
 

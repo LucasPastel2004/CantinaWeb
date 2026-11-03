@@ -39,9 +39,6 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Contestações Bancárias & Pix MED</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Controle de devoluções pelo Mecanismo Especial de Devolução do Banco Central, inadimplências e bloqueios.
-        </p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/admin/contestacoes/imprimir<?php echo $queryStringMed; ?>" 
@@ -148,7 +145,6 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                 </label>
                 <div class="input-group input-group-sm">
                     <input type="text" class="form-control form-control-sm" id="busca" name="busca" 
-                           placeholder="Nome, e-mail, telefone ou dependente..." 
                            value="<?php echo htmlspecialchars($filtroBusca, ENT_QUOTES, 'UTF-8'); ?>"
                            autocomplete="off">
                     <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btnLimparBuscaInput" 
@@ -193,7 +189,6 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
     <div class="card-enterprise-header d-flex justify-content-between align-items-center p-3 border-bottom">
         <div>
             <h2 class="h6 font-weight-bold text-dark mb-0">Contas com Bloqueio ou Saldo Devedor</h2>
-            <span class="text-secondary text-microcopy">Famílias sob restrição decorrente de contestação de recarga Pix</span>
         </div>
         <span class="badge bg-light text-secondary border font-tabular px-2 py-1">
             <?php echo $jaFiltrado ? count($negativados) . ' exibido(s)' : '0 exibido(s)'; ?>
@@ -218,7 +213,6 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     </svg>
                 </div>
                 <h3 class="h6 font-weight-semibold text-dark mb-1">Nenhuma inadimplência MED encontrada</h3>
-                <p class="text-secondary text-microcopy mb-0">Não há famílias negativadas ou bloqueadas por contestação bancária no momento.</p>
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -384,14 +378,14 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                                 Valor do Estorno (R$) <span class="text-danger">*</span>
                             </label>
                             <input type="number" step="0.01" min="0.01" class="form-control form-control-sm font-tabular" 
-                                   id="valor_estorno" name="valor" placeholder="0,00" required>
+                                   id="valor_estorno" name="valor" required>
                         </div>
                         <div class="col-6">
                             <label for="protocolo_med" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 Protocolo / rtrId
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular" 
-                                   id="protocolo_med" name="protocolo" placeholder="Ex: D000000000...">
+                                   id="protocolo_med" name="protocolo">
                         </div>
                     </div>
 
@@ -399,8 +393,7 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                         <label for="motivo_estorno" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                             Motivo / Descrição do Ofício Bancário <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control form-control-sm" id="motivo_estorno" name="motivo" rows="2" 
-                                  placeholder="Informe o número do processo, motivação informada pela instituição ou motivo da devolução..." required></textarea>
+                        <textarea class="form-control form-control-sm" id="motivo_estorno" name="motivo" rows="2" required></textarea>
                     </div>
 
                     <div class="form-check form-switch mb-0">
@@ -452,15 +445,14 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                             Valor Recebido para Quitação (R$) <span class="text-danger">*</span>
                         </label>
                         <input type="number" step="0.01" min="0.01" class="form-control form-control-sm font-tabular" 
-                               id="quitacao_valor" name="valor" placeholder="0,00" required>
+                               id="quitacao_valor" name="valor" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="quitacao_motivo" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                             Observações do Pagamento / Comprovante <span class="text-danger">*</span>
                         </label>
-                        <textarea class="form-control form-control-sm" id="quitacao_motivo" name="motivo" rows="2" 
-                                  placeholder="Ex: Acordo presencial na secretaria, pagamento via TED/PIX direto, etc." required></textarea>
+                        <textarea class="form-control form-control-sm" id="quitacao_motivo" name="motivo" rows="2" required></textarea>
                     </div>
 
                     <div class="form-check form-switch mb-2">
@@ -526,7 +518,6 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                                   id="desbloqueio_justificativa" 
                                   name="justificativa" 
                                   rows="3" 
-                                  placeholder="Informe o motivo formal do desbloqueio (ex: autorização da diretoria escolar, comprovação de pagamento apresentada em análise, acordo presencial, etc.)" 
                                   required 
                                   minlength="5"></textarea>
                     </div>

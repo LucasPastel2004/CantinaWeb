@@ -25,7 +25,6 @@ $filtros      = $filtros ?? ['busca' => '', 'turma_id' => 0, 'turno' => '', 'sta
             </ol>
         </nav>
         <h1 class="h5 font-weight-bold text-dark mb-0">Alunos e Matrículas Escolares</h1>
-        <p class="text-secondary text-microcopy mb-0">Consulta cadastral, remanejamento de turmas, vínculo familiar e gestão de status.</p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/admin/importacao-escolar" class="btn btn-enterprise btn-primary">
@@ -44,7 +43,7 @@ $filtros      = $filtros ?? ['busca' => '', 'turma_id' => 0, 'turno' => '', 'sta
         <form action="<?php echo $baseUrl; ?>/admin/alunos" method="GET" class="row g-2 align-items-center">
             <input type="hidden" name="filtrar" value="1">
             <div class="col-12 col-md-3">
-                <input type="text" name="busca" class="form-control form-control-sm" placeholder="Buscar por aluno, matrícula, responsável ou CPF..." value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" name="busca" class="form-control form-control-sm" aria-label="Buscar por aluno, matrícula, responsável ou CPF" value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="col-6 col-md-3">
                 <select name="turma_id" class="form-select form-select-sm">
@@ -216,11 +215,11 @@ $filtros      = $filtros ?? ['busca' => '', 'turma_id' => 0, 'turno' => '', 'sta
                     <div class="row g-3">
                         <div class="col-12 col-md-4">
                             <label for="alunoMatricula" class="form-label text-microcopy text-uppercase font-weight-bold text-secondary">Matrícula Escolar *</label>
-                            <input type="text" name="matricula" id="alunoMatricula" required class="form-control form-control-sm font-tabular" placeholder="Ex: MAT-2026-042">
+                            <input type="text" name="matricula" id="alunoMatricula" required class="form-control form-control-sm font-tabular">
                         </div>
                         <div class="col-12 col-md-8">
                             <label for="alunoNome" class="form-label text-microcopy text-uppercase font-weight-bold text-secondary">Nome Completo do Estudante *</label>
-                            <input type="text" name="nome" id="alunoNome" required class="form-control form-control-sm" placeholder="Nome completo do aluno">
+                            <input type="text" name="nome" id="alunoNome" required class="form-control form-control-sm">
                         </div>
 
                         <div class="col-12 col-md-6">

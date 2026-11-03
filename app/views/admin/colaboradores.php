@@ -17,9 +17,6 @@ $csrfField = $csrf_field ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Colaboradores & Professores</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Profissionais autorizados ao consumo na cantina sob a modalidade Desconto em Folha.
-        </p>
     </div>
     <div>
         <button type="button" class="btn btn-enterprise btn-primary" onclick="abrirModalColaborador()">
@@ -37,8 +34,7 @@ $csrfField = $csrf_field ?? '';
                 <label for="busca" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                     Buscar por Nome, Matrícula ou Cargo
                 </label>
-                <input type="text" class="form-control form-control-sm" id="busca" name="busca" 
-                       placeholder="Digite o nome, matrícula ou cargo..." value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" class="form-control form-control-sm" id="busca" name="busca" value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="col-12 col-sm-4 col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-grow-1">
@@ -174,7 +170,7 @@ $csrfField = $csrf_field ?? '';
                                 Matrícula Funcional <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular" id="colab_matricula" name="matricula_funcional" 
-                                   required maxlength="30" placeholder="Ex: FUNC-104">
+                                   required maxlength="30">
                         </div>
                         <div class="col-12 col-sm-6">
                             <label for="colab_ativo" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
@@ -192,7 +188,7 @@ $csrfField = $csrf_field ?? '';
                             Nome Completo do Colaborador <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm" id="colab_nome" name="nome" 
-                               required maxlength="100" placeholder="Ex: Maria Clara Fernandes">
+                               required maxlength="100">
                     </div>
 
                     <div class="mb-3">
@@ -200,7 +196,7 @@ $csrfField = $csrf_field ?? '';
                             Cargo / Função na Escola <span class="text-danger">*</span>
                         </label>
                         <input type="text" class="form-control form-control-sm" id="colab_cargo" name="cargo" 
-                               required maxlength="50" placeholder="Ex: Professora de Matemática, Inspetor...">
+                               required maxlength="50">
                     </div>
 
                     <div class="mb-2">

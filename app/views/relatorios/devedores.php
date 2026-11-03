@@ -25,9 +25,6 @@ $totalQuitacoesValor = (float)($totalQuitacoesValor ?? 0.0);
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h1 class="h5 font-weight-bold text-dark mb-1">Histórico de Eventos MED & Quitações</h1>
-            <p class="text-secondary text-microcopy mb-0">
-                Trilha de auditoria das movimentações bancárias, débitos por estorno MED BACEN e quitações manuais de carteira.
-            </p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?php echo $baseUrl; ?>/admin/contestacoes" 
@@ -56,7 +53,7 @@ $totalQuitacoesValor = (float)($totalQuitacoesValor ?? 0.0);
                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                             </svg>
                         </span>
-                        <input type="text" name="busca" id="inputBusca" class="form-control form-control-sm font-tabular" style="padding-left: 46px !important;" placeholder="Nome, CPF ou ref/protocolo..." value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="text" name="busca" id="inputBusca" class="form-control form-control-sm font-tabular" style="padding-left: 46px !important;" value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
                 </div>
 

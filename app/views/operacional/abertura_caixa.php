@@ -23,9 +23,6 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <span class="bullet" style="color: #64748b;">●</span> Turno <?php echo $turnoAtivo; ?>
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Libere as operações em dinheiro e Pix no PDV declarando o Fundo de Troco disponível fisicamente na gaveta.
-        </p>
     </div>
 
     <div>
@@ -75,7 +72,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
 
                     <div class="mb-4">
                         <label class="form-label font-12 font-semibold">Observações de Abertura (Opcional)</label>
-                        <input type="text" name="observacoes" class="form-control form-control-sm" placeholder="Ex: Moedas de R$ 0,50 e notas trocadas conferidas...">
+                        <input type="text" name="observacoes" class="form-control form-control-sm">
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">

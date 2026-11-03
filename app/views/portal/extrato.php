@@ -29,10 +29,7 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
     <!-- Cabeçalho Executivo do Portal -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
         <div>
-            <h1 class="page-title mb-1" style="font-size: 18px; font-weight: 700; color: #0f172a;">Extrato Analítico do Aluno</h1>
-            <p class="text-secondary mb-0" style="font-size: 13px;">
-                Acompanhamento analítico e auditável de compras diárias, recargas Pix e evolução do saldo da carteira familiar.
-            </p>
+            <h1 class="page-title mb-0" style="font-size: 18px; font-weight: 700; color: #0f172a;">Extrato Analítico do Aluno</h1>
         </div>
         <?php if ($alunoSelecionado): ?>
             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -188,9 +185,6 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
             <div class="card-enterprise-header d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="h6 font-weight-bold text-dark mb-0">Extrato Analítico Linha a Linha</h2>
-                    <span class="text-secondary text-microcopy">
-                        Acompanhe cada débito de lanche e recarga com a posição de saldo resultante.
-                    </span>
                 </div>
                 <span class="badge bg-light text-secondary border font-tabular">
                     <?php echo count($linhas); ?> lançamento(s)

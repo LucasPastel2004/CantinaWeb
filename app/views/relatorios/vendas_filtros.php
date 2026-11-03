@@ -82,9 +82,6 @@ $ordPor       = $filtros['ordenar_por'] ?? 'maior_consumo';
                     <span class="badge bg-light text-secondary border font-tabular">Padrão Escolar Manager</span>
                 </div>
                 <h1 class="h5 font-weight-bold text-dark mb-0">Filtros de Vendas & Relatório por Alimento</h1>
-                <p class="text-secondary text-microcopy mb-0">
-                    Defina os parâmetros de emissão para visualização em tela de impressão A4 (com opção de salvar PDF) ou exportação CSV.
-                </p>
             </div>
         </div>
 

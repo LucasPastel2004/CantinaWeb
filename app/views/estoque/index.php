@@ -18,7 +18,6 @@ $isAdmin = ($user['role'] ?? $user['perfil'] ?? '') === 'administrador';
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
             <h1 class="h5 fw-bold text-slate-900 mb-1">Controle de Estoque & Saldos Físicos</h1>
-            <p class="text-muted small mb-0">Gestão de saldos em tempo real, movimentações físicas e pontos de reposição.</p>
         </div>
     </div>
 
@@ -53,7 +52,7 @@ $isAdmin = ($user['role'] ?? $user['perfil'] ?? '') === 'administrador';
         <form method="GET" action="<?php echo $baseUrl; ?>/estoque" class="row g-2 align-items-center">
             <input type="hidden" name="filtrar" value="1">
             <div class="col-12 col-md-4">
-                <input type="text" name="busca" class="form-control form-control-sm" placeholder="Buscar por código, produto ou categoria..." value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" name="busca" class="form-control form-control-sm" aria-label="Buscar por código, produto ou categoria" value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="col-6 col-md-3">
                 <select name="categoria_id" class="form-select form-select-sm">

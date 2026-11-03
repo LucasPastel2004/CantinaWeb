@@ -17,10 +17,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
         <div>
-            <h1 class="page-title mb-1">Meus Pedidos de Lanche</h1>
-            <p class="text-secondary mb-0" style="font-size: 13px;">
-                Histórico de encomendas escolares, status de preparação e gerenciamento autônomo com travas de corte.
-            </p>
+            <h1 class="page-title mb-0">Meus Pedidos de Lanche</h1>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary btn-sm">

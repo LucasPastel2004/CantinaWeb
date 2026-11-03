@@ -16,9 +16,6 @@ $baseUrl = $baseUrl ?? '';
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 pb-2 border-bottom">
         <div>
             <span class="text-microcopy text-uppercase font-weight-bold text-secondary d-block">Diretório Executivo</span>
-            <p class="text-secondary text-microcopy mb-0">
-                Painel unificado de exportações financeiras, relatórios analíticos em PDF A4 timbrado e demonstrativos de auditoria da cantina.
-            </p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <span class="code-tag font-tabular">

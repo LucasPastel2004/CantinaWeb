@@ -711,7 +711,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                         <span class="search-icon">
                             <svg width="13" height="13" viewBox="0 0 16 16" fill="#64748b"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
                         </span>
-                        <input type="text" id="pdvBuscaInput" class="form-control form-control-sm" style="padding-left: 46px !important;" placeholder="Buscar produto... (F3)" autocomplete="off" oninput="filtrarTexto(this.value)">
+                        <input type="text" id="pdvBuscaInput" class="form-control form-control-sm" style="padding-left: 46px !important;" autocomplete="off" oninput="filtrarTexto(this.value)">
                     </div>
                 </div>
             </div>
@@ -804,7 +804,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <!-- Painel Aluno -->
                 <div id="boxClienteAluno" class="d-none mt-1">
                     <div class="input-group input-group-sm" id="wrapBuscaAluno">
-                        <input type="text" id="buscaAlunoPdv" class="form-control py-1 font-12" placeholder="Buscar aluno por nome ou matrícula..." oninput="buscarAlunosLive(this.value)">
+                        <input type="text" id="buscaAlunoPdv" class="form-control py-1 font-12" aria-label="Buscar aluno por nome ou matrícula" oninput="buscarAlunosLive(this.value)">
                         <button type="button" class="btn btn-outline-secondary py-1" onclick="limparSelecaoAluno()">✕</button>
                     </div>
                     <div id="listaSugestoesAluno" class="list-group position-absolute shadow-sm d-none" style="z-index: 1050; max-width: 380px;"></div>
@@ -828,7 +828,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <!-- Painel Colaborador -->
                 <div id="boxClienteColaborador" class="d-none mt-1">
                     <div class="input-group input-group-sm" id="wrapBuscaColab">
-                        <input type="text" id="buscaColabPdv" class="form-control py-1 font-12" placeholder="Buscar professor ou funcionário..." oninput="buscarColaboradoresLive(this.value)">
+                        <input type="text" id="buscaColabPdv" class="form-control py-1 font-12" aria-label="Buscar professor ou funcionário" oninput="buscarColaboradoresLive(this.value)">
                         <button type="button" class="btn btn-outline-secondary py-1" onclick="limparSelecaoColaborador()">✕</button>
                     </div>
                     <div id="listaSugestoesColab" class="list-group position-absolute shadow-sm d-none" style="z-index: 1050; max-width: 380px;"></div>
@@ -890,7 +890,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <div id="payDetailsDinheiro" class="mb-2">
                     <div class="d-flex align-items-center gap-2 mb-1.5">
                         <label class="font-11 text-secondary text-uppercase font-bold mb-0" style="min-width: 68px; flex-shrink: 0;">Recebido:</label>
-                        <input type="text" id="inputValorRecebido" class="form-control form-control-sm font-tabular text-end input-money py-1.5 font-13 font-bold" placeholder="R$ 0,00" oninput="calcularTroco()" style="max-width: 125px;">
+                        <input type="text" id="inputValorRecebido" class="form-control form-control-sm font-tabular text-end input-money py-1.5 font-13 font-bold" oninput="calcularTroco()" style="max-width: 125px;">
                         <div class="btn-group btn-group-sm flex-grow-1" role="group">
                             <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-semibold" onclick="definirRecebidoExato()" title="Valor Exato">Exato</button>
                             <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(10)">+10</button>

@@ -15,9 +15,6 @@ $primeiroNome = explode(' ', trim($nome))[0];
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Crie sua Senha de Acesso</h2>
-    <p class="text-secondary text-microcopy mb-0">
-        Olá, <strong><?php echo htmlspecialchars($primeiroNome, ENT_QUOTES, 'UTF-8'); ?></strong>! Defina a senha para acessar o Portal da Família.
-    </p>
 </div>
 
 <form action="<?php echo $baseUrl; ?>/primeiro-acesso/concluir" method="POST" autocomplete="off" class="auth-form" id="form-primeiro-acesso-senha">
@@ -29,7 +26,6 @@ $primeiroNome = explode(' ', trim($nome))[0];
                class="form-control form-control-enterprise" 
                id="senha" 
                name="senha" 
-               placeholder="Mínimo 6 caracteres" 
                minlength="6" 
                required>
     </div>
@@ -40,7 +36,6 @@ $primeiroNome = explode(' ', trim($nome))[0];
                class="form-control form-control-enterprise" 
                id="senha_confirmacao" 
                name="senha_confirmacao" 
-               placeholder="Repita a nova senha" 
                minlength="6" 
                required>
     </div>

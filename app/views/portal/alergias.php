@@ -24,7 +24,6 @@ $alergenosDoAluno  = $alergenosDoAluno ?? [];
             </ol>
         </nav>
         <h1 class="h5 font-weight-bold text-dark mb-0">Restrições Alimentares e Alergias</h1>
-        <p class="text-secondary text-microcopy mb-0">Informe os ingredientes ou alérgenos diagnosticados dos seus dependentes para prevenção automática.</p>
     </div>
     <div>
         <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-primary">

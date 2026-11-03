@@ -29,9 +29,6 @@ $ultimoDiaFmt = !empty($diasSemana[4]['data']) ? date('d/m/Y', strtotime($diasSe
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Calendário Escolar & Dias Letivos</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Parametrização de feriados, recessos escolares, períodos letivos e suspensão emergencial com estorno em lote.
-        </p>
     </div>
     <div class="d-flex gap-2">
         <button type="button" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1" onclick="abrirModalExcecao()">
@@ -390,7 +387,7 @@ require __DIR__ . '/../partials/stat_strip.php';
 
                     <div class="mb-2">
                         <label for="excDescricao" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">Descrição / Nome do Feriado</label>
-                        <input type="text" class="form-control" id="excDescricao" name="descricao" maxlength="100" placeholder="Ex: Dia das Crianças / N. Sra. Aparecida" required>
+                        <input type="text" class="form-control" id="excDescricao" name="descricao" maxlength="100" required>
                     </div>
                 </div>
                 <div class="modal-footer card-enterprise-footer p-2 bg-light d-flex justify-content-end gap-2">
@@ -437,7 +434,7 @@ require __DIR__ . '/../partials/stat_strip.php';
 
                     <div class="mb-2">
                         <label for="emergMotivo" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">Justificativa / Motivo Formal</label>
-                        <textarea class="form-control" id="emergMotivo" name="motivo" rows="3" maxlength="100" placeholder="Ex: Temporal severo com falta de energia na escola / Ordem da Secretaria" required></textarea>
+                        <textarea class="form-control" id="emergMotivo" name="motivo" rows="3" maxlength="100" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer card-enterprise-footer p-2 bg-light d-flex justify-content-end gap-2">

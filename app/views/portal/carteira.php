@@ -18,10 +18,7 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
         <div>
-            <h1 class="page-title mb-1">Carteira Digital Familiar</h1>
-            <p class="text-secondary mb-0" style="font-size: 13px;">
-                Gestão centralizada de saldo compartilhado, recargas instantâneas via Pix e extrato contábil analítico.
-            </p>
+            <h1 class="page-title mb-0">Carteira Digital Familiar</h1>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?php echo $baseUrl; ?>/portal/extrato" class="btn btn-enterprise btn-secondary btn-sm" title="Consultar Extrato Analítico de Consumo e Baixar PDF">
@@ -181,7 +178,6 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                                    id="input-valor-pix" 
                                    name="valor" 
                                    class="form-control font-tabular input-money" 
-                                   placeholder="0,00" 
                                    value="<?php echo htmlspecialchars($temPixAtivo ? number_format((float)$pixAtivo['valor'], 2, ',', '.') : '50,00', ENT_QUOTES); ?>" 
                                    required 
                                    style="font-size: 15px; font-weight: 600;">

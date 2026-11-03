@@ -29,7 +29,6 @@ $chaveFormatada = trim(chunk_split($chaveNfe, 4, ' '));
                 </a>
             </div>
             <h1 class="h5 fw-bold text-dark mb-0">Detalhamento da NF-e nº <?php echo htmlspecialchars($nota['numero_nota'], ENT_QUOTES, 'UTF-8'); ?></h1>
-            <p class="text-secondary text-microcopy mb-0">Memória de cálculo, conversão de embalagens e histórico fiscal do lote recebido.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
             <button type="button" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1" id="btnAbrirModalXmlDetalhes">

@@ -21,7 +21,6 @@ $previa  = $previa ?? null;
             </ol>
         </nav>
         <h1 class="h5 font-weight-bold text-dark mb-0">Importação Escolar em Lote</h1>
-        <p class="text-secondary text-microcopy mb-0">Carga massiva e atualização de turmas, alunos e vínculos de responsáveis via planilha CSV.</p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/admin/importacao-escolar/modelo" class="btn btn-enterprise btn-primary">
@@ -42,7 +41,6 @@ $previa  = $previa ?? null;
             <div class="card-enterprise">
                 <div class="card-enterprise-header">
                     <h2 class="h6 font-weight-bold text-dark mb-0">Enviar Arquivo de Planilha</h2>
-                    <span class="text-microcopy text-muted">Formato suportado: .csv</span>
                 </div>
                 <div class="card-enterprise-body">
                     <form action="<?php echo $baseUrl; ?>/admin/importacao-escolar/analisar" method="POST" enctype="multipart/form-data">
@@ -53,7 +51,6 @@ $previa  = $previa ?? null;
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                             </svg>
                             <h3 class="h6 font-weight-semibold text-dark mb-1">Selecione o arquivo CSV escolar</h3>
-                            <p class="text-microcopy text-muted mb-3">Tamanho máximo de até 10 MB. Delimitadores aceitos: ponto-e-vírgula (;) ou vírgula (,).</p>
                             
                             <div class="d-inline-block text-start">
                                 <input type="file" name="planilha" id="inputPlanilha" accept=".csv,text/csv,text/plain" required class="form-control form-control-sm">
@@ -106,7 +103,6 @@ $previa  = $previa ?? null;
         <div class="card-enterprise-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h2 class="h6 font-weight-bold text-dark mb-0">Resumo da Análise Prévia</h2>
-                <span class="text-microcopy text-muted">Confira as métricas estimadas antes de confirmar a gravação no banco de dados</span>
             </div>
             <div class="d-flex gap-2">
                 <form action="<?php echo $baseUrl; ?>/admin/importacao-escolar/cancelar" method="POST" class="d-inline m-0">
@@ -164,7 +160,6 @@ $previa  = $previa ?? null;
     <div class="card-enterprise">
         <div class="card-enterprise-header d-flex justify-content-between align-items-center">
             <h2 class="h6 font-weight-bold text-dark mb-0">Detalhamento das Linhas Analisadas</h2>
-            <span class="text-microcopy text-muted">Exibindo até 100 linhas da amostra</span>
         </div>
         <div class="card-enterprise-body p-0">
             <div class="table-responsive">

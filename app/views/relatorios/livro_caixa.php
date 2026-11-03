@@ -28,9 +28,6 @@ $fimMesAnterior = date('Y-m-d', strtotime('last day of previous month'));
                 <span class="text-secondary text-microcopy text-uppercase font-weight-bold">Módulo Financeiro & Escrituração Contábil</span>
             </div>
             <h1 class="h4 font-weight-bold mb-0 text-dark">Livro Caixa Diário</h1>
-            <p class="text-secondary text-microcopy mb-0 mt-1">
-                Registro cronológico detalhado de todas as entradas financeiras (Pix Online, PDV Pix e Dinheiro) e saídas (pagamentos a fornecedores e despesas) com saldo progressivo.
-            </p>
         </div>
     </div>
 

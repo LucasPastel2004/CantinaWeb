@@ -44,9 +44,6 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
                 Turno <?php echo htmlspecialchars($turnoNome, ENT_QUOTES, 'UTF-8'); ?>
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Emissão contínua de fichas de consumo para distribuição prévia em sala de aula e consulta rápida de 2ª via.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <!-- Folha A4 (Grade de Fichas para Impressora Comum e Exportação em PDF) -->
@@ -153,7 +150,6 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
     <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
         <div>
             <h2 class="h6 mb-0 font-weight-bold text-dark">Lotes de Fichas por Turma Escolar</h2>
-            <span class="text-secondary text-microcopy">Separação ordenada por blocos de sala de aula para entrega prévia aos professores</span>
         </div>
         <span class="badge bg-light text-dark border font-tabular" style="font-size: 11px;">
             <?php echo count($turmasAgrupadas); ?> turmas com pedidos
@@ -250,7 +246,6 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
     <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <h2 class="h6 mb-0 font-weight-bold text-dark">Consulta Rápida de Tickets &amp; Emissão de 2ª Via</h2>
-            <span class="text-secondary text-microcopy">Localização instantânea para atender alunos que perderam ou danificaram a ficha</span>
         </div>
         <?php if (!empty($jaFiltrado)): ?>
             <span class="badge bg-light text-dark border font-tabular" style="font-size: 11px;">
@@ -266,26 +261,17 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
             <input type="hidden" name="turno" value="<?php echo htmlspecialchars($turnoConsumo, ENT_QUOTES, 'UTF-8'); ?>">
             <input type="hidden" name="filtrar" value="1">
 
-            <div class="col-12 col-md-4 position-relative">
+            <div class="col-12 col-md-4">
                 <label for="filtroQ" class="form-label text-microcopy text-secondary mb-1 fw-semibold text-uppercase" style="font-size: 10px;">
                     Buscar por Aluno, Matrícula ou Código
                 </label>
-                <div class="position-relative">
-                    <input type="text" 
-                           id="filtroQ"
-                           name="q" 
-                           class="form-control form-control-sm" 
-                           placeholder="Digite nome, matrícula, pedido ou código..." 
-                           value="<?php echo htmlspecialchars($buscaTermo, ENT_QUOTES, 'UTF-8'); ?>"
-                           autocomplete="off"
-                           aria-label="Buscar tickets"
-                           aria-autocomplete="list"
-                           aria-controls="buscaSugestoesTicketsDropdown">
-                    <!-- Dropdown flutuante de sugestões em tempo real -->
-                    <div id="buscaSugestoesTicketsDropdown" class="shadow-sm position-absolute rounded" 
-                         style="top: calc(100% + 4px); left: 0; right: 0; z-index: 1060; max-height: 290px; overflow-y: auto; display: none; background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;">
-                    </div>
-                </div>
+                <input type="text" 
+                       id="filtroQ"
+                       name="q" 
+                       class="form-control form-control-sm" 
+                       value="<?php echo htmlspecialchars($buscaTermo, ENT_QUOTES, 'UTF-8'); ?>"
+                       autocomplete="off"
+                       aria-label="Buscar tickets">
             </div>
 
             <div class="col-6 col-md-3">
@@ -483,8 +469,7 @@ $turnoNome = ($turnoConsumo === 'matutino') ? 'Matutino' : 'Vespertino';
                                   name="justificativa" 
                                   rows="3" 
                                   required 
-                                  minlength="5"
-                                  placeholder="Ex: Aluno informou perda da ficha em sala de aula / Ticket rasgado..."></textarea>
+                                  minlength="5"></textarea>
                         <div class="text-secondary text-microcopy mt-1">Mínimo de 5 caracteres.</div>
                     </div>
                 </div>
@@ -524,198 +509,4 @@ function abrirModalSegundaVia(ticketId, codigoTicket, alunoNome, viaAtual) {
         modalEl.style.display = 'block';
     }
 }
-
-// =========================================================================
-// AUTOCOMPLETE DE SUGESTÕES EM TEMPO REAL PARA TICKETS & 2ª VIA
-// =========================================================================
-(function() {
-    const inputBusca = document.getElementById('filtroQ');
-    const dropdown = document.getElementById('buscaSugestoesTicketsDropdown');
-    const formFiltros = inputBusca ? inputBusca.closest('form') : null;
-    const baseUrl = '<?php echo $baseUrl; ?>';
-    const dataConsumo = '<?php echo htmlspecialchars($dataConsumo, ENT_QUOTES, 'UTF-8'); ?>';
-    const turnoConsumo = '<?php echo htmlspecialchars($turnoConsumo, ENT_QUOTES, 'UTF-8'); ?>';
-
-    if (!inputBusca || !dropdown || !formFiltros) return;
-
-    let debounceTimer = null;
-    let itemAtivoIndex = -1;
-    let sugestoesAtuais = [];
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    function fecharDropdown() {
-        dropdown.style.display = 'none';
-        dropdown.innerHTML = '';
-        itemAtivoIndex = -1;
-        sugestoesAtuais = [];
-    }
-
-    function destacarItem(index) {
-        const itens = dropdown.querySelectorAll('.sugestao-ticket-item');
-        itens.forEach((el, i) => {
-            if (i === index) {
-                el.style.backgroundColor = '#f1f5f9';
-                el.scrollIntoView({ block: 'nearest' });
-            } else {
-                el.style.backgroundColor = '#ffffff';
-            }
-        });
-    }
-
-    function selecionarSugestao(item) {
-        if (!item) return;
-        const valorDigitado = inputBusca.value.trim().toUpperCase();
-        if (valorDigitado.startsWith('TCK')) {
-            inputBusca.value = item.codigo_ticket || item.aluno_nome;
-        } else if (valorDigitado.startsWith('PED')) {
-            inputBusca.value = item.codigo_pedido || item.aluno_nome;
-        } else {
-            inputBusca.value = item.aluno_nome;
-        }
-
-        fecharDropdown();
-        formFiltros.submit();
-    }
-
-    function buscarSugestoes(termo) {
-        if (!termo || termo.length < 1) {
-            fecharDropdown();
-            return;
-        }
-
-        dropdown.innerHTML = '<div class="p-2 text-center text-secondary text-microcopy">' +
-            '<span class="spinner-border spinner-border-sm me-1 text-primary" role="status"></span> Buscando tickets...</div>';
-        dropdown.style.display = 'block';
-
-        const url = baseUrl + '/operacional/tickets/sugestoes?q=' + encodeURIComponent(termo) +
-            '&data=' + encodeURIComponent(dataConsumo) +
-            '&turno=' + encodeURIComponent(turnoConsumo);
-
-        fetch(url)
-            .then(res => {
-                if (!res.ok) throw new Error('Falha na requisição');
-                return res.json();
-            })
-            .then(data => {
-                // Descarta resposta de requisição assíncrona se o usuário já limpou ou alterou o texto
-                if (inputBusca.value.trim() !== termo) {
-                    if (!inputBusca.value.trim()) {
-                        fecharDropdown();
-                    }
-                    return;
-                }
-
-                const lista = data.sugestoes || [];
-                sugestoesAtuais = lista;
-                itemAtivoIndex = -1;
-
-                if (lista.length === 0) {
-                    dropdown.innerHTML = '<div class="p-2 text-center text-secondary text-microcopy">' +
-                        'Nenhum ticket encontrado para "' + escapeHtml(termo) + '".</div>';
-                    dropdown.style.display = 'block';
-                    return;
-                }
-
-                let html = '';
-                lista.forEach((item, idx) => {
-                    const viaBadge = (parseInt(item.numero_via, 10) > 1)
-                        ? '<span class="badge bg-danger text-white ms-1" style="font-size: 9px; font-weight: 700;">' + item.numero_via + 'ª Via</span>'
-                        : '<span class="badge bg-light text-secondary border ms-1" style="font-size: 9px;">1ª Via</span>';
-
-                    html += '<div class="sugestao-ticket-item px-3 py-2 border-bottom text-start" data-idx="' + idx + '" role="option" tabindex="0" style="cursor: pointer; background: #ffffff;">' +
-                        '<div class="d-flex justify-content-between align-items-center mb-1">' +
-                            '<div>' +
-                                '<strong class="text-dark" style="font-size: 13px;">' + escapeHtml(item.aluno_nome) + '</strong>' +
-                                '<span class="badge bg-light text-dark border ms-2" style="font-size: 9.5px;">' + escapeHtml(item.nome_turma) + '</span>' +
-                                viaBadge +
-                            '</div>' +
-                            '<code class="code-tag font-tabular" style="font-size: 10.5px;">' + escapeHtml(item.codigo_ticket) + '</code>' +
-                        '</div>' +
-                        '<div class="d-flex justify-content-between text-secondary text-microcopy" style="font-size: 11px;">' +
-                            '<span>' + escapeHtml(item.produto_descricao) + '</span>' +
-                            '<span>Mat: <strong class="font-tabular">' + escapeHtml(item.aluno_matricula || '—') + '</strong> &bull; Ped: ' + escapeHtml(item.codigo_pedido) + '</span>' +
-                        '</div>' +
-                    '</div>';
-                });
-
-                dropdown.innerHTML = html;
-                dropdown.style.display = 'block';
-
-                dropdown.querySelectorAll('.sugestao-ticket-item').forEach(el => {
-                    el.addEventListener('mouseenter', () => {
-                        const idx = parseInt(el.getAttribute('data-idx'), 10);
-                        itemAtivoIndex = idx;
-                        destacarItem(idx);
-                    });
-                    el.addEventListener('click', e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const idx = parseInt(el.getAttribute('data-idx'), 10);
-                        selecionarSugestao(sugestoesAtuais[idx]);
-                    });
-                });
-            })
-            .catch(() => {
-                dropdown.innerHTML = '<div class="p-2 text-center text-secondary text-microcopy">Erro ao carregar sugestões.</div>';
-                dropdown.style.display = 'block';
-            });
-    }
-
-    inputBusca.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        const termo = inputBusca.value;
-        if (!termo.trim()) {
-            fecharDropdown();
-            return;
-        }
-        debounceTimer = setTimeout(() => {
-            buscarSugestoes(termo.trim());
-        }, 180);
-    });
-
-    inputBusca.addEventListener('keydown', e => {
-        const total = sugestoesAtuais.length;
-        if (dropdown.style.display === 'block' && total > 0) {
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                itemAtivoIndex = (itemAtivoIndex + 1) >= total ? 0 : itemAtivoIndex + 1;
-                destacarItem(itemAtivoIndex);
-                return;
-            }
-            if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                itemAtivoIndex = (itemAtivoIndex - 1) < 0 ? total - 1 : itemAtivoIndex - 1;
-                destacarItem(itemAtivoIndex);
-                return;
-            }
-            if (e.key === 'Enter') {
-                if (itemAtivoIndex >= 0 && itemAtivoIndex < total) {
-                    e.preventDefault();
-                    selecionarSugestao(sugestoesAtuais[itemAtivoIndex]);
-                    return;
-                }
-            }
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                fecharDropdown();
-                return;
-            }
-        }
-    });
-
-    document.addEventListener('click', e => {
-        if (!inputBusca.contains(e.target) && !dropdown.contains(e.target)) {
-            fecharDropdown();
-        }
-    });
-})();
 </script>

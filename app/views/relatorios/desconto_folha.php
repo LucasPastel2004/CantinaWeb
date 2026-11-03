@@ -18,9 +18,6 @@ $competenciaChave = $dadosFolha['competencia_chave'] ?? $competencia;
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Desconto em Folha para Recursos Humanos</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Consolidado mensal de consumo de professores e colaboradores para lançamento e conferência em folha de pagamento.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?php echo $baseUrl; ?>/relatorios/desconto-folha/csv?competencia=<?php echo urlencode($competenciaChave); ?>" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5" title="Baixar Arquivo CSV Formatado para Sistemas de Folha / Excel">
@@ -110,11 +107,10 @@ $competenciaChave = $dadosFolha['competencia_chave'] ?? $competencia;
     <div class="card-enterprise-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <h2 class="h6 font-weight-bold text-dark mb-0">Relação de Professores e Colaboradores</h2>
-            <span class="text-secondary text-microcopy">Selecione o professor para emitir o relatório individual com itens consumidos</span>
         </div>
         <div class="d-flex align-items-center gap-2">
             <div class="position-relative" style="width: 260px;">
-                <input type="text" id="filtroProfessor" class="form-control form-control-sm" placeholder="Buscar professor por nome ou matrícula..." oninput="filtrarProfessores(this.value)">
+                <input type="text" id="filtroProfessor" class="form-control form-control-sm" aria-label="Buscar professor ou colaborador" oninput="filtrarProfessores(this.value)">
             </div>
             <span class="badge bg-light text-secondary border font-tabular" id="contadorColaboradores">
                 <?php echo count($colaboradores); ?> colaborador(es)

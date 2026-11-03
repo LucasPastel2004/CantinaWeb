@@ -14,9 +14,6 @@ $mockCode = $mockCode ?? null;
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Redefinir Senha</h2>
-    <p class="text-secondary text-microcopy mb-0">
-        Digite o código de 6 dígitos recebido no seu WhatsApp e crie uma nova senha.
-    </p>
 </div>
 
 <?php if ($mockCode): ?>
@@ -34,7 +31,6 @@ $mockCode = $mockCode ?? null;
                class="form-control form-control-enterprise font-tabular text-center mx-auto" 
                id="codigo" 
                name="codigo" 
-               placeholder="000000" 
                maxlength="6" 
                style="letter-spacing: 8px; font-size: 20px; font-weight: 700; max-width: 220px;" 
                required>
@@ -46,7 +42,6 @@ $mockCode = $mockCode ?? null;
                class="form-control form-control-enterprise" 
                id="senha" 
                name="senha" 
-               placeholder="Mínimo 6 caracteres" 
                minlength="6" 
                required>
     </div>
@@ -57,7 +52,6 @@ $mockCode = $mockCode ?? null;
                class="form-control form-control-enterprise" 
                id="senha_confirmacao" 
                name="senha_confirmacao" 
-               placeholder="Repita a nova senha" 
                minlength="6" 
                required>
     </div>

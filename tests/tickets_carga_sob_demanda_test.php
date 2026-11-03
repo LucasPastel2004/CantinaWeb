@@ -195,63 +195,29 @@ class TicketsCargaSobDemandaTest
             "Ticket::buscarParaConsulta aceitou status_ticket='impresso' com sucesso"
         );
 
-        // --- 6. Autocomplete de Sugestões em Tempo Real (/operacional/tickets/sugestoes) ---
-        echo "\n--- 6. Autocomplete de Sugestões em Tempo Real ---\n";
+        // --- 6. Remoção de Placeholders, Subtítulos e Autocomplete (/operacional/tickets) ---
+        echo "\n--- 6. Verificação de Remoção de Placeholders, Subtítulos e Autocomplete ---\n";
 
-        // Verifica que o HTML renderiza autocomplete="off" e o container do dropdown flutuante
+        // Verifica que o HTML possui input limpo sem placeholder e sem dropdown
         $this->assert(
             str_contains($htmlInicial, 'autocomplete="off"'),
             "Input de pesquisa possui autocomplete='off' para suprimir histórico nativo do navegador"
         );
         $this->assert(
-            str_contains($htmlInicial, 'id="buscaSugestoesTicketsDropdown"'),
-            "Container flutuante de sugestões (buscaSugestoesTicketsDropdown) presente no HTML"
+            !str_contains($htmlInicial, 'id="buscaSugestoesTicketsDropdown"'),
+            "Container flutuante de sugestões (buscaSugestoesTicketsDropdown) foi removido do HTML"
         );
         $this->assert(
-            str_contains($htmlInicial, '/operacional/tickets/sugestoes'),
-            "Script frontend faz referência ao endpoint assíncrono de sugestões"
-        );
-
-        // Testa o método de Model: Ticket::buscarSugestoesConsulta
-        $sugestoesModel = Ticket::buscarSugestoesConsulta('Enzo', $dataTeste, $turnoTeste, 8);
-        $this->assert(
-            is_array($sugestoesModel) && count($sugestoesModel) > 0,
-            "Ticket::buscarSugestoesConsulta retornou resultados para 'Enzo' (" . count($sugestoesModel) . " sugestões)"
-        );
-        if (!empty($sugestoesModel)) {
-            $primeira = $sugestoesModel[0];
-            $this->assert(
-                isset($primeira['aluno_nome'], $primeira['codigo_ticket'], $primeira['produto_descricao']),
-                "Estrutura da sugestão contém aluno_nome, codigo_ticket e produto_descricao"
-            );
-        }
-
-        // Testa busca de sugestão vazia
-        $sugestoesVazia = Ticket::buscarSugestoesConsulta('', $dataTeste, $turnoTeste);
-        $this->assert(
-            empty($sugestoesVazia),
-            "Ticket::buscarSugestoesConsulta com termo vazio retorna array vazio"
-        );
-
-        // Testa endpoint do Controller: TicketsController::sugestoes()
-        $_GET = [
-            'q'     => 'Enzo',
-            'data'  => $dataTeste,
-            'turno' => $turnoTeste,
-        ];
-        ob_start();
-        $controller = new TicketsController();
-        $controller->sugestoes();
-        $jsonOutput = ob_get_clean();
-
-        $dadosJson = json_decode($jsonOutput, true);
-        $this->assert(
-            is_array($dadosJson) && ($dadosJson['sucesso'] ?? false) === true,
-            "Endpoint TicketsController::sugestoes retornou JSON com sucesso = true"
+            !str_contains($htmlInicial, 'Digite nome, matrícula, pedido ou código...'),
+            "Sugestão de texto (placeholder) removida do campo de pesquisa de tickets"
         );
         $this->assert(
-            isset($dadosJson['sugestoes']) && is_array($dadosJson['sugestoes']),
-            "Endpoint retornou array de sugestões estruturado"
+            !str_contains($htmlInicial, 'Localização instantânea para atender alunos que perderam ou danificaram a ficha'),
+            "Explicação em letras miúdas (subtítulo) removida do cabeçalho da consulta rápida de tickets"
+        );
+        $this->assert(
+            !str_contains($htmlInicial, 'Emissão contínua de fichas de consumo para distribuição prévia'),
+            "Explicação em letras miúdas (subtítulo) removida do cabeçalho principal da tela de tickets"
         );
 
         echo "\n=================================================================\n";

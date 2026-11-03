@@ -32,10 +32,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
         <div>
-            <h1 class="page-title mb-1">Agendamento Semanal de Lanches</h1>
-            <p class="text-secondary mb-0" style="font-size: 13px;">
-                Selecione o dependente, o dia letivo desejado e monte a comanda diária de lanche escolar.
-            </p>
+            <h1 class="page-title mb-0">Agendamento Semanal de Lanches</h1>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm">

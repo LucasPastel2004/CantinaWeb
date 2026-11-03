@@ -16,9 +16,6 @@ $csrfField = $csrf_field ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Configurações Globais</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Parâmetros institucionais, operacionais e regras financeiras da cantina escolar.
-        </p>
     </div>
 </div>
 
@@ -65,7 +62,7 @@ $csrfField = $csrf_field ?? '';
                             ?>
                             <input type="text" class="form-control form-control-sm font-tabular input-cnpj" id="cnpj" name="cnpj" 
                                    value="<?php echo htmlspecialchars($cnpjValor, ENT_QUOTES, 'UTF-8'); ?>" 
-                                   placeholder="00.000.000/0000-00" required maxlength="18">
+                                   required maxlength="18">
                         </div>
                         <div class="col-12 col-sm-6">
                             <label for="telefone_contato" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em;">
@@ -84,7 +81,7 @@ $csrfField = $csrf_field ?? '';
                             ?>
                             <input type="text" class="form-control form-control-sm font-tabular input-phone" id="telefone_contato" name="telefone_contato" 
                                    value="<?php echo htmlspecialchars($telValor, ENT_QUOTES, 'UTF-8'); ?>" 
-                                   placeholder="(00) 00000-0000" maxlength="20">
+                                   maxlength="20">
                         </div>
                     </div>
 

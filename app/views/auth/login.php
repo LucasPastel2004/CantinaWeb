@@ -40,7 +40,6 @@ $tab = $tab ?? 'familia';
                    class="form-control form-control-enterprise font-tabular" 
                    id="cpf" 
                    name="cpf" 
-                   placeholder="000.000.000-00" 
                    maxlength="14" 
                    required>
             <div class="text-microcopy text-muted mt-1">Informe o CPF cadastrado na matrícula escolar.</div>
@@ -55,7 +54,6 @@ $tab = $tab ?? 'familia';
                    class="form-control form-control-enterprise" 
                    id="senha" 
                    name="senha" 
-                   placeholder="••••••••" 
                    required>
         </div>
 
@@ -83,7 +81,6 @@ $tab = $tab ?? 'familia';
                    class="form-control form-control-enterprise" 
                    id="usuario" 
                    name="usuario" 
-                   placeholder="Digite seu identificador" 
                    required>
             <div class="text-microcopy text-muted mt-1">Identificador individual fornecido pela administração.</div>
         </div>
@@ -94,7 +91,6 @@ $tab = $tab ?? 'familia';
                    class="form-control form-control-enterprise" 
                    id="senha" 
                    name="senha" 
-                   placeholder="••••••••" 
                    required>
         </div>
 

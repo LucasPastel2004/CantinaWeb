@@ -15,10 +15,6 @@ $usuario = $usuario ?? [];
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Painel da Cantina</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Operador logado: <strong><?php echo htmlspecialchars($usuario['nome'] ?? 'Operador', ENT_QUOTES, 'UTF-8'); ?></strong> 
-            (Perfil: <?php echo ucfirst($usuario['role'] ?? 'operador'); ?>)
-        </p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/operacional/corte" class="btn btn-enterprise btn-primary">

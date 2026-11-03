@@ -78,7 +78,7 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
                 <!-- Quantidade Baixada -->
                 <div class="col-12 col-lg-4">
                     <label for="inputQuantidade" class="form-label small fw-semibold text-muted">Quantidade a Baixar (unidades): *</label>
-                    <input type="number" name="quantidade" id="inputQuantidade" class="form-control form-control-sm font-tabular" min="1" step="1" required placeholder="Ex: 2">
+                    <input type="number" name="quantidade" id="inputQuantidade" class="form-control form-control-sm font-tabular" min="1" step="1" required>
                     <div class="form-text" style="font-size: 11px;">A quantidade não pode ultrapassar o saldo físico existente.</div>
                 </div>
 
@@ -104,7 +104,7 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
                 <!-- Justificativa Obrigatória -->
                 <div class="col-12">
                     <label for="textareaJustificativa" class="form-label small fw-semibold text-muted">Justificativa Operacional: *</label>
-                    <textarea name="justificativa" id="textareaJustificativa" rows="3" class="form-control form-control-sm" required minlength="5" placeholder="Descreva o ocorrido (ex: Pacote avariado no descarregamento, produto caiu no chão durante o intervalo, data de validade vencida, produto sobrou de produção sem consumo)..."></textarea>
+                    <textarea name="justificativa" id="textareaJustificativa" rows="3" class="form-control form-control-sm" required minlength="5"></textarea>
                     <div class="form-text" style="font-size: 11px;">Mínimo de 5 caracteres. Ficará registrado permanentemente no log de auditoria técnica.</div>
                 </div>
             </div>

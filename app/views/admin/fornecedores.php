@@ -25,9 +25,6 @@ $csrfToken = $csrf_token ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Fornecedores Parceiros</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Cadastro de distribuidoras, fabricantes e parceiros comerciais vinculados ao suprimento e estoque da cantina.
-        </p>
     </div>
     <div class="d-flex flex-wrap gap-2">
         <button type="button" class="btn btn-enterprise btn-secondary" onclick="abrirModalHistoricoRecibos()" title="Consultar recibos emitidos para fornecedores">
@@ -74,8 +71,7 @@ $csrfToken = $csrf_token ?? '';
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </span>
-                    <input type="text" class="form-control form-control-sm" style="padding-left: 46px !important;" id="busca" name="busca" 
-                           placeholder="Nome fantasia, razão social, CNPJ ou contato..." value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="text" class="form-control form-control-sm" style="padding-left: 46px !important;" id="busca" name="busca" value="<?php echo htmlspecialchars($busca, ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-md-3">
@@ -310,7 +306,7 @@ $csrfToken = $csrf_token ?? '';
                                 Nome Fantasia / Identificação Comercial <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm" id="forn_nome_fantasia" name="nome_fantasia" 
-                                   required maxlength="150" placeholder="Ex: Padaria Pão Dourado, Distribuidora Valle...">
+                                   required maxlength="150">
                         </div>
                         <div class="col-12 col-md-5">
                             <label for="forn_ativo" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
@@ -327,14 +323,14 @@ $csrfToken = $csrf_token ?? '';
                                 Razão Social Oficial
                             </label>
                             <input type="text" class="form-control form-control-sm" id="forn_razao_social" name="razao_social" 
-                                   maxlength="200" placeholder="Ex: Panificadora Central Ltda ME">
+                                   maxlength="200">
                         </div>
                         <div class="col-12 col-md-5">
                             <label for="forn_cnpj_cpf" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 CNPJ ou CPF
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular" id="forn_cnpj_cpf" name="cnpj_cpf" 
-                                   maxlength="20" placeholder="00.000.000/0000-00">
+                                   maxlength="20">
                         </div>
 
                         <div class="col-12 col-md-4">
@@ -342,21 +338,21 @@ $csrfToken = $csrf_token ?? '';
                                 Telefone / WhatsApp
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular" id="forn_telefone" name="telefone" 
-                                   maxlength="30" placeholder="(00) 00000-0000">
+                                   maxlength="30">
                         </div>
                         <div class="col-12 col-md-4">
                             <label for="forn_contato" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 Contato / Vendedor
                             </label>
                             <input type="text" class="form-control form-control-sm" id="forn_contato" name="contato_responsavel" 
-                                   maxlength="100" placeholder="Nome do representante...">
+                                   maxlength="100">
                         </div>
                         <div class="col-12 col-md-4">
                             <label for="forn_email" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 E-mail Comercial
                             </label>
                             <input type="email" class="form-control form-control-sm" id="forn_email" name="email" 
-                                   maxlength="100" placeholder="pedidos@fornecedor.com.br">
+                                   maxlength="100">
                         </div>
 
                         <div class="col-12">
@@ -364,15 +360,14 @@ $csrfToken = $csrf_token ?? '';
                                 Endereço / Localização
                             </label>
                             <input type="text" class="form-control form-control-sm" id="forn_endereco" name="endereco" 
-                                   maxlength="255" placeholder="Rua, número, bairro, cidade...">
+                                   maxlength="255">
                         </div>
 
                         <div class="col-12">
                             <label for="forn_observacoes" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 Observações Internas & Condições Comerciais
                             </label>
-                            <textarea class="form-control form-control-sm" id="forn_observacoes" name="observacoes" rows="2" 
-                                      placeholder="Prazos de entrega, horários permitidos de recebimento, chave Pix de faturamento..."></textarea>
+                            <textarea class="form-control form-control-sm" id="forn_observacoes" name="observacoes" rows="2"></textarea>
                         </div>
                     </div>
                 </div>
@@ -399,9 +394,6 @@ $csrfToken = $csrf_token ?? '';
                     <h5 class="modal-title font-weight-bold text-dark mb-0" id="modalReciboLabel" style="font-size: 15px;">
                         Emitir Recibo de Pagamento a Fornecedor
                     </h5>
-                    <p class="text-secondary text-microcopy mb-0 mt-0.5">
-                        Registra o pagamento a fornecedor parceiro, debita automaticamente no Livro Caixa e emite comprovante A4 timbrado.
-                    </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -442,8 +434,7 @@ $csrfToken = $csrf_token ?? '';
                             </label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light text-secondary font-tabular">R$</span>
-                                <input type="text" class="form-control form-control-sm font-tabular fw-bold" id="recibo_valor" name="valor" 
-                                       placeholder="0,00" required data-mask-moeda="true" style="font-size: 15px;">
+                                <input type="text" class="form-control form-control-sm font-tabular fw-bold" id="recibo_valor" name="valor" required data-mask-moeda="true" style="font-size: 15px;">
                             </div>
                         </div>
 
@@ -462,7 +453,7 @@ $csrfToken = $csrf_token ?? '';
                                 Descrição / Referência do Pagamento <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm" id="recibo_descricao" name="descricao" 
-                                   maxlength="200" placeholder="Ex: Pagamento Salgado, Pagamento Cupcake, Fornecimento de Pães..." required>
+                                   maxlength="200" required>
                             
                             <!-- Botões de Atalhos Rápidos de Descrição -->
                             <div class="d-flex flex-wrap gap-1 mt-1.5">
@@ -479,8 +470,7 @@ $csrfToken = $csrf_token ?? '';
                             <label for="recibo_observacoes" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 Observações / Número da NF (Opcional)
                             </label>
-                            <textarea class="form-control form-control-sm" id="recibo_observacoes" name="observacoes" rows="2" 
-                                      placeholder="Nº da Nota Fiscal, chave Pix de destino, lote de entrega ou anotações internas..."></textarea>
+                            <textarea class="form-control form-control-sm" id="recibo_observacoes" name="observacoes" rows="2"></textarea>
                         </div>
 
                         <div class="col-12">
@@ -515,9 +505,6 @@ $csrfToken = $csrf_token ?? '';
                     <h5 class="modal-title font-weight-bold text-dark mb-0" id="modalHistoricoLabel" style="font-size: 15px;">
                         Histórico de Recibos Emitidos para Fornecedores
                     </h5>
-                    <p class="text-secondary text-microcopy mb-0 mt-0.5">
-                        Relação de comprovantes de pagamentos emitidos e liquidados para controle financeiro e conferência.
-                    </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>

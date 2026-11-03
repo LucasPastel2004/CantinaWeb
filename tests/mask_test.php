@@ -66,8 +66,8 @@ assertCond(str_contains($jsContent, 'phoneInputs.forEach'), 'app.js vincula inpu
 $viewContent = file_get_contents(__DIR__ . '/../app/views/admin/configuracoes.php');
 assertCond(str_contains($viewContent, 'input-cnpj'), 'configuracoes.php possui classe input-cnpj', $testsPassed, $testsFailed);
 assertCond(str_contains($viewContent, 'input-phone'), 'configuracoes.php possui classe input-phone', $testsPassed, $testsFailed);
-assertCond(str_contains($viewContent, '00.000.000/0000-00'), 'configuracoes.php possui placeholder de CNPJ', $testsPassed, $testsFailed);
-assertCond(str_contains($viewContent, '(00) 00000-0000'), 'configuracoes.php possui placeholder de WhatsApp', $testsPassed, $testsFailed);
+assertCond(!str_contains($viewContent, 'placeholder="00.000.000/0000-00"'), 'configuracoes.php não possui placeholder de CNPJ', $testsPassed, $testsFailed);
+assertCond(!str_contains($viewContent, 'placeholder="(00) 00000-0000"'), 'configuracoes.php não possui placeholder de WhatsApp', $testsPassed, $testsFailed);
 assertCond(str_contains($viewContent, 'aplicarMascaraCnpj'), 'configuracoes.php possui script defensivo de CNPJ', $testsPassed, $testsFailed);
 
 // 5. Verifica versão atualizada do app.js no layout admin

@@ -149,9 +149,6 @@ $quebraPagina   = $filtros['quebra_pagina'] ?? 'ocultar';
                     <span class="badge bg-light text-secondary border font-tabular">Padrão Escolar Manager</span>
                 </div>
                 <h1 class="h5 font-weight-bold text-dark mb-0">Emissão de Movimentações de Estoque</h1>
-                <p class="text-secondary text-microcopy mb-0">
-                    Parametrização dinâmica com orientações Retrato e Paisagem e agrupamentos dinâmicos.
-                </p>
             </div>
         </div>
 

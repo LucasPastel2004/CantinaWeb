@@ -40,9 +40,6 @@ $corteAberto = $statusCorte['pode_alterar'] ?? false;
                 <span style="color: <?php echo $corteAberto ? '#d97706' : '#64748b'; ?>;">●</span> <?php echo $corteAberto ? 'Agendamento Aberto' : 'Corte Fechado'; ?>
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Consolidação matemática de salgados para encomenda junto ao fornecedor parceiro.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?php echo $baseUrl; ?>/relatorios/corte?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 
@@ -254,9 +251,6 @@ require __DIR__ . '/../partials/stat_strip.php';
     <div class="card-enterprise-body p-3">
         <textarea id="textareaWhatsApp" class="form-control font-monospace" rows="14" readonly 
                   style="background-color: #f8fafc; font-size: 13px; line-height: 1.6; height: 320px; min-height: 280px; padding: 12px 14px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); resize: vertical;"><?php echo htmlspecialchars($textoWhatsApp, ENT_QUOTES, 'UTF-8'); ?></textarea>
-        <p class="text-microcopy text-muted mt-2 mb-0">
-            Você pode copiar este texto estruturado e colá-lo diretamente na conversa com o fornecedor parceiro no WhatsApp Web ou aplicativo.
-        </p>
     </div>
 </div>
 

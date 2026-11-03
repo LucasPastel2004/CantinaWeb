@@ -16,9 +16,6 @@ $baseUrl = $baseUrl ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Demonstrativo de Fechamento de Caixa</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Histórico consolidado de apurações por turno, contagem física de gaveta, faturamento em espécie, Pix balcão e conferência de sobras/quebras.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="<?php echo $baseUrl; ?>/operacional/caixa" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5" title="Ir para a Gestão Operacional de Caixa">

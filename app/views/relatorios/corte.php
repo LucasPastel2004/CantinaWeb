@@ -34,9 +34,6 @@ $corteAberto = $statusCorte['pode_alterar'] ?? false;
                     <span style="color: <?php echo $corteAberto ? '#d97706' : '#64748b'; ?>;">●</span> <?php echo $corteAberto ? 'Agendamento Aberto' : 'Corte Fechado'; ?>
                 </span>
             </div>
-            <p class="text-secondary text-microcopy mb-0">
-                Selecione a data e o turno escolar para emitir o relatório consolidado timbrado oficial para fornecedores parceiros.
-            </p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <a href="<?php echo $baseUrl; ?>/operacional/corte?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 

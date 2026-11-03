@@ -17,9 +17,6 @@ $csrfToken = $csrf_token ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Categorias de Alimentos</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Segmentação dos produtos para o cardápio familiar e telas de PDV.
-        </p>
     </div>
     <div>
         <button type="button" class="btn btn-enterprise btn-primary" onclick="abrirModalCategoria()">
@@ -195,7 +192,7 @@ $totalProdutosVinculados = array_sum(array_map(static function($c) {
                         <label for="cat_nome" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em;">
                             Nome da Categoria <span class="text-danger">*</span>
                         </label>
-                        <input type="text" class="form-control form-control-sm" id="cat_nome" name="nome" required maxlength="50" placeholder="Ex: Salgados Assados, Bebidas...">
+                        <input type="text" class="form-control form-control-sm" id="cat_nome" name="nome" required maxlength="50">
                     </div>
 
                     <div class="row g-3">

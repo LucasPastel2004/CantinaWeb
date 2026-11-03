@@ -13,7 +13,6 @@ $baseUrl = $baseUrl ?? '';
 
 <div class="auth-header-block text-center mb-4">
     <h2 class="h5 font-weight-bold text-dark mb-1">Termos e Políticas da Cantina</h2>
-    <span class="text-secondary text-microcopy">Colégio Monteiro Lobato &bull; Unidade de Ensino</span>
 </div>
 
 <div class="termos-content text-left p-3 bg-white border mb-4" style="max-height: 400px; overflow-y: auto; font-size: 13px; line-height: 1.5; color: #334155; border-radius: 4px;">

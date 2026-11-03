@@ -26,9 +26,6 @@ $alunoId = (int)($alunoId ?? ($aluno['id'] ?? 0));
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Emissão de Extrato de Consumo do Aluno (Cantina)</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Consulta transparente de recargas, saldo familiar compartilhado e histórico de consumo individual por período com saldo progressivo.
-        </p>
     </div>
 </div>
 
@@ -46,7 +43,7 @@ $alunoId = (int)($alunoId ?? ($aluno['id'] ?? 0));
                         <span class="search-icon">
                             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
                         </span>
-                        <input type="text" id="aluno_busca" name="aluno_busca" class="form-control form-control-sm" style="padding-left: 36px !important;" placeholder="Digite para buscar aluno..." autocomplete="off" value="<?php echo htmlspecialchars($aluno['nome'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="text" id="aluno_busca" name="aluno_busca" class="form-control form-control-sm" style="padding-left: 36px !important;" autocomplete="off" value="<?php echo htmlspecialchars($aluno['nome'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         <input type="hidden" name="aluno_id" id="hiddenAlunoId" value="<?php echo (int)($alunoId ?? 0); ?>">
 
                         <!-- Dropdown flutuante de Autocomplete -->

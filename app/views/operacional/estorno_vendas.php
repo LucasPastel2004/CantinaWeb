@@ -36,9 +36,6 @@ $carregado = $carregado ?? false;
                 Módulo Operacional
             </span>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Localização e reversão atômica de vendas avulsas de balcão ou encomendas online com reconstituição de estoque e saldo.
-        </p>
     </div>
 </div>
 
@@ -91,15 +88,6 @@ $carregado = $carregado ?? false;
                     
                     <div class="search-input-wrapper position-relative" style="position: relative;">
                         <input type="text" id="inputBuscaPessoa" class="form-control form-control-sm pe-4" 
-                               placeholder="<?php 
-                               if ($vendaAvulsa === 'sim') {
-                                   echo 'Venda avulsa de balcão (externo, anônimo ou sobra de estoque)';
-                               } elseif ($filtrarPor === 'colaborador') {
-                                   echo 'Selecione ou digite o nome do colaborador...';
-                               } else {
-                                   echo 'Selecione ou digite o nome do aluno...';
-                               }
-                               ?>" 
                                autocomplete="off" 
                                value="<?php echo htmlspecialchars($nomePessoaSelecionada, ENT_QUOTES, 'UTF-8'); ?>"
                                <?php echo ($vendaAvulsa === 'sim') ? 'disabled' : ''; ?>>
@@ -172,7 +160,7 @@ $carregado = $carregado ?? false;
                 <option value="5-DUPLICIDADE" <?php echo ($motivoFiltro === '5-DUPLICIDADE') ? 'selected' : ''; ?>>5-DUPLICIDADE</option>
                 <option value="6-OUTRO" <?php echo ($motivoFiltro === '6-OUTRO' || !in_array($motivoFiltro, ['1-ESTORNO', '2-DESISTÊNCIA DO ALUNO', '3-FALTA DE PRODUTO', '4-ERRO DE LANÇAMENTO', '5-DUPLICIDADE'])) ? 'selected' : ''; ?>>6-OUTRO</option>
             </select>
-            <input type="text" class="form-control form-control-sm d-none" id="inputMotivoOutro" placeholder="Especifique o motivo do estorno..." maxlength="200" value="<?php echo (!in_array($motivoFiltro, ['1-ESTORNO', '2-DESISTÊNCIA DO ALUNO', '3-FALTA DE PRODUTO', '4-ERRO DE LANÇAMENTO', '5-DUPLICIDADE', '6-OUTRO'])) ? htmlspecialchars($motivoFiltro, ENT_QUOTES, 'UTF-8') : ''; ?>">
+            <input type="text" class="form-control form-control-sm d-none" id="inputMotivoOutro" maxlength="200" value="<?php echo (!in_array($motivoFiltro, ['1-ESTORNO', '2-DESISTÊNCIA DO ALUNO', '3-FALTA DE PRODUTO', '4-ERRO DE LANÇAMENTO', '5-DUPLICIDADE', '6-OUTRO'])) ? htmlspecialchars($motivoFiltro, ENT_QUOTES, 'UTF-8') : ''; ?>">
         </div>
 
         <!-- Botões Cancelar e Gravar (Alinhados à direita junto com o Motivo, padrão Nutre) -->
@@ -605,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (selectFiltrarPor) selectFiltrarPor.disabled = true;
                 if (inputBuscaPessoa) {
                     inputBuscaPessoa.disabled = true;
-                    inputBuscaPessoa.placeholder = 'Venda avulsa de balcão (externo, anônimo ou sobra de estoque)';
+                    inputBuscaPessoa.placeholder = '';
                 }
                 if (lblBuscaPessoa) lblBuscaPessoa.textContent = 'Consumidor';
             } else {
@@ -633,17 +621,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const isAvulsa = document.getElementById('vaSim') && document.getElementById('vaSim').checked;
         if (isAvulsa) {
             if (lblBuscaPessoa) lblBuscaPessoa.textContent = 'Consumidor';
-            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = 'Venda avulsa de balcão (externo, anônimo ou sobra de estoque)';
+            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = '';
             return;
         }
 
         const tipo = selectFiltrarPor ? selectFiltrarPor.value : 'aluno';
         if (tipo === 'colaborador') {
             if (lblBuscaPessoa) lblBuscaPessoa.textContent = 'Colaborador';
-            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = 'Selecione ou digite o nome do colaborador...';
+            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = '';
         } else {
             if (lblBuscaPessoa) lblBuscaPessoa.textContent = 'Aluno';
-            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = 'Selecione ou digite o nome do aluno...';
+            if (inputBuscaPessoa) inputBuscaPessoa.placeholder = '';
         }
     }
 

@@ -20,9 +20,6 @@ $csrfToken = $csrf_token ?? '';
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Cardápio & Produtos</h1>
-        <p class="text-secondary text-microcopy mb-0">
-            Cadastro de alimentos, preços de venda, alérgenos declarados e pausa rápida de vendas.
-        </p>
     </div>
     <div>
         <button type="button" class="btn btn-enterprise btn-primary" onclick="abrirModalProduto()">
@@ -44,8 +41,7 @@ $csrfToken = $csrf_token ?? '';
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </span>
-                    <input type="text" class="form-control form-control-sm" style="padding-left: 46px !important;" id="busca" name="busca" 
-                           placeholder="Código interno ou descrição..." value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="text" class="form-control form-control-sm" style="padding-left: 46px !important;" id="busca" name="busca" value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
             </div>
             <div class="col-6 col-md-2">
@@ -273,14 +269,14 @@ $csrfToken = $csrf_token ?? '';
                                 Código Interno <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular" id="prod_codigo_interno" name="codigo_interno" 
-                                   required maxlength="30" placeholder="Ex: SAL-01, BEB-02">
+                                   required maxlength="30">
                         </div>
                         <div class="col-12 col-sm-8">
                             <label for="prod_descricao" class="form-label font-weight-semibold text-secondary" style="font-size: 11px; text-transform: uppercase;">
                                 Descrição do Produto <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm" id="prod_descricao" name="descricao" 
-                                   required maxlength="100" placeholder="Ex: Esfiha de Frango com Catupiry">
+                                   required maxlength="100">
                         </div>
                     </div>
 
@@ -303,7 +299,7 @@ $csrfToken = $csrf_token ?? '';
                                 Preço de Venda (R$) <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-sm font-tabular text-end" id="prod_preco_venda" name="preco_venda" 
-                                   required placeholder="0,00">
+                                   required>
                         </div>
                     </div>
 

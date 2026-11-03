@@ -29,7 +29,6 @@ $bloqueadoMed = $bloqueadoMed ?? false;
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Olá, <?php echo htmlspecialchars($usuario['nome'] ?? 'Família', ENT_QUOTES, 'UTF-8'); ?>!</h1>
-        <p class="text-secondary text-microcopy mb-0">Acompanhe a alimentação escolar e o saldo dos seus dependentes.</p>
     </div>
     <div class="d-flex gap-2">
         <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary">

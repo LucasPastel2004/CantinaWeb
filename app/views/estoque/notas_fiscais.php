@@ -27,7 +27,6 @@ $filtros = $filtros ?? ['busca' => '', 'data_inicio' => '', 'data_fim' => ''];
                 </a>
             </div>
             <h1 class="h5 fw-bold text-dark mb-0">Notas Fiscais de Entrada (NF-e)</h1>
-            <p class="text-secondary text-microcopy mb-0">Repositório de notas fiscais importadas e histórico de abastecimento físico do estoque.</p>
         </div>
         <div class="d-flex gap-2">
             <a href="<?php echo $baseUrl; ?>/estoque/entrada" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1">
@@ -67,7 +66,7 @@ $filtros = $filtros ?? ['busca' => '', 'data_inicio' => '', 'data_fim' => ''];
         <form method="GET" action="<?php echo $baseUrl; ?>/estoque/notas-fiscais" class="row g-2 align-items-end">
             <div class="col-12 col-md-5">
                 <label class="form-label font-11 font-semibold text-secondary mb-1">Buscar Nota Fiscal:</label>
-                <input type="text" name="busca" class="form-control form-control-sm font-12" placeholder="Número da nota, fornecedor, CNPJ ou chave de 44 dígitos..." value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" name="busca" class="form-control form-control-sm font-12" value="<?php echo htmlspecialchars($filtros['busca'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="col-6 col-md-3">
                 <label class="form-label font-11 font-semibold text-secondary mb-1">Data Início:</label>

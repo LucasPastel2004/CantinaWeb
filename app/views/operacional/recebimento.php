@@ -53,9 +53,6 @@ $podeConferir = (!$jaRecebido && $isHoje);
                 </span>
             <?php endif; ?>
         </div>
-        <p class="text-secondary text-microcopy mb-0">
-            Conferência da remessa física entregue na cantina, liquidação da demanda de pedidos e entrada no estoque.
-        </p>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?php echo $baseUrl; ?>/operacional/corte?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 
@@ -361,13 +358,9 @@ if ($jaRecebido) {
                     <label for="observacaoRecebimento" class="form-label text-microcopy font-weight-bold text-secondary">
                         OBSERVAÇÕES DA ENTREGA (OPCIONAL):
                     </label>
-                    <input type="text" id="observacaoRecebimento" name="observacao" class="form-control form-control-sm" 
-                           placeholder="Ex: Entregador João confirmou que 2 coxinhas adicionais foram enviadas como sobra de cortesia.">
+                    <input type="text" id="observacaoRecebimento" name="observacao" class="form-control form-control-sm">
                 </div>
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div class="text-microcopy text-muted">
-                        Ao confirmar, o sistema dará baixa na demanda de tickets do turno e disponibilizará eventuais sobras para o balcão.
-                    </div>
+                <div class="d-flex justify-content-end align-items-center flex-wrap gap-2">
                     <button type="submit" class="btn btn-enterprise btn-primary" id="btnConfirmarRecebimento">
                         Confirmar Recebimento e Dar Entrada
                     </button>

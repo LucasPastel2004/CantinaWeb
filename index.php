@@ -198,6 +198,9 @@ $router->post('/operacional/recebimento/confirmar', [\App\Controllers\PedidosCon
 $router->get('/operacional/tickets', [\App\Controllers\TicketsController::class, 'index'], [
     \App\Core\RBAC::requireRole([\App\Core\RBAC::ROLE_OPERADOR, \App\Core\RBAC::ROLE_ADMINISTRADOR])
 ]);
+$router->get('/operacional/tickets/sugestoes', [\App\Controllers\TicketsController::class, 'sugestoes'], [
+    \App\Core\RBAC::requireRole([\App\Core\RBAC::ROLE_OPERADOR, \App\Core\RBAC::ROLE_ADMINISTRADOR])
+]);
 $router->get('/operacional/tickets/lote', [\App\Controllers\TicketsController::class, 'lote'], [
     \App\Core\RBAC::requireRole([\App\Core\RBAC::ROLE_OPERADOR, \App\Core\RBAC::ROLE_ADMINISTRADOR])
 ]);

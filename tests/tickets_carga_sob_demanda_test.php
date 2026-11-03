@@ -195,6 +195,65 @@ class TicketsCargaSobDemandaTest
             "Ticket::buscarParaConsulta aceitou status_ticket='impresso' com sucesso"
         );
 
+        // --- 6. Autocomplete de Sugestões em Tempo Real (/operacional/tickets/sugestoes) ---
+        echo "\n--- 6. Autocomplete de Sugestões em Tempo Real ---\n";
+
+        // Verifica que o HTML renderiza autocomplete="off" e o container do dropdown flutuante
+        $this->assert(
+            str_contains($htmlInicial, 'autocomplete="off"'),
+            "Input de pesquisa possui autocomplete='off' para suprimir histórico nativo do navegador"
+        );
+        $this->assert(
+            str_contains($htmlInicial, 'id="buscaSugestoesTicketsDropdown"'),
+            "Container flutuante de sugestões (buscaSugestoesTicketsDropdown) presente no HTML"
+        );
+        $this->assert(
+            str_contains($htmlInicial, '/operacional/tickets/sugestoes'),
+            "Script frontend faz referência ao endpoint assíncrono de sugestões"
+        );
+
+        // Testa o método de Model: Ticket::buscarSugestoesConsulta
+        $sugestoesModel = Ticket::buscarSugestoesConsulta('Enzo', $dataTeste, $turnoTeste, 8);
+        $this->assert(
+            is_array($sugestoesModel) && count($sugestoesModel) > 0,
+            "Ticket::buscarSugestoesConsulta retornou resultados para 'Enzo' (" . count($sugestoesModel) . " sugestões)"
+        );
+        if (!empty($sugestoesModel)) {
+            $primeira = $sugestoesModel[0];
+            $this->assert(
+                isset($primeira['aluno_nome'], $primeira['codigo_ticket'], $primeira['produto_descricao']),
+                "Estrutura da sugestão contém aluno_nome, codigo_ticket e produto_descricao"
+            );
+        }
+
+        // Testa busca de sugestão vazia
+        $sugestoesVazia = Ticket::buscarSugestoesConsulta('', $dataTeste, $turnoTeste);
+        $this->assert(
+            empty($sugestoesVazia),
+            "Ticket::buscarSugestoesConsulta com termo vazio retorna array vazio"
+        );
+
+        // Testa endpoint do Controller: TicketsController::sugestoes()
+        $_GET = [
+            'q'     => 'Enzo',
+            'data'  => $dataTeste,
+            'turno' => $turnoTeste,
+        ];
+        ob_start();
+        $controller = new TicketsController();
+        $controller->sugestoes();
+        $jsonOutput = ob_get_clean();
+
+        $dadosJson = json_decode($jsonOutput, true);
+        $this->assert(
+            is_array($dadosJson) && ($dadosJson['sucesso'] ?? false) === true,
+            "Endpoint TicketsController::sugestoes retornou JSON com sucesso = true"
+        );
+        $this->assert(
+            isset($dadosJson['sugestoes']) && is_array($dadosJson['sugestoes']),
+            "Endpoint retornou array de sugestões estruturado"
+        );
+
         echo "\n=================================================================\n";
         echo " RESULTADO: {$this->passou} aprovados, {$this->falhou} falhas.\n";
         echo "=================================================================\n\n";

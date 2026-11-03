@@ -430,6 +430,93 @@ class Ticket extends Model
     }
 
     /**
+     * Busca sugestões de tickets e alunos em tempo real para o autocomplete da 2ª via
+     * 
+     * @param string $termo Termo digitado pelo operador
+     * @param string|null $data Data de consumo (padrão hoje)
+     * @param string|null $turno Turno ('matutino' ou 'vespertino')
+     * @param int $limite Limite de sugestões (padrão 8)
+     * @return array
+     */
+    public static function buscarSugestoesConsulta(
+        string $termo,
+        ?string $data = null,
+        ?string $turno = null,
+        int $limite = 8
+    ): array {
+        $limite = max(1, min(50, $limite));
+        $termoLimpo = trim($termo);
+        if (empty($termoLimpo)) {
+            return [];
+        }
+
+        $dataConsumo = $data ?? date('Y-m-d');
+        $params = [
+            'data_cons' => $dataConsumo,
+        ];
+
+        $whereTurno = '';
+        if ($turno !== null && in_array($turno, ['matutino', 'vespertino'], true)) {
+            $whereTurno = " AND p.turno_consumo = :turno_cons";
+            $params['turno_cons'] = $turno;
+        }
+
+        $like = '%' . $termoLimpo . '%';
+        $params['b_nome']  = $like;
+        $params['b_mat']   = $like;
+        $params['b_turma'] = $like;
+        $params['b_cod']   = $like;
+        $params['b_ped']   = $like;
+        $params['b_prod']  = $like;
+
+        $sql = "
+            SELECT 
+                t.id AS ticket_id,
+                t.codigo_ticket,
+                t.numero_via,
+                t.status AS ticket_status,
+                p.codigo_pedido,
+                prod.descricao AS produto_descricao,
+                a.id AS aluno_id,
+                a.nome AS aluno_nome,
+                a.matricula AS aluno_matricula,
+                COALESCE(tur.nome_turma, 'Sem Turma') AS nome_turma,
+                COALESCE(tur.serie, '') AS serie
+            FROM tickets t
+            INNER JOIN pedidos p ON p.id = t.pedido_id
+            INNER JOIN itens_pedido ip ON ip.id = t.item_pedido_id
+            INNER JOIN produtos prod ON prod.id = ip.produto_id
+            INNER JOIN alunos a ON a.id = p.aluno_id
+            LEFT JOIN turmas tur ON tur.id = a.turma_id
+            WHERE p.data_consumo = :data_cons
+              AND p.status != 'cancelado'
+              {$whereTurno}
+              AND (
+                  a.nome LIKE :b_nome 
+                  OR a.matricula LIKE :b_mat 
+                  OR tur.nome_turma LIKE :b_turma 
+                  OR t.codigo_ticket LIKE :b_cod 
+                  OR p.codigo_pedido LIKE :b_ped
+                  OR prod.descricao LIKE :b_prod
+              )
+            ORDER BY 
+                CASE 
+                    WHEN a.nome LIKE :b_nome_start THEN 1
+                    WHEN t.codigo_ticket LIKE :b_cod_start THEN 2
+                    ELSE 3
+                END,
+                a.nome ASC,
+                t.id DESC
+            LIMIT {$limite}
+        ";
+
+        $params['b_nome_start'] = $termoLimpo . '%';
+        $params['b_cod_start']  = $termoLimpo . '%';
+
+        return self::fetchAll($sql, $params);
+    }
+
+    /**
      * Executa a emissão de 2ª via com incremento de via e registro obrigatório em auditoria
      * 
      * @param int $ticketId

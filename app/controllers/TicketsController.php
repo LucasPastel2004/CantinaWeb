@@ -117,6 +117,33 @@ class TicketsController extends Controller
     }
 
     /**
+     * Endpoint JSON para autocomplete de sugestões em tempo real (/operacional/tickets/sugestoes)
+     */
+    public function sugestoes(): void
+    {
+        $qRaw = $_GET['q'] ?? ($_GET['busca'] ?? ($_GET['termo'] ?? ''));
+        $termo = is_string($qRaw) ? trim($qRaw) : '';
+
+        $hoje = date('Y-m-d');
+        $dataConsumo = $this->normalizarData($_GET['data'] ?? null, $hoje);
+        $turnoConsumo = $this->normalizarTurno($_GET['turno'] ?? null);
+
+        $limite = max(1, min(15, (int)($_GET['limite'] ?? 8)));
+
+        $sugestoes = Ticket::buscarSugestoesConsulta($termo, $dataConsumo, $turnoConsumo, $limite);
+
+        $this->json([
+            'sucesso'   => true,
+            'success'   => true,
+            'termo'     => $termo,
+            'data'      => $dataConsumo,
+            'turno'     => $turnoConsumo,
+            'sugestoes' => $sugestoes,
+            'total'     => count($sugestoes)
+        ]);
+    }
+
+    /**
      * Normaliza e valida o formato de impressão ('a4' ou '80mm')
      */
     protected function normalizarFormato(?string $formato, string $padrao = 'a4'): string

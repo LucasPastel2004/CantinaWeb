@@ -58,16 +58,48 @@ class HomeController extends Controller
         $config = file_exists($configFile) ? require $configFile : [];
         $isProduction = ($config['app']['env'] ?? 'development') === 'production';
 
+        $opcacheReset = false;
+        if (function_exists('opcache_reset')) {
+            $opcacheReset = @opcache_reset();
+        }
+
+        $pedidoFile = dirname(__DIR__) . '/models/Pedido.php';
+        $pedidoMtime = file_exists($pedidoFile) ? date('Y-m-d H:i:s', filemtime($pedidoFile)) : null;
+        $pedidoHasEntregue = file_exists($pedidoFile) ? (strpos(file_get_contents($pedidoFile), "'entregue'") !== false) : false;
+
+        $corteDebug = [];
+        try {
+            $corte = \App\Models\Pedido::consolidarCorte('2026-10-30', 'matutino');
+            $corteDebug = [
+                'itens_count'   => count($corte['itens'] ?? []),
+                'total_pedidos' => $corte['total_pedidos'] ?? 0,
+                'total_pecas'   => $corte['total_pecas'] ?? 0,
+            ];
+        } catch (\Throwable $e) {
+            $corteDebug = ['erro' => $e->getMessage()];
+        }
+
         if ($isProduction) {
-            $this->json(['status' => 'online', 'timestamp' => date('Y-m-d H:i:s')]);
+            $this->json([
+                'status'                  => 'online',
+                'opcache_reset'           => $opcacheReset,
+                'pedido_mtime'            => $pedidoMtime,
+                'pedido_has_entregue'     => $pedidoHasEntregue,
+                'corte_debug_30_matutino' => $corteDebug,
+                'timestamp'               => date('Y-m-d H:i:s')
+            ]);
             return;
         }
 
         $this->json([
-            'status'      => 'online',
-            'app'         => $config['app']['name'] ?? 'Cantina Web',
-            'environment' => $config['app']['env'] ?? 'development',
-            'php_version' => PHP_VERSION,
+            'status'                  => 'online',
+            'opcache_reset'           => $opcacheReset,
+            'pedido_mtime'            => $pedidoMtime,
+            'pedido_has_entregue'     => $pedidoHasEntregue,
+            'corte_debug_30_matutino' => $corteDebug,
+            'app'                     => $config['app']['name'] ?? 'Cantina Web',
+            'environment'             => $config['app']['env'] ?? 'development',
+            'php_version'             => PHP_VERSION,
             'fase_atual'  => 'Sistema Completo e Homologado (24 Fases)',
             'mvc_core'    => [
                 'router'       => 'App\Core\Router',

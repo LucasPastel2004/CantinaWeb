@@ -190,3 +190,7 @@ jobs:
             echo "Execução de seeder ignorada (RUN_SEEDER=$RUN_SEEDER)."
           fi
           EOF
+
+      - name: Limpar OPcache da Hostnet via Web
+        run: |
+          curl -s https://www.cantinawebmonteirolobato.com.br/api/status || true

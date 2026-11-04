@@ -86,6 +86,8 @@ $router->post('/logout', [\App\Controllers\AuthController::class, 'logout']);
 
 $router->get('/primeiro-acesso', [\App\Controllers\AuthController::class, 'primeiroAcesso']);
 $router->post('/primeiro-acesso/solicitar', [\App\Controllers\AuthController::class, 'primeiroAcessoSolicitar']);
+$router->get('/primeiro-acesso/email', [\App\Controllers\AuthController::class, 'primeiroAcessoEmail']);
+$router->post('/primeiro-acesso/enviar-codigo', [\App\Controllers\AuthController::class, 'primeiroAcessoEnviarCodigo']);
 $router->get('/primeiro-acesso/codigo', [\App\Controllers\AuthController::class, 'primeiroAcessoCodigo']);
 $router->post('/primeiro-acesso/validar-codigo', [\App\Controllers\AuthController::class, 'primeiroAcessoValidarCodigo']);
 $router->post('/primeiro-acesso/reenviar', [\App\Controllers\AuthController::class, 'primeiroAcessoReenviar']);

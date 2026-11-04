@@ -18,6 +18,7 @@ use App\Core\Controller;
 use App\Models\TransacaoCarteira;
 use App\Models\Responsavel;
 use App\Services\PixService;
+use App\Services\EmailService;
 use App\Services\WhatsAppService;
 
 class WebhookController extends Controller
@@ -148,20 +149,20 @@ class WebhookController extends Controller
                 PixService::salvarCobrancaCache($txid, $cobranca);
             }
 
-            // 7. Notificação Transacional via WhatsApp
-            $resp = Responsavel::fetchOne("SELECT nome, whatsapp FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $responsavelId]);
-            if ($resp && !empty($resp['whatsapp'])) {
+            // 7. Notificação Transacional via E-mail Institucional
+            $resp = Responsavel::fetchOne("SELECT nome, email, whatsapp FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $responsavelId]);
+            if ($resp && !empty($resp['email'])) {
                 try {
-                    $whatsService = new WhatsAppService();
-                    $whatsService->sendRecargaConfirmada(
-                        $resp['whatsapp'],
+                    $emailService = new EmailService();
+                    $emailService->sendRecargaConfirmada(
+                        $resp['email'],
                         $valor,
                         (float)$transacao['saldo_resultante'],
                         $resp['nome'] ?? ''
                     );
                 } catch (\Throwable $we) {
                     // Falha de notificação não compromete a transação financeira
-                    error_log('[WHATSAPP_NOTIFY_ERROR] ' . $we->getMessage());
+                    error_log('[EMAIL_NOTIFY_ERROR] ' . $we->getMessage());
                 }
             }
 

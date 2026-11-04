@@ -1680,7 +1680,7 @@ class AdminController extends Controller
         $rtrId         = trim((string)$this->input('rtr_id', ''));
         $motivo        = trim((string)$this->input('motivo', ''));
         $justificativa = trim((string)$this->input('justificativa', ''));
-        $notificar     = (bool)$this->input('notificar_whatsapp', true);
+        $notificar     = (bool)$this->input('notificar_email', (bool)$this->input('notificar_whatsapp', true));
 
         // Normalização de moeda
         if (str_contains($valorRaw, ',')) {
@@ -1807,7 +1807,7 @@ class AdminController extends Controller
 
         $responsavelId = (int)$this->input('responsavel_id', 0);
         $justificativa = trim((string)$this->input('justificativa', ''));
-        $notificarWhatsapp = (bool)$this->input('notificar_whatsapp', false);
+        $notificarEmail = (bool)$this->input('notificar_email', (bool)$this->input('notificar_whatsapp', false));
 
         if ($responsavelId <= 0 || empty($justificativa)) {
             Session::setFlash('danger', 'A justificativa de desbloqueio é de preenchimento obrigatório.');
@@ -1818,12 +1818,12 @@ class AdminController extends Controller
         $operadorId = Auth::id() ?: 1;
         Responsavel::desbloquearMed($responsavelId, $operadorId, $justificativa);
 
-        if ($notificarWhatsapp) {
+        if ($notificarEmail) {
             $resp = Responsavel::buscarPorId($responsavelId);
-            if ($resp && !empty($resp['whatsapp'])) {
+            if ($resp && !empty($resp['email'])) {
                 try {
-                    $ws = new \App\Services\WhatsAppService();
-                    $ws->sendNotificacaoDesbloqueioMed($resp['whatsapp'], (float)$resp['saldo_atual'], $resp['nome'] ?? '');
+                    $emailService = new \App\Services\EmailService();
+                    $emailService->sendNotificacaoDesbloqueioMed($resp['email'], (float)$resp['saldo_atual'], $resp['nome'] ?? '');
                 } catch (\Throwable $e) {}
             }
         }

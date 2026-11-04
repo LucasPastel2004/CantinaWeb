@@ -66,7 +66,7 @@ $tab = $tab ?? 'familia';
         </div>
 
         <a href="<?php echo $baseUrl; ?>/primeiro-acesso" class="btn btn-enterprise btn-secondary w-100 py-2 text-center text-decoration-none">
-            Ativar Primeiro Acesso com WhatsApp
+            Ativar Primeiro Acesso
         </a>
     </form>
 <?php else: ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Cantina Web — Colégio Monteiro Lobato
- * View: Primeiro Acesso - Etapa 2: Digitação do Código de 6 Dígitos
+ * View: Primeiro Acesso - Etapa 3: Digitação do Código de 6 Dígitos
  * 
  * Conforme docs/DESIGN.md e docs/FSD.md
  */
@@ -9,13 +9,18 @@
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 
 $baseUrl = $baseUrl ?? '';
-$maskedPhone = $maskedPhone ?? '';
+$maskedEmail = $maskedEmail ?? '';
 $mockCode = $mockCode ?? null;
 $codigoBloqueado = $codigoBloqueado ?? false;
 ?>
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Código de Confirmação</h2>
+    <?php if (!empty($maskedEmail)): ?>
+        <div class="text-microcopy text-secondary">
+            Enviamos o código para <strong><?php echo htmlspecialchars($maskedEmail, ENT_QUOTES, 'UTF-8'); ?></strong>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($mockCode): ?>
@@ -28,12 +33,12 @@ $codigoBloqueado = $codigoBloqueado ?? false;
     <div class="alert alert-warning py-3 px-3 mb-3 text-center border">
         <div class="font-weight-bold text-dark mb-1" style="font-size: 14px;">Código Bloqueado</div>
         <p class="text-microcopy text-secondary mb-3">
-            O limite de 5 tentativas foi excedido. Por motivos de segurança, clique no botão abaixo para receber um novo código no seu WhatsApp.
+            O limite de 5 tentativas foi excedido. Por motivos de segurança, clique no botão abaixo para receber um novo código no seu e-mail.
         </p>
         <form action="<?php echo $baseUrl; ?>/primeiro-acesso/reenviar" method="POST">
             <?php echo $csrf_field ?? ''; ?>
             <button type="submit" class="btn btn-enterprise btn-primary w-100 py-2">
-                Solicitar Novo Código por WhatsApp
+                Solicitar Novo Código por E-mail
             </button>
         </form>
     </div>
@@ -66,15 +71,15 @@ $codigoBloqueado = $codigoBloqueado ?? false;
         <form action="<?php echo $baseUrl; ?>/primeiro-acesso/reenviar" method="POST" class="d-inline">
             <?php echo $csrf_field ?? ''; ?>
             <button type="submit" class="btn btn-link text-microcopy text-primary p-0 text-decoration-none border-0 bg-transparent">
-                Reenviar código
+                Reenviar código por e-mail
             </button>
         </form>
     <?php else: ?>
         <span class="text-microcopy text-muted">Aguardando novo envio</span>
     <?php endif; ?>
 
-    <a href="<?php echo $baseUrl; ?>/primeiro-acesso" class="text-microcopy text-secondary text-decoration-none">
-        Trocar CPF
+    <a href="<?php echo $baseUrl; ?>/primeiro-acesso/email" class="text-microcopy text-secondary text-decoration-none">
+        Alterar e-mail
     </a>
 </div>
 

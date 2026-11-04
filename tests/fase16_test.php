@@ -378,6 +378,7 @@ class Fase16Test
         $resParcial = TransacaoCarteira::processarQuitacaoMed(
             $this->responsavelId,
             20.00,
+            'dinheiro',
             'Quitação parcial presencial na tesouraria',
             $this->adminId,
             true // desbloquear se positivo
@@ -397,6 +398,7 @@ class Fase16Test
         $resTotal = TransacaoCarteira::processarQuitacaoMed(
             $this->responsavelId,
             35.00,
+            'dinheiro',
             'Quitação final e regularização completa',
             $this->adminId,
             true // desbloquear se positivo
@@ -509,6 +511,7 @@ class Fase16Test
             $this->pdo->exec("DELETE FROM responsaveis WHERE id = {$this->responsavelId}");
         }
         if ($this->adminId > 0) {
+            $this->pdo->exec("DELETE FROM logs_auditoria WHERE operador_id = {$this->adminId}");
             $this->pdo->exec("DELETE FROM usuarios WHERE id = {$this->adminId}");
         }
 

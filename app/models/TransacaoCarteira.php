@@ -97,16 +97,16 @@ class TransacaoCarteira extends Model
                 );
 
                 try {
-                    $whats = new \App\Services\WhatsAppService();
-                    if (!empty($resp['whatsapp'])) {
-                        $whats->sendNotificacaoDesbloqueioMed(
-                            $resp['whatsapp'],
+                    $emailService = new \App\Services\EmailService();
+                    if (!empty($resp['email'])) {
+                        $emailService->sendNotificacaoDesbloqueioMed(
+                            $resp['email'],
                             $saldoResultante,
                             $resp['nome'] ?? 'Responsável'
                         );
                     }
                 } catch (\Throwable $e) {
-                    error_log('[WHATSAPP_UNBLOCK_ERROR] ' . $e->getMessage());
+                    error_log('[EMAIL_UNBLOCK_ERROR] ' . $e->getMessage());
                 }
             }
 
@@ -535,20 +535,20 @@ class TransacaoCarteira extends Model
             Responsavel::bloquearMed($responsavelId, $motivo, $operadorId);
             $foiBloqueado = true;
 
-            // Envia WhatsApp urgente
+            // Envia e-mail urgente de notificação MED
             if ($dispararNotificacao) {
                 $resp = Responsavel::buscarPorId($responsavelId);
-                if ($resp && !empty($resp['whatsapp'])) {
+                if ($resp && !empty($resp['email'])) {
                     try {
-                        $whats = new \App\Services\WhatsAppService();
-                        $whats->sendNotificacaoMed(
-                            $resp['whatsapp'],
+                        $emailService = new \App\Services\EmailService();
+                        $emailService->sendNotificacaoMed(
+                            $resp['email'],
                             $valor,
                             $saldoResultante,
                             $resp['nome'] ?? ''
                         );
                     } catch (\Throwable $e) {
-                        error_log('[WHATSAPP_MED_ERROR] ' . $e->getMessage());
+                        error_log('[EMAIL_MED_ERROR] ' . $e->getMessage());
                     }
                 }
             }
@@ -648,18 +648,18 @@ class TransacaoCarteira extends Model
             );
             $desbloqueado = true;
 
-            // Dispara WhatsApp de confirmação de desbloqueio
+            // Dispara e-mail de confirmação de desbloqueio
             $resp = Responsavel::buscarPorId($responsavelId);
-            if ($resp && !empty($resp['whatsapp'])) {
+            if ($resp && !empty($resp['email'])) {
                 try {
-                    $whats = new \App\Services\WhatsAppService();
-                    $whats->sendNotificacaoDesbloqueioMed(
-                        $resp['whatsapp'],
+                    $emailService = new \App\Services\EmailService();
+                    $emailService->sendNotificacaoDesbloqueioMed(
+                        $resp['email'],
                         $saldoResultante,
                         $resp['nome'] ?? ''
                     );
                 } catch (\Throwable $e) {
-                    error_log('[WHATSAPP_DESBLOQUEIO_ERROR] ' . $e->getMessage());
+                    error_log('[EMAIL_DESBLOQUEIO_ERROR] ' . $e->getMessage());
                 }
             }
         }

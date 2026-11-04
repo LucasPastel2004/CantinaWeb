@@ -85,6 +85,22 @@ class Responsavel extends Model
     }
 
     /**
+     * Atualiza o e-mail cadastrado do responsável
+     */
+    public function updateEmail(int $id, string $email): bool
+    {
+        $sql = "UPDATE {$this->table} 
+                SET email = :email, updated_at = :updated_at 
+                WHERE id = :id";
+
+        return self::execute($sql, [
+            'email'      => trim($email),
+            'updated_at' => date('Y-m-d H:i:s'),
+            'id'         => $id
+        ]) >= 0;
+    }
+
+    /**
      * Registra o aceite formal dos Termos e Políticas da Cantina
      */
     public function aceitarTermos(int $id): bool

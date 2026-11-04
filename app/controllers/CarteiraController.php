@@ -20,6 +20,7 @@ use App\Models\TransacaoCarteira;
 use App\Models\Responsavel;
 use App\Models\Configuracao;
 use App\Services\PixService;
+use App\Services\EmailService;
 use App\Services\WhatsAppService;
 
 class CarteiraController extends Controller
@@ -295,15 +296,19 @@ class CarteiraController extends Controller
             Session::set('_auth_saldo', (float)$transacao['saldo_resultante']);
             Session::remove('_pix_ativo_txid_' . $responsavelId);
 
-            // Notifica mock WhatsApp
-            $resp = Responsavel::fetchOne("SELECT nome, whatsapp FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $responsavelId]);
-            if ($resp && !empty($resp['whatsapp'])) {
-                (new WhatsAppService())->sendRecargaConfirmada(
-                    $resp['whatsapp'],
-                    (float)$cobranca['valor'],
-                    (float)$transacao['saldo_resultante'],
-                    $resp['nome'] ?? ''
-                );
+            // Notificação de recarga confirmada via E-mail institucional
+            $resp = Responsavel::fetchOne("SELECT nome, email, whatsapp FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $responsavelId]);
+            if ($resp && !empty($resp['email'])) {
+                try {
+                    (new EmailService())->sendRecargaConfirmada(
+                        $resp['email'],
+                        (float)$cobranca['valor'],
+                        (float)$transacao['saldo_resultante'],
+                        $resp['nome'] ?? ''
+                    );
+                } catch (\Throwable $e) {
+                    error_log('[EMAIL_RECARGA_ERROR] ' . $e->getMessage());
+                }
             }
 
             $this->json([

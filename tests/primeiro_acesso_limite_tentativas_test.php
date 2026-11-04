@@ -13,6 +13,7 @@ require_once __DIR__ . '/../app/core/Model.php';
 require_once __DIR__ . '/../app/core/Session.php';
 require_once __DIR__ . '/../app/core/Auth.php';
 require_once __DIR__ . '/../app/models/Responsavel.php';
+require_once __DIR__ . '/../app/services/EmailService.php';
 require_once __DIR__ . '/../app/services/WhatsAppService.php';
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 
@@ -50,9 +51,18 @@ Session::remove('_pa_expira_em');
 Session::remove('_pa_tentativas');
 Session::remove('_pa_ultimo_envio');
 
-// Executa solicitação inicial
+// Executa solicitação inicial com CPF
 ob_start();
 $authController->primeiroAcessoSolicitar();
+ob_end_clean();
+
+// Executa etapa 2: Informa o e-mail para envio do código
+$_POST = [
+    'csrf_token' => $csrfToken,
+    'email'      => 'responsavel.teste@escola.com.br'
+];
+ob_start();
+$authController->primeiroAcessoEnviarCodigo();
 ob_end_clean();
 
 $codigoInicial = Session::get('_pa_codigo');
@@ -81,7 +91,7 @@ ob_start();
 $authController->primeiroAcessoCodigo();
 $htmlCodigo = ob_get_clean();
 $assert3 = str_contains($htmlCodigo, 'Código Bloqueado') 
-        && str_contains($htmlCodigo, 'Solicitar Novo Código por WhatsApp');
+        && str_contains($htmlCodigo, 'Solicitar Novo Código por E-mail');
 echo "3. Tela de confirmação exibe botão de solicitar novo código sem chutar para login: " . ($assert3 ? "PASS" : "FAIL") . PHP_EOL;
 
 // 4. Tentativa de validar código enquanto bloqueado é rejeitada

@@ -48,7 +48,7 @@ return [
         'horario_fechamento_vespertino' => '16:00',
     ],
 
-    // Integrações Externas (Gateway Pix e WhatsApp)
+    // Integrações Externas (Gateway Pix, E-mail e WhatsApp)
     'integracoes' => [
         'pix' => [
             'provedor'         => 'mock', // 'efi', 'mercado_pago', 'mock'
@@ -57,6 +57,16 @@ return [
             'chave_pix'        => 'financeiro@colegiomonteirolobato.com.br',
             'certificado_path' => '',
             'webhook_secret'   => 'SEU_WEBHOOK_SECRET',
+        ],
+        'email' => [
+            'provedor'         => 'smtp', // 'smtp', 'mail', 'mock'
+            'smtp_host'        => 'mail.cantinawebmonteirolobato.com.br',
+            'smtp_port'        => 587,
+            'smtp_user'        => 'contato@cantinawebmonteirolobato.com.br',
+            'smtp_pass'        => 'SUA_SENHA_DE_EMAIL_HOSTNET',
+            'smtp_secure'      => 'tls', // 'tls', 'ssl' ou ''
+            'from_email'       => 'contato@cantinawebmonteirolobato.com.br',
+            'from_name'        => 'Cantina Web — Colégio Monteiro Lobato',
         ],
         'whatsapp' => [
             'provedor'         => 'mock', // 'z-api', 'evolution', 'mock'

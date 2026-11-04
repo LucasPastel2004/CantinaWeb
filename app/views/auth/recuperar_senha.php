@@ -1,7 +1,7 @@
 <?php
 /**
  * Cantina Web — Colégio Monteiro Lobato
- * View: Recuperação de Senha - Solicitação de Código via WhatsApp
+ * View: Recuperação de Senha - Solicitação de Código via E-mail
  * 
  * Conforme docs/DESIGN.md e docs/FSD.md
  */
@@ -29,7 +29,7 @@ $baseUrl = $baseUrl ?? '';
     </div>
 
     <button type="submit" class="btn btn-enterprise btn-primary w-100 py-2">
-        Enviar Código de Recuperação
+        Enviar Código por E-mail
     </button>
 
     <div class="d-flex justify-content-between align-items-center mt-3">

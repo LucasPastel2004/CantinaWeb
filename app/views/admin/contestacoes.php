@@ -397,9 +397,9 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     </div>
 
                     <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" id="notificar_whatsapp_med" name="notificar_whatsapp" value="1" checked>
-                        <label class="form-check-label text-secondary" for="notificar_whatsapp_med" style="font-size: 12px;">
-                            Enviar notificação automática e advertência urgente via WhatsApp
+                        <input class="form-check-input" type="checkbox" id="notificar_email_med" name="notificar_email" value="1" checked>
+                        <label class="form-check-label text-secondary" for="notificar_email_med" style="font-size: 12px;">
+                            Enviar notificação automática e advertência urgente via E-mail
                         </label>
                     </div>
                 </div>
@@ -463,9 +463,9 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     </div>
 
                     <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" id="quitacao_whatsapp" name="notificar_whatsapp" value="1" checked>
-                        <label class="form-check-label text-secondary" for="quitacao_whatsapp" style="font-size: 12px;">
-                            Enviar mensagem de confirmação e recibo via WhatsApp
+                        <input class="form-check-input" type="checkbox" id="quitacao_email" name="notificar_email" value="1" checked>
+                        <label class="form-check-label text-secondary" for="quitacao_email" style="font-size: 12px;">
+                            Enviar mensagem de confirmação e recibo via E-mail
                         </label>
                     </div>
                 </div>
@@ -523,9 +523,9 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     </div>
 
                     <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" id="desbloqueio_whatsapp" name="notificar_whatsapp" value="1" checked>
-                        <label class="form-check-label text-secondary" for="desbloqueio_whatsapp" style="font-size: 12px;">
-                            Enviar notificação de liberação e confirmação via WhatsApp para o responsável
+                        <input class="form-check-input" type="checkbox" id="desbloqueio_email" name="notificar_email" value="1" checked>
+                        <label class="form-check-label text-secondary" for="desbloqueio_email" style="font-size: 12px;">
+                            Enviar notificação de liberação e confirmação via E-mail para o responsável
                         </label>
                     </div>
                 </div>

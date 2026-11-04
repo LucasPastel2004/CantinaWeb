@@ -9,11 +9,17 @@
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 
 $baseUrl = $baseUrl ?? '';
+$maskedEmail = $maskedEmail ?? '';
 $mockCode = $mockCode ?? null;
 ?>
 
 <div class="auth-header-block text-center mb-3">
     <h2 class="h6 font-weight-bold text-dark mb-1">Redefinir Senha</h2>
+    <?php if (!empty($maskedEmail)): ?>
+        <div class="text-microcopy text-secondary">
+            Código enviado para <strong><?php echo htmlspecialchars($maskedEmail, ENT_QUOTES, 'UTF-8'); ?></strong>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($mockCode): ?>

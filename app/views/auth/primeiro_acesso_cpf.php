@@ -32,7 +32,7 @@ $cpfPreenchido = $cpfPreenchido ?? '';
     </div>
 
     <button type="submit" class="btn btn-enterprise btn-primary w-100 py-2">
-        Enviar Código por WhatsApp
+        Continuar
     </button>
 
     <div class="text-center mt-3">

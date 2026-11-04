@@ -53,7 +53,7 @@ $dependentes = $dependentes ?? [];
                         </span>
                     </div>
                     <div class="col-6">
-                        <span class="text-microcopy text-muted d-block">WhatsApp Transacional</span>
+                        <span class="text-microcopy text-muted d-block">Telefone / Contato</span>
                         <span class="font-tabular text-dark fw-semibold"><?php echo htmlspecialchars($responsavel['whatsapp'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></span>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ $dependentes = $dependentes ?? [];
                 <div class="p-3 bg-light rounded-2 border">
                     <span class="text-microcopy text-dark d-block mb-1 fw-bold">Dicas de Segurança</span>
                     <ul class="text-secondary text-microcopy mb-0 ps-3">
-                        <li>Não forneça sua senha ou códigos recebidos no WhatsApp para outras pessoas.</li>
+                        <li>Não forneça sua senha ou códigos recebidos por e-mail para outras pessoas.</li>
                         <li>Ao utilizar computadores compartilhados, lembre-se de clicar em <strong>"Sair"</strong> ao concluir seus pedidos.</li>
                     </ul>
                 </div>

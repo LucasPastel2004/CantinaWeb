@@ -15,6 +15,7 @@ use App\Core\Session;
 use App\Core\Auth;
 use App\Models\Usuario;
 use App\Models\Responsavel;
+use App\Services\EmailService;
 use App\Services\WhatsAppService;
 
 class AuthController extends Controller
@@ -164,7 +165,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Primeiro Acesso - Processa a verificação do CPF e dispara o código WhatsApp
+     * Primeiro Acesso - Processa a verificação do CPF e direciona para confirmação de e-mail
      */
     public function primeiroAcessoSolicitar(): void
     {
@@ -201,41 +202,110 @@ class AuthController extends Controller
             return;
         }
 
+        // Guarda estado básico na sessão e direciona para a tela de confirmação de e-mail
+        Session::set('_pa_responsavel_id', (int)$resp['id']);
+        Session::set('_pa_cpf', $cleanCpf);
+        Session::set('_pa_nome', $resp['nome']);
+        Session::set('_pa_sugestao_email', $resp['email'] ?? '');
+
+        // Se já tiver um código válido não expirado em sessão, permite ir direto ao código ou e-mail
+        $expiraEm = (int)Session::get('_pa_expira_em', 0);
+        if (Session::has('_pa_codigo') && $expiraEm > time()) {
+            $this->redirect('/primeiro-acesso/codigo');
+            return;
+        }
+
+        $this->redirect('/primeiro-acesso/email');
+    }
+
+    /**
+     * Primeiro Acesso - Etapa 2: Confirmação ou preenchimento do E-mail
+     */
+    public function primeiroAcessoEmail(): void
+    {
+        if (!Session::has('_pa_responsavel_id')) {
+            Session::setFlash('warning', 'Sessão de ativação expirada. Informe seu CPF novamente.');
+            $this->redirect('/primeiro-acesso');
+            return;
+        }
+
+        $emailSugerido = Session::get('_pa_sugestao_email', Session::get('_pa_email', ''));
+        $nomeResponsavel = Session::get('_pa_nome', '');
+
+        $this->render('auth/primeiro_acesso_email', [
+            'pageTitle'       => 'Confirmar E-mail — Primeiro Acesso',
+            'emailSugerido'   => $emailSugerido,
+            'nomeResponsavel' => $nomeResponsavel
+        ], 'auth');
+    }
+
+    /**
+     * Primeiro Acesso - Valida o e-mail, atualiza o cadastro e dispara o código de 6 dígitos
+     */
+    public function primeiroAcessoEnviarCodigo(): void
+    {
+        $dados = $this->all();
+
+        if (!Session::validateCsrfToken($dados['csrf_token'] ?? '')) {
+            Session::setFlash('danger', 'Validação CSRF expirada. Tente novamente.');
+            $this->redirect('/primeiro-acesso/email');
+            return;
+        }
+
+        if (!Session::has('_pa_responsavel_id')) {
+            Session::setFlash('warning', 'Sessão de ativação expirada. Informe seu CPF novamente.');
+            $this->redirect('/primeiro-acesso');
+            return;
+        }
+
+        $email = trim($dados['email'] ?? '');
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Session::setFlash('warning', 'Por favor, informe um endereço de e-mail válido.');
+            $this->redirect('/primeiro-acesso/email');
+            return;
+        }
+
         // Cooldown de segurança contra disparos em massa (mínimo 60s entre envios)
         $ultimoEnvio = (int)Session::get('_pa_ultimo_envio', 0);
         if ($ultimoEnvio > 0 && (time() - $ultimoEnvio) < 60) {
             $espera = 60 - (time() - $ultimoEnvio);
             if (Session::has('_pa_codigo')) {
-                Session::setFlash('warning', "Já enviamos um código para seu WhatsApp. Você pode digitá-lo abaixo ou aguardar {$espera} segundo(s) para solicitar outro.");
+                Session::setFlash('warning', "Já enviamos um código para seu e-mail. Você pode digitá-lo abaixo ou aguardar {$espera} segundo(s) para solicitar outro.");
                 $this->redirect('/primeiro-acesso/codigo');
             } else {
                 Session::setFlash('warning', "Por motivos de segurança, aguarde {$espera} segundo(s) antes de solicitar um novo código.");
-                $this->redirect('/primeiro-acesso?cpf=' . urlencode($cpf));
+                $this->redirect('/primeiro-acesso/email');
             }
             return;
         }
 
-        // Gera código de 6 dígitos e envia via WhatsApp
-        $codigo = WhatsAppService::generateCode();
-        $whatsAppService = new WhatsAppService();
-        $whatsAppService->sendFirstAccessCode($resp['whatsapp'], $codigo, $resp['nome']);
+        $respId = (int)Session::get('_pa_responsavel_id');
+        $nome = Session::get('_pa_nome', '');
+
+        // Atualiza o e-mail no cadastro do responsável
+        $respModel = new Responsavel();
+        $respModel->updateEmail($respId, $email);
+
+        // Gera código de 6 dígitos e despacha via EmailService
+        $codigo = EmailService::generateCode();
+        $emailService = new EmailService();
+        $emailService->sendFirstAccessCode($email, $codigo, $nome);
 
         // Guarda estado seguro na sessão
-        Session::set('_pa_responsavel_id', (int)$resp['id']);
-        Session::set('_pa_cpf', $cleanCpf);
-        Session::set('_pa_nome', $resp['nome']);
-        Session::set('_pa_whatsapp', $resp['whatsapp']);
+        Session::set('_pa_email', $email);
         Session::set('_pa_codigo', $codigo);
         Session::set('_pa_expira_em', time() + 900); // 15 minutos
         Session::set('_pa_tentativas', 0);
         Session::set('_pa_ultimo_envio', time());
+        Session::set('_pa_codigo_bloqueado', false);
 
-        Session::setFlash('success', 'Código de verificação enviado para o seu WhatsApp cadastrado!');
+        $maskedEmail = EmailService::maskEmail($email);
+        Session::setFlash('success', "Código de verificação enviado para o seu e-mail ({$maskedEmail})!");
         $this->redirect('/primeiro-acesso/codigo');
     }
 
     /**
-     * Primeiro Acesso - Etapa 2: Digitação do código de 6 dígitos
+     * Primeiro Acesso - Etapa 3: Digitação do código de 6 dígitos
      */
     public function primeiroAcessoCodigo(): void
     {
@@ -245,10 +315,15 @@ class AuthController extends Controller
             return;
         }
 
+        // Se ainda não gerou código e não está bloqueado (ex: usuário tentou acessar direto a rota do código sem informar email)
+        if (!Session::has('_pa_codigo') && !Session::get('_pa_codigo_bloqueado', false)) {
+            $this->redirect('/primeiro-acesso/email');
+            return;
+        }
+
         $codigoBloqueado = (bool)Session::get('_pa_codigo_bloqueado', false);
-        $whatsapp = Session::get('_pa_whatsapp', '');
-        // Mascara o número do WhatsApp para privacidade (ex: (11) 9****-1234)
-        $maskedPhone = self::maskPhone($whatsapp);
+        $email = Session::get('_pa_email', '');
+        $maskedEmail = EmailService::maskEmail($email);
 
         $configFile = __DIR__ . '/../../config/config.php';
         $config = file_exists($configFile) ? require $configFile : [];
@@ -257,7 +332,7 @@ class AuthController extends Controller
 
         $this->render('auth/primeiro_acesso_codigo', [
             'pageTitle'       => 'Confirmação de Código — Cantina Web',
-            'maskedPhone'     => $maskedPhone,
+            'maskedEmail'     => $maskedEmail,
             'mockCode'        => $mockCode,
             'codigoBloqueado' => $codigoBloqueado
         ], 'auth');
@@ -346,7 +421,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Primeiro Acesso - Reenvia código WhatsApp
+     * Primeiro Acesso - Reenvia código por E-mail
      */
     public function primeiroAcessoReenviar(): void
     {
@@ -366,11 +441,16 @@ class AuthController extends Controller
             return;
         }
 
-        $whatsapp = Session::get('_pa_whatsapp', '');
+        $email = Session::get('_pa_email', '');
         $nome = Session::get('_pa_nome', '');
 
-        $novoCodigo = WhatsAppService::generateCode();
-        (new WhatsAppService())->sendFirstAccessCode($whatsapp, $novoCodigo, $nome);
+        if (empty($email)) {
+            $this->redirect('/primeiro-acesso/email');
+            return;
+        }
+
+        $novoCodigo = EmailService::generateCode();
+        (new EmailService())->sendFirstAccessCode($email, $novoCodigo, $nome);
 
         Session::remove('_pa_codigo_bloqueado');
         Session::set('_pa_codigo', $novoCodigo);
@@ -378,7 +458,8 @@ class AuthController extends Controller
         Session::set('_pa_tentativas', 0);
         Session::set('_pa_ultimo_envio', time());
 
-        Session::setFlash('success', 'Novo código de segurança enviado para o seu WhatsApp!');
+        $masked = EmailService::maskEmail($email);
+        Session::setFlash('success', "Novo código de segurança enviado para o seu e-mail ({$masked})!");
         $this->redirect('/primeiro-acesso/codigo');
     }
 
@@ -459,7 +540,8 @@ class AuthController extends Controller
         Session::remove('_pa_responsavel_id');
         Session::remove('_pa_cpf');
         Session::remove('_pa_nome');
-        Session::remove('_pa_whatsapp');
+        Session::remove('_pa_email');
+        Session::remove('_pa_sugestao_email');
         Session::remove('_pa_codigo');
         Session::remove('_pa_expira_em');
         Session::remove('_pa_verificado');
@@ -483,7 +565,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Recuperação de Senha - Solicita código via WhatsApp
+     * Recuperação de Senha - Solicita código via E-mail
      */
     public function recuperarSenhaSolicitar(): void
     {
@@ -509,7 +591,7 @@ class AuthController extends Controller
 
         // Mensagem genérica para não permitir enumeração de dados
         if (!$resp) {
-            Session::setFlash('info', 'Se o CPF estiver cadastrado, um código de verificação será enviado para o WhatsApp associado.');
+            Session::setFlash('info', 'Se o CPF estiver cadastrado, um código de verificação será enviado para o e-mail associado.');
             $this->redirect('/login?tab=familia');
             return;
         }
@@ -530,7 +612,7 @@ class AuthController extends Controller
         if ($ultimoEnvio > 0 && (time() - $ultimoEnvio) < 60) {
             $espera = 60 - (time() - $ultimoEnvio);
             if (Session::has('_rec_codigo')) {
-                Session::setFlash('warning', "Já enviamos um código para seu WhatsApp. Você pode digitá-lo abaixo ou aguardar {$espera} segundo(s) para nova solicitação.");
+                Session::setFlash('warning', "Já enviamos um código para seu e-mail. Você pode digitá-lo abaixo ou aguardar {$espera} segundo(s) para nova solicitação.");
                 $this->redirect('/recuperar-senha/codigo');
             } else {
                 Session::setFlash('warning', "Por motivos de segurança, aguarde {$espera} segundo(s) antes de solicitar um novo código de recuperação.");
@@ -539,17 +621,20 @@ class AuthController extends Controller
             return;
         }
 
-        $codigo = WhatsAppService::generateCode();
-        (new WhatsAppService())->sendPasswordResetCode($resp['whatsapp'], $codigo, $resp['nome']);
+        $emailDestino = $resp['email'] ?? '';
+        $codigo = EmailService::generateCode();
+        (new EmailService())->sendPasswordResetCode($emailDestino, $codigo, $resp['nome']);
 
         Session::set('_rec_responsavel_id', (int)$resp['id']);
         Session::set('_rec_cpf', $cleanCpf);
+        Session::set('_rec_email', $emailDestino);
         Session::set('_rec_codigo', $codigo);
         Session::set('_rec_expira_em', time() + 900);
         Session::set('_rec_tentativas', 0);
         Session::set('_rec_ultimo_envio', time());
 
-        Session::setFlash('success', 'Código de recuperação enviado para o WhatsApp cadastrado.');
+        $masked = EmailService::maskEmail($emailDestino);
+        Session::setFlash('success', "Código de recuperação enviado para o e-mail cadastrado ({$masked}).");
         $this->redirect('/recuperar-senha/codigo');
     }
 
@@ -570,6 +655,7 @@ class AuthController extends Controller
             $cleanCpf = Session::get('_rec_cpf', '');
             Session::remove('_rec_responsavel_id');
             Session::remove('_rec_cpf');
+            Session::remove('_rec_email');
             Session::remove('_rec_codigo');
             Session::remove('_rec_expira_em');
             Session::remove('_rec_tentativas');
@@ -583,10 +669,12 @@ class AuthController extends Controller
         $config = file_exists($configFile) ? require $configFile : [];
         $isDev = ($config['app']['env'] ?? '') === 'development' || ($config['app']['debug'] ?? false);
         $mockCode = $isDev ? Session::get('_rec_codigo') : null;
+        $maskedEmail = EmailService::maskEmail(Session::get('_rec_email', $resp['email'] ?? ''));
 
         $this->render('auth/recuperar_senha_codigo', [
-            'pageTitle' => 'Redefinir Senha — Cantina Web',
-            'mockCode'  => $mockCode
+            'pageTitle'   => 'Redefinir Senha — Cantina Web',
+            'maskedEmail' => $maskedEmail,
+            'mockCode'    => $mockCode
         ], 'auth');
     }
 
@@ -704,6 +792,7 @@ class AuthController extends Controller
 
         Session::remove('_rec_responsavel_id');
         Session::remove('_rec_cpf');
+        Session::remove('_rec_email');
         Session::remove('_rec_codigo');
         Session::remove('_rec_expira_em');
         Session::remove('_rec_tentativas');

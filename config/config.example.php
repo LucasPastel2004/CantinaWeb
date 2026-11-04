@@ -54,7 +54,7 @@ return [
             'provedor'         => 'mock', // 'efi', 'mercado_pago', 'mock'
             'client_id'        => 'SEU_CLIENT_ID_PIX',
             'client_secret'    => 'SEU_CLIENT_SECRET_PIX',
-            'chave_pix'        => 'financeiro@colegiomonteirolobato.com.br',
+            'chave_pix'        => 'colegioml@hotmail.com',
             'certificado_path' => '',
             'webhook_secret'   => 'SEU_WEBHOOK_SECRET',
         ],

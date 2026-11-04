@@ -85,7 +85,7 @@ class PixService
 
         // Obtém chave Pix institucional e dados do recebedor
         $configPix = self::getConfig();
-        $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'financeiro@colegiomonteirolobato.com.br';
+        $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'colegioml@hotmail.com';
         $nomeRecebedor = 'COLEGIO MONTEIRO LOBATO';
         $cidadeRecebedor = 'SAO PAULO';
 
@@ -177,7 +177,7 @@ class PixService
 
         // Obtém chave Pix institucional e dados do recebedor
         $configPix = self::getConfig();
-        $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'financeiro@colegiomonteirolobato.com.br';
+        $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'colegioml@hotmail.com';
         $nomeRecebedor = 'COLEGIO MONTEIRO LOBATO';
         $cidadeRecebedor = 'SAO PAULO';
 
@@ -434,7 +434,7 @@ class PixService
         // Reconstrói copia_e_cola e qr_code_svg defensivamente caso ausentes em cache legado
         if (empty($cobranca['copia_e_cola']) || empty($cobranca['qr_code_svg'])) {
             $configPix = self::getConfig();
-            $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'financeiro@colegiomonteirolobato.com.br';
+            $chavePix = !empty($configPix['chave_pix']) ? $configPix['chave_pix'] : 'colegioml@hotmail.com';
             $payload = self::montarPayloadBrCode($chavePix, 'COLEGIO MONTEIRO LOBATO', 'SAO PAULO', (float)$cobranca['valor'], $txid, $cobranca['descricao'] ?? '');
             $cobranca['copia_e_cola'] = $payload;
             $cobranca['qr_code_svg'] = QrCodeService::svg($payload, 260);

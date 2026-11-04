@@ -25,6 +25,8 @@ use App\Models\Aluno;
 use App\Models\Responsavel;
 use App\Models\TransacaoCarteira;
 use App\Models\CalendarioEscolar;
+use App\Models\SessaoCaixa;
+use App\Models\Pedido;
 use App\Services\SpreadsheetService;
 use App\Services\PdfService;
 use App\Services\WhatsAppService;
@@ -37,13 +39,82 @@ class AdminController extends Controller
     public function index(): void
     {
         $usuario = Auth::user();
+        $hoje = date('Y-m-d');
+
+        // 1. Turno ativo e status do caixa
+        $turnoAtivo = SessaoCaixa::inferirTurnoAtual();
+        $sessaoCaixa = SessaoCaixa::obterSessaoAberta($turnoAtivo);
+        $statusCaixa = $sessaoCaixa ? 'Aberto' : 'Fechado';
+
+        // 2. Horários e status do corte do turno
+        $horarioCorte = ($turnoAtivo === SessaoCaixa::TURNO_VESPERTINO) ? '13:30' : '08:00';
+        $horarioCaixa = ($turnoAtivo === SessaoCaixa::TURNO_VESPERTINO) ? 'Fechamento 16:00' : 'Fechamento 11:00';
+        $statusCorte = Pedido::obterStatusCorte($hoje, $turnoAtivo);
+
+        // 3. Encomendas do turno
+        $corteHoje = Pedido::consolidarCorte($hoje, $turnoAtivo);
+        $totalEncomendasTurno = (int)($corteHoje['total_pecas'] ?? 0);
+        $totalValorEstimadoCorte = (float)($corteHoje['total_valor_estimado'] ?? 0.0);
+
+        // 4. Quantidade de alunos ativos
+        $totalAlunos = 0;
+        try {
+            $pdo = \Database::getInstance();
+            $totalAlunos = (int)$pdo->query("SELECT COUNT(*) FROM alunos WHERE deleted_at IS NULL AND ativo = 1")->fetchColumn();
+        } catch (\Throwable $e) {
+            $totalAlunos = 0;
+        }
+
+        // 5. Faixa de métricas de alta densidade
+        $statItems = [
+            [
+                'label'   => 'TURNO VIGENTE',
+                'value'   => ucfirst($turnoAtivo),
+                'subtext' => 'Corte rígido às ' . $horarioCorte,
+                'status'  => 'primary'
+            ],
+            [
+                'label'   => 'SESSÃO DE CAIXA',
+                'value'   => $statusCaixa,
+                'subtext' => $sessaoCaixa ? 'Operador: ' . ($sessaoCaixa['operador_nome'] ?? 'Ativo') : $horarioCaixa,
+                'status'  => ($statusCaixa === 'Aberto' ? 'success' : 'secondary')
+            ],
+            [
+                'label'   => 'STATUS DO CORTE',
+                'value'   => $statusCorte['rotulo'] ?? 'Corte',
+                'subtext' => !empty($statusCorte['minutos_restantes']) ? ($statusCorte['minutos_restantes'] . ' min restantes') : ('Limite ' . $horarioCorte),
+                'status'  => (!empty($statusCorte['pode_alterar']) ? 'warning' : 'secondary')
+            ],
+            [
+                'label'   => 'ENCOMENDAS DO TURNO',
+                'value'   => $totalEncomendasTurno . ' un',
+                'subtext' => 'R$ ' . number_format($totalValorEstimadoCorte, 2, ',', '.'),
+                'status'  => 'primary'
+            ],
+            [
+                'label'   => 'BASE DE ALUNOS',
+                'value'   => (string)$totalAlunos,
+                'subtext' => 'Unidade física única',
+                'status'  => 'secondary'
+            ]
+        ];
 
         $this->render('admin/index', [
-            'pageTitle'   => 'Painel da Cantina — Visão Geral',
-            'pageHeading' => 'Painel da Cantina',
-            'activeMenu'  => 'visao_geral',
-            'usuario'     => $usuario,
-            'user'        => $usuario
+            'pageTitle'            => 'Painel da Cantina — Visão Geral',
+            'pageHeading'          => 'Painel da Cantina',
+            'activeMenu'           => 'visao_geral',
+            'usuario'              => $usuario,
+            'user'                 => $usuario,
+            'turnoAtivo'           => $turnoAtivo,
+            'sessaoCaixa'          => $sessaoCaixa,
+            'statusCaixa'          => $statusCaixa,
+            'statusCorte'          => $statusCorte,
+            'horarioCorte'         => $horarioCorte,
+            'horarioCaixa'         => $horarioCaixa,
+            'totalEncomendasTurno' => $totalEncomendasTurno,
+            'totalValorCorte'      => $totalValorEstimadoCorte,
+            'totalAlunos'          => $totalAlunos,
+            'statItems'            => $statItems
         ], 'admin');
     }
 

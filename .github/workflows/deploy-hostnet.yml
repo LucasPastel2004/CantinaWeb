@@ -2,12 +2,6 @@ name: Deploy Hostnet
 
 on:
   workflow_dispatch:
-    inputs:
-      executar_seeder:
-        description: 'Executar Seeder para popular banco de dados (database/seed_outubro_positivo.php)'
-        required: false
-        type: boolean
-        default: true
 
 jobs:
   deploy:
@@ -53,9 +47,8 @@ jobs:
       - name: Executar migrações do banco de dados na Hostnet
         run: |
           ssh -i ~/.ssh/hostnet_deploy -o IdentitiesOnly=yes -p ${{ secrets.HOSTNET_PORT }} \
-            ${{ secrets.HOSTNET_USER }}@${{ secrets.HOSTNET_HOST }} "bash -s -- '${{ secrets.HOSTNET_PATH }}' '${{ github.event.inputs.executar_seeder }}'" << 'EOF'
+            ${{ secrets.HOSTNET_USER }}@${{ secrets.HOSTNET_HOST }} "bash -s -- '${{ secrets.HOSTNET_PATH }}'" << 'EOF'
           RAW_PATH="$1"
-          RUN_SEEDER="$2"
           echo "======================================================"
           echo "Resolvendo caminho e interpretador PHP 8.2+ na Hostnet..."
           echo "======================================================"
@@ -174,21 +167,6 @@ jobs:
           "$PHP_BIN" "$TARGET_PATH/database/runner.php"
           echo ""
           "$PHP_BIN" "$TARGET_PATH/database/runner.php" --status
-
-          if [ "$RUN_SEEDER" = "true" ] || [ -z "$RUN_SEEDER" ]; then
-            echo ""
-            echo "======================================================"
-            echo "Executando Seeder de Outubro Positivo..."
-            echo "======================================================"
-            if [ -f "$TARGET_PATH/database/seed_outubro_positivo.php" ]; then
-              "$PHP_BIN" "$TARGET_PATH/database/seed_outubro_positivo.php"
-            else
-              echo "Aviso: database/seed_outubro_positivo.php não encontrado."
-            fi
-          else
-            echo ""
-            echo "Execução de seeder ignorada (RUN_SEEDER=$RUN_SEEDER)."
-          fi
           EOF
 
       - name: Limpar OPcache da Hostnet via Web

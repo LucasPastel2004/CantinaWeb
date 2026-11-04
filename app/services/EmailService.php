@@ -258,9 +258,11 @@ HTML;
         // Carrega configurações da aplicação
         $configFile = __DIR__ . '/../../config/config.php';
         $config = file_exists($configFile) ? require $configFile : [];
-        $emailConfig = $config['integracoes']['email'] ?? [];
+        $emailConfig = $config['integracoes']['email'] ?? $config['email'] ?? [];
+        $isDev = ($config['app']['env'] ?? '') === 'development' || ($config['app']['debug'] ?? false);
+        $defaultProvedor = $isDev ? 'mock' : 'mail';
 
-        $provedor = strtolower((string)($emailConfig['provedor'] ?? 'mock'));
+        $provedor = strtolower((string)($emailConfig['provedor'] ?? $defaultProvedor));
         $fromEmail = $emailConfig['from_email'] ?? 'contato@cantinawebmonteirolobato.com.br';
         $fromName = $emailConfig['from_name'] ?? 'Cantina Web — Colégio Monteiro Lobato';
 

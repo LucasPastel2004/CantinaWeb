@@ -1,0 +1,1 @@
+Sistema para gerenciamento de cantinas escolares, Sistema pensado para as necessidades da escola que eu trabalho. Tem algumas funções especificas ou coisas que deixei hard coded pois era o melhor para minha escola, decidi deixar open source para que caso alguém precise já tem 8ma base bem boa para começar.

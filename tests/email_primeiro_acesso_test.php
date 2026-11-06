@@ -84,8 +84,8 @@ $cpfTeste = '55566677788';
 $emailTeste = 'responsavel.novo@teste.com';
 $db = \Database::getInstance();
 
-// Reseta o responsável para pendente
-$db->query("UPDATE responsaveis SET email = 'antigo@teste.com', senha_hash = '', termos_aceitos_em = NULL WHERE cpf = '{$cpfTeste}'");
+// Reseta o responsável para pendente com e-mail sintético (simulando a base real da escola)
+$db->query("UPDATE responsaveis SET email = '{$cpfTeste}@colegiomonteirolobato.com.br', senha_hash = '', termos_aceitos_em = NULL WHERE cpf = '{$cpfTeste}'");
 
 // Etapa 1: Inserção do CPF
 $_POST = [
@@ -107,7 +107,9 @@ assercao(Session::get('_pa_cpf') === $cpfTeste, "Etapa 1 aprovada: CPF higieniza
 ob_start();
 $authController->primeiroAcessoEmail();
 $htmlEmail = ob_get_clean();
-assercao(str_contains($htmlEmail, 'Confirmação de E-mail'), "Etapa 2 exibe tela de 'Confirmação de E-mail'", $passed, $failed);
+assercao(str_contains($htmlEmail, 'Informe seu E-mail'), "Etapa 2 exibe tela de 'Informe seu E-mail'", $passed, $failed);
+assercao(!str_contains($htmlEmail, '@colegiomonteirolobato.com.br'), "Etapa 2 BLINDADA: e-mail sintético da escola NÃO é exibido no campo", $passed, $failed);
+assercao(str_contains($htmlEmail, 'value=""'), "Etapa 2 inicia com o campo de e-mail completamente vazio para o pai digitar", $passed, $failed);
 assercao(str_contains($htmlEmail, 'Enviar Código por E-mail'), "Etapa 2 exibe botão 'Enviar Código por E-mail'", $passed, $failed);
 
 // Submissão do novo E-mail

@@ -1,7 +1,7 @@
 <?php
 /**
  * Cantina Web — Colégio Monteiro Lobato
- * View: Primeiro Acesso - Etapa 2: Inserção/Confirmação de E-mail
+ * View: Primeiro Acesso - Etapa 2: Inserção do E-mail Pessoal
  * 
  * Conforme docs/DESIGN.md e docs/FSD.md
  */
@@ -15,9 +15,9 @@ $primeiroNome = !empty($nomeResponsavel) ? explode(' ', trim($nomeResponsavel))[
 ?>
 
 <div class="auth-header-block text-center mb-3">
-    <h2 class="h6 font-weight-bold text-dark mb-1">Confirmação de E-mail</h2>
+    <h2 class="h6 font-weight-bold text-dark mb-1">Informe seu E-mail</h2>
     <div class="text-microcopy text-secondary">
-        Olá, <?php echo htmlspecialchars($primeiroNome, ENT_QUOTES, 'UTF-8'); ?>! Confirme o seu e-mail para receber o código de segurança.
+        Olá, <?php echo htmlspecialchars($primeiroNome, ENT_QUOTES, 'UTF-8'); ?>! Digite seu e-mail pessoal para receber o código de ativação.
     </div>
 </div>
 
@@ -25,17 +25,17 @@ $primeiroNome = !empty($nomeResponsavel) ? explode(' ', trim($nomeResponsavel))[
     <?php echo $csrf_field ?? ''; ?>
 
     <div class="mb-3">
-        <label for="email" class="form-label-enterprise">Seu E-mail</label>
+        <label for="email" class="form-label-enterprise">E-mail Pessoal</label>
         <input type="email" 
                class="form-control form-control-enterprise" 
                id="email" 
                name="email" 
                value="<?php echo htmlspecialchars($emailSugerido, ENT_QUOTES, 'UTF-8'); ?>" 
-               placeholder="seu.email@exemplo.com"
+               placeholder="ex: seu.email@gmail.com"
                required 
                autofocus>
         <div class="text-microcopy text-muted mt-1">
-            Enviaremos um código numérico de 6 dígitos com validade de 15 minutos para este e-mail.
+            Enviaremos um código numérico de 6 dígitos para o seu e-mail.
         </div>
     </div>
 

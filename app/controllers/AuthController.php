@@ -202,11 +202,13 @@ class AuthController extends Controller
             return;
         }
 
-        // Guarda estado básico na sessão e direciona para a tela de confirmação de e-mail
+        // Guarda estado básico na sessão e direciona para a tela de preenchimento de e-mail
         Session::set('_pa_responsavel_id', (int)$resp['id']);
         Session::set('_pa_cpf', $cleanCpf);
         Session::set('_pa_nome', $resp['nome']);
-        Session::set('_pa_sugestao_email', $resp['email'] ?? '');
+        // Limpa e-mails anteriores para que o campo venha sempre limpo para o responsável digitar
+        Session::remove('_pa_sugestao_email');
+        Session::remove('_pa_email_digitado');
 
         // Se já tiver um código válido não expirado em sessão, permite ir direto ao código ou e-mail
         $expiraEm = (int)Session::get('_pa_expira_em', 0);
@@ -229,11 +231,15 @@ class AuthController extends Controller
             return;
         }
 
-        $emailSugerido = Session::get('_pa_sugestao_email', Session::get('_pa_email', ''));
+        $emailSugerido = (string)Session::get('_pa_email_digitado', '');
+        // Garantia de blindagem: nunca exibir e-mails sintéticos da escola no campo
+        if (str_ends_with(strtolower($emailSugerido), '@colegiomonteirolobato.com.br') || preg_match('/^\d{11}@/', $emailSugerido)) {
+            $emailSugerido = '';
+        }
         $nomeResponsavel = Session::get('_pa_nome', '');
 
         $this->render('auth/primeiro_acesso_email', [
-            'pageTitle'       => 'Confirmar E-mail — Primeiro Acesso',
+            'pageTitle'       => 'Informe seu E-mail — Primeiro Acesso',
             'emailSugerido'   => $emailSugerido,
             'nomeResponsavel' => $nomeResponsavel
         ], 'auth');
@@ -259,6 +265,8 @@ class AuthController extends Controller
         }
 
         $email = trim($dados['email'] ?? '');
+        Session::set('_pa_email_digitado', $email);
+
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Session::setFlash('warning', 'Por favor, informe um endereço de e-mail válido.');
             $this->redirect('/primeiro-acesso/email');

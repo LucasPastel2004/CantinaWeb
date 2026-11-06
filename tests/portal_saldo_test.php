@@ -6,19 +6,35 @@
 
 define('CANTINA_SISTEMA', true);
 
+// Registra o Autoloader PSR-4 nativo para App\
+spl_autoload_register(function (string $class): void {
+    $prefix = 'App\\';
+    $baseDir = __DIR__ . '/../app/';
+    $len = strlen($prefix);
+
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+
+    $relativeClass = substr($class, $len);
+    $parts = explode('\\', $relativeClass);
+    $className = array_pop($parts);
+    $subDir = strtolower(implode('/', $parts));
+    $file = $baseDir . ($subDir !== '' ? $subDir . '/' : '') . $className . '.php';
+
+    if (file_exists($file)) {
+        require_once $file;
+        return;
+    }
+
+    $fallbackFile = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+    if (file_exists($fallbackFile)) {
+        require_once $fallbackFile;
+    }
+});
+
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../app/core/Session.php';
-require_once __DIR__ . '/../app/core/Auth.php';
-require_once __DIR__ . '/../app/core/Controller.php';
-require_once __DIR__ . '/../app/core/Model.php';
-require_once __DIR__ . '/../app/models/Responsavel.php';
-require_once __DIR__ . '/../app/models/Aluno.php';
-require_once __DIR__ . '/../app/models/RestricaoAlimentar.php';
-require_once __DIR__ . '/../app/models/Configuracao.php';
-require_once __DIR__ . '/../app/models/TransacaoCarteira.php';
-require_once __DIR__ . '/../app/controllers/PortalController.php';
-require_once __DIR__ . '/../app/controllers/CarteiraController.php';
 
 function assertCondition(bool $cond, string $message, &$pass, &$fail): void {
     if ($cond) {

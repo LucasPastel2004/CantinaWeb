@@ -462,12 +462,37 @@ class PortalController extends Controller
         $dataInicio  = $this->input('data_inicio', '');
         $dataFim     = $this->input('data_fim', '');
 
-        $pedidos = Pedido::listarPorResponsavel(
-            $respId, 
-            $alunoFiltro > 0 ? $alunoFiltro : null, 
-            !empty($dataInicio) ? $dataInicio : null, 
-            !empty($dataFim) ? $dataFim : null
-        );
+        // Carga sob demanda: inicia vazia por padrão, exibe todos ou filtrados ao clicar em Filtrar
+        $filtrar        = (bool)($this->input('filtrar', false) || isset($_GET['filtrar']));
+        $jaFiltrado     = $filtrar || ($alunoFiltro > 0) || !empty($dataInicio) || !empty($dataFim) || isset($_GET['pagina']);
+        $paginaAtual    = max(1, (int)$this->input('pagina', 1));
+        $itensPorPagina = 20;
+
+        if ($jaFiltrado) {
+            $totalPedidos = Pedido::contarPorResponsavel(
+                $respId, 
+                $alunoFiltro > 0 ? $alunoFiltro : null, 
+                !empty($dataInicio) ? $dataInicio : null, 
+                !empty($dataFim) ? $dataFim : null
+            );
+            $totalPaginas = max(1, (int)ceil($totalPedidos / $itensPorPagina));
+            if ($paginaAtual > $totalPaginas) {
+                $paginaAtual = $totalPaginas;
+            }
+            $offset = ($paginaAtual - 1) * $itensPorPagina;
+            $pedidos = Pedido::listarPorResponsavel(
+                $respId, 
+                $alunoFiltro > 0 ? $alunoFiltro : null, 
+                !empty($dataInicio) ? $dataInicio : null, 
+                !empty($dataFim) ? $dataFim : null,
+                $itensPorPagina,
+                $offset
+            );
+        } else {
+            $totalPedidos = 0;
+            $totalPaginas = 1;
+            $pedidos = [];
+        }
 
         $this->render('portal/meus_pedidos', [
             'pageTitle'       => 'Meus Pedidos — Portal da Família',
@@ -483,6 +508,11 @@ class PortalController extends Controller
             'dataInicio'      => $dataInicio,
             'dataFim'         => $dataFim,
             'pedidos'         => $pedidos,
+            'jaFiltrado'      => $jaFiltrado,
+            'paginaAtual'     => $paginaAtual,
+            'totalPaginas'    => $totalPaginas,
+            'totalPedidos'    => $totalPedidos,
+            'itensPorPagina'  => $itensPorPagina,
         ], 'portal');
     }
 

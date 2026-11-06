@@ -53,10 +53,23 @@ class CarteiraController extends Controller
             'data_fim'       => !empty($_GET['data_fim']) ? trim($_GET['data_fim']) : null,
         ];
 
-        $pagina = max(1, (int)($_GET['pagina'] ?? 1));
-        $porPagina = 15; // Densidade corporativa calibrada
+        // Carga sob demanda: inicia vazia por padrão, exibe todos ou filtrados ao clicar em Filtrar
+        $filtrar    = (bool)($this->input('filtrar', false) || isset($_GET['filtrar']));
+        $jaFiltrado = $filtrar || !empty($filtros['aluno_id']) || !empty($filtros['tipo_transacao']) || !empty($filtros['data_inicio']) || !empty($filtros['data_fim']) || isset($_GET['pagina']);
+        $pagina     = max(1, (int)($_GET['pagina'] ?? 1));
+        $porPagina  = 20; // Máximo 20 itens por página conforme padrão do sistema
 
-        $extrato = TransacaoCarteira::obterExtrato($responsavelId, $filtros, $pagina, $porPagina);
+        if ($jaFiltrado) {
+            $extrato = TransacaoCarteira::obterExtrato($responsavelId, $filtros, $pagina, $porPagina);
+        } else {
+            $extrato = [
+                'itens'         => [],
+                'total'         => 0,
+                'pagina'        => 1,
+                'por_pagina'    => $porPagina,
+                'total_paginas' => 1
+            ];
+        }
 
         // Cobrança Pix ativa pendente (restaura no F5 se ainda válida)
         $pixAtivo = PixService::obterCobrancaPendenteResponsavel($responsavelId);
@@ -77,6 +90,8 @@ class CarteiraController extends Controller
             'extrato'         => $extrato,
             'filtros'         => $filtros,
             'pagina'          => $pagina,
+            'porPagina'       => $porPagina,
+            'jaFiltrado'      => $jaFiltrado,
             'pixAtivo'        => $pixAtivo,
         ], 'portal');
     }

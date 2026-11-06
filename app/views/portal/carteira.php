@@ -326,6 +326,7 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
 
         <!-- Filtros de Busca -->
         <form method="GET" action="<?php echo $baseUrl; ?>/portal/carteira#secao-extrato" class="row g-2 align-items-end mb-3">
+            <input type="hidden" name="filtrar" value="1">
             <!-- Filtro por Dependente -->
             <div class="col-12 col-sm-6 col-md-3">
                 <label for="filtro-aluno" class="form-label text-secondary mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">
@@ -377,9 +378,9 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                 <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-grow-1">
                     Filtrar
                 </button>
-                <?php if (!empty($filtros['aluno_id']) || !empty($filtros['tipo_transacao']) || !empty($filtros['data_inicio']) || !empty($filtros['data_fim'])): ?>
+                <?php if (!empty($jaFiltrado)): ?>
                     <a href="<?php echo $baseUrl; ?>/portal/carteira#secao-extrato" class="btn btn-enterprise btn-primary btn-sm" title="Limpar filtros">
-                        ✕
+                        Limpar
                     </a>
                 <?php endif; ?>
             </div>
@@ -399,12 +400,22 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                     </tr>
                 </thead>
                 <tbody id="tabela-extrato-tbody">
-                    <?php if (empty($extrato['itens'])): ?>
+                    <?php if (empty($jaFiltrado)): ?>
                         <tr>
                             <td colspan="6" class="p-0 border-0">
                                 <?php 
                                     $emptyMessage = "Não há nada para mostrar aqui";
-                                    $emptySubtext = "Nenhuma movimentação registrada para os critérios informados.";
+                                    $emptyDescription = "Utilize os filtros acima ou clique em \"Filtrar\" para exibir o extrato completo de lançamentos.";
+                                    require __DIR__ . '/../partials/empty_state.php';
+                                ?>
+                            </td>
+                        </tr>
+                    <?php elseif (empty($extrato['itens'])): ?>
+                        <tr>
+                            <td colspan="6" class="p-0 border-0">
+                                <?php 
+                                    $emptyMessage = "Nenhuma movimentação encontrada";
+                                    $emptyDescription = "Nenhuma movimentação registrada para os critérios informados.";
                                     require __DIR__ . '/../partials/empty_state.php';
                                 ?>
                             </td>
@@ -424,7 +435,7 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                                     <?php echo htmlspecialchars($item['descricao'], ENT_QUOTES); ?>
                                     <?php if (!empty($item['referencia_id'])): ?>
                                         <div class="text-muted font-tabular" style="font-size: 10px;">
-                                            Ref: <?php echo htmlspecialchars(substr($item['referencia_id'], 0, 18), ENT_QUOTES); ?>
+                                             Ref: <?php echo htmlspecialchars(substr($item['referencia_id'], 0, 18), ENT_QUOTES); ?>
                                         </div>
                                     <?php endif; ?>
                                 </td>
@@ -451,19 +462,26 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
 
         <!-- Paginação -->
         <?php if (!empty($extrato['total_paginas']) && $extrato['total_paginas'] > 1): ?>
+            <?php 
+            $queryExtratoBase = '?filtrar=1'
+                . (!empty($filtros['aluno_id']) ? '&aluno_id=' . (int)$filtros['aluno_id'] : '')
+                . (!empty($filtros['tipo_transacao']) ? '&tipo_transacao=' . urlencode($filtros['tipo_transacao']) : '')
+                . (!empty($filtros['data_inicio']) ? '&data_inicio=' . urlencode($filtros['data_inicio']) : '')
+                . (!empty($filtros['data_fim']) ? '&data_fim=' . urlencode($filtros['data_fim']) : '');
+            ?>
             <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top" style="font-size: 12px;">
                 <div class="text-muted font-tabular">
-                    Página <strong><?php echo (int)$extrato['pagina']; ?></strong> de <strong><?php echo (int)$extrato['total_paginas']; ?></strong>
+                    Página <strong><?php echo (int)$extrato['pagina']; ?></strong> de <strong><?php echo (int)$extrato['total_paginas']; ?></strong> (Total: <strong><?php echo (int)($extrato['total'] ?? 0); ?></strong> transações)
                 </div>
                 <div class="d-flex gap-1">
                     <?php if ($extrato['pagina'] > 1): ?>
-                        <a href="<?php echo $baseUrl; ?>/portal/carteira?pagina=<?php echo ($extrato['pagina'] - 1); ?><?php echo !empty($filtros['aluno_id']) ? '&aluno_id='.$filtros['aluno_id'] : ''; ?><?php echo !empty($filtros['tipo_transacao']) ? '&tipo_transacao='.$filtros['tipo_transacao'] : ''; ?>#secao-extrato" class="btn btn-enterprise btn-secondary btn-sm">
+                        <a href="<?php echo $baseUrl; ?>/portal/carteira<?php echo $queryExtratoBase; ?>&pagina=<?php echo ($extrato['pagina'] - 1); ?>#secao-extrato" class="btn btn-enterprise btn-secondary btn-sm">
                             &laquo; Anterior
                         </a>
                     <?php endif; ?>
 
                     <?php if ($extrato['pagina'] < $extrato['total_paginas']): ?>
-                        <a href="<?php echo $baseUrl; ?>/portal/carteira?pagina=<?php echo ($extrato['pagina'] + 1); ?><?php echo !empty($filtros['aluno_id']) ? '&aluno_id='.$filtros['aluno_id'] : ''; ?><?php echo !empty($filtros['tipo_transacao']) ? '&tipo_transacao='.$filtros['tipo_transacao'] : ''; ?>#secao-extrato" class="btn btn-enterprise btn-secondary btn-sm">
+                        <a href="<?php echo $baseUrl; ?>/portal/carteira<?php echo $queryExtratoBase; ?>&pagina=<?php echo ($extrato['pagina'] + 1); ?>#secao-extrato" class="btn btn-enterprise btn-secondary btn-sm">
                             Próxima &raquo;
                         </a>
                     <?php endif; ?>

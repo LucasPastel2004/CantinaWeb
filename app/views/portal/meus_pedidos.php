@@ -32,6 +32,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
     <!-- Filtros de Consulta -->
     <div class="card-enterprise p-3 mb-4 bg-light border-subtle">
         <form action="<?php echo $baseUrl; ?>/portal/pedidos" method="GET" class="row g-2 align-items-end">
+            <input type="hidden" name="filtrar" value="1">
             <!-- Filtro por Dependente -->
             <div class="col-12 col-md-4">
                 <label for="filtro-aluno" class="form-label text-secondary mb-1" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">
@@ -65,12 +66,12 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
 
             <!-- Botão Filtrar -->
             <div class="col-12 col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-enterprise btn-primary btn-sm w-100">
+                <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-grow-1">
                     Filtrar
                 </button>
-                <?php if (!empty($alunoFiltro) || !empty($dataInicio) || !empty($dataFim)): ?>
+                <?php if (!empty($jaFiltrado)): ?>
                     <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">
-                        &times;
+                        Limpar
                     </a>
                 <?php endif; ?>
             </div>
@@ -79,21 +80,20 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
 
     <!-- Listagem de Pedidos em Data-Grid -->
     <div class="card-enterprise overflow-hidden mb-4">
-        <?php if (empty($pedidos)): ?>
-            <div class="p-5 text-center">
-                <div class="mb-3 text-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-inbox" viewBox="0 0 16 16">
-                        <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438zM3.809 3.563A1.5 1.5 0 0 1 4.981 3h6.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a1 1 0 0 1 .21.645v4.604a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8.833a1 1 0 0 1 .21-.646z"/>
-                    </svg>
-                </div>
-                <h4 class="fw-semibold mb-1" style="font-size: 15px; color: #475569;">Não há nada para mostrar aqui</h4>
-                <p class="text-secondary mb-3" style="font-size: 13px;">
-                    Nenhum pedido de lanche localizado para os critérios informados.
-                </p>
-                <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary btn-sm">
-                    Agendar Lanche Agora
-                </a>
-            </div>
+        <?php if (empty($jaFiltrado)): ?>
+            <?php 
+            $emptyMessage = 'Não há nada para mostrar aqui';
+            $emptyDescription = 'Utilize os filtros acima ou clique em "Filtrar" para exibir a lista completa de pedidos.';
+            require __DIR__ . '/../partials/empty_state.php'; 
+            ?>
+        <?php elseif (empty($pedidos)): ?>
+            <?php 
+            $emptyMessage = 'Nenhum pedido encontrado';
+            $emptyDescription = 'Nenhum pedido de lanche localizado para os critérios informados.';
+            $emptyActionText = 'Agendar Lanche Agora';
+            $emptyActionUrl = $baseUrl . '/portal/agendamento';
+            require __DIR__ . '/../partials/empty_state.php'; 
+            ?>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-enterprise mb-0 align-middle">
@@ -236,6 +236,33 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                     </tbody>
                 </table>
             </div>
+
+            <?php if (!empty($totalPaginas) && $totalPaginas > 1): ?>
+                <div class="d-flex justify-content-between align-items-center p-3 border-top" style="font-size: 12px;">
+                    <div class="text-muted font-tabular">
+                        Mostrando página <strong><?php echo (int)$paginaAtual; ?></strong> de <strong><?php echo (int)$totalPaginas; ?></strong> (Total: <strong><?php echo (int)$totalPedidos; ?></strong> pedidos)
+                    </div>
+                    <div class="d-flex gap-1">
+                        <?php 
+                        $queryBase = '?filtrar=1' 
+                            . (!empty($alunoFiltro) ? '&aluno=' . (int)$alunoFiltro : '')
+                            . (!empty($dataInicio) ? '&data_inicio=' . urlencode($dataInicio) : '')
+                            . (!empty($dataFim) ? '&data_fim=' . urlencode($dataFim) : '');
+                        ?>
+                        <?php if ($paginaAtual > 1): ?>
+                            <a href="<?php echo $baseUrl; ?>/portal/pedidos<?php echo $queryBase; ?>&pagina=<?php echo ($paginaAtual - 1); ?>" class="btn btn-enterprise btn-secondary btn-sm">
+                                &laquo; Anterior
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if ($paginaAtual < $totalPaginas): ?>
+                            <a href="<?php echo $baseUrl; ?>/portal/pedidos<?php echo $queryBase; ?>&pagina=<?php echo ($paginaAtual + 1); ?>" class="btn btn-enterprise btn-secondary btn-sm">
+                                Próxima &raquo;
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>

@@ -947,13 +947,50 @@ class Pedido extends Model
     }
 
     /**
-     * Lista pedidos do responsável com filtros e metadados
+     * Conta pedidos do responsável com filtros para paginação
+     */
+    public static function contarPorResponsavel(
+        int $responsavelId, 
+        ?int $alunoId = null, 
+        ?string $dataInicio = null, 
+        ?string $dataFim = null
+    ): int {
+        $sql = "SELECT COUNT(*) AS total
+                FROM pedidos p
+                INNER JOIN alunos a ON a.id = p.aluno_id
+                WHERE p.responsavel_id = :resp_id";
+
+        $params = ['resp_id' => $responsavelId];
+
+        if ($alunoId !== null && $alunoId > 0) {
+            $sql .= " AND p.aluno_id = :aluno_id";
+            $params['aluno_id'] = $alunoId;
+        }
+
+        if (!empty($dataInicio)) {
+            $sql .= " AND p.data_consumo >= :data_inicio";
+            $params['data_inicio'] = $dataInicio;
+        }
+
+        if (!empty($dataFim)) {
+            $sql .= " AND p.data_consumo <= :data_fim";
+            $params['data_fim'] = $dataFim;
+        }
+
+        $row = self::fetchOne($sql, $params);
+        return (int)($row['total'] ?? 0);
+    }
+
+    /**
+     * Lista pedidos do responsável com filtros e metadados (suporta limite e offset)
      */
     public static function listarPorResponsavel(
         int $responsavelId, 
         ?int $alunoId = null, 
         ?string $dataInicio = null, 
-        ?string $dataFim = null
+        ?string $dataFim = null,
+        ?int $limite = null,
+        ?int $offset = null
     ): array {
         $sql = "SELECT p.*, 
                        a.nome AS aluno_nome, 
@@ -983,6 +1020,13 @@ class Pedido extends Model
         }
 
         $sql .= " ORDER BY p.data_consumo DESC, p.id DESC";
+
+        if ($limite !== null && $limite > 0) {
+            $sql .= " LIMIT " . (int)$limite;
+            if ($offset !== null && $offset > 0) {
+                $sql .= " OFFSET " . (int)$offset;
+            }
+        }
 
         $pedidos = self::fetchAll($sql, $params);
 

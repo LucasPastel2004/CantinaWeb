@@ -33,7 +33,16 @@ if (empty($responsavelNome) || $responsavelNome === 'Responsável') {
         : (\App\Core\Session::get('_auth_nome') ?? 'Responsável');
 }
 
+// Formatação elegante do nome para evitar texto todo em maiúsculas
+$preposicoesLayout = ['de', 'da', 'do', 'das', 'dos', 'e'];
+$palavrasLayout = explode(' ', mb_strtolower(trim($responsavelNome), 'UTF-8'));
+$nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout) {
+    return in_array($p, $preposicoesLayout, true) ? $p : mb_convert_case($p, MB_CASE_TITLE, 'UTF-8');
+}, $palavrasLayout));
+$inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo, 0, 1, 'UTF-8'), 'UTF-8');
+
 $isSaldoBaixo = ($saldoAtual < 15.00);
+$assetVersion = '7.2.2';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -47,7 +56,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/bootstrap.min.css">
 
     <!-- Design System Corporativo Anti-Slop -->
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.2.1'; ?>">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion; ?>">
 
     <!-- Favicon Oficial -->
     <link rel="icon" type="image/jpeg" href="<?php echo $baseUrl; ?>/assets/img/logo-colegio.jpg">
@@ -75,11 +84,18 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
 
             <!-- Perfil do Responsável e Logout -->
             <div class="dropdown d-none d-md-block">
-                <button class="btn btn-enterprise btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <?php echo htmlspecialchars($responsavelNome, ENT_QUOTES, 'UTF-8'); ?>
+                <button class="btn btn-enterprise btn-secondary btn-sm dropdown-toggle d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 20px; height: 20px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 700;">
+                        <?php echo $inicialTopo; ?>
+                    </span>
+                    <span><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px;">
-                    <li><a class="dropdown-item" href="<?php echo $baseUrl; ?>/portal/perfil">Meus Dados</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; min-width: 220px;">
+                    <li class="px-3 py-2 border-bottom bg-light">
+                        <div class="font-weight-bold text-dark text-truncate" style="font-size: 13px;"><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="text-microcopy text-muted font-tabular">Responsável Financeiro</div>
+                    </li>
+                    <li><a class="dropdown-item mt-1" href="<?php echo $baseUrl; ?>/portal/perfil">Meus Dados</a></li>
                     <li><a class="dropdown-item" href="<?php echo $baseUrl; ?>/portal/carteira">Extrato Financeiro</a></li>
                     <li><a class="dropdown-item" href="<?php echo $baseUrl; ?>/portal/extrato">Extrato do Aluno</a></li>
                     <li><hr class="dropdown-divider"></li>

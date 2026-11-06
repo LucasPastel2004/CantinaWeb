@@ -37,15 +37,46 @@ class PortalController extends Controller
         $saldoAtual = (float)($respDb['saldo_atual'] ?? $usuario['saldo'] ?? 0.00);
         Session::set('_auth_saldo', $saldoAtual);
 
+        // Agrega restrições de cada dependente
+        foreach ($dependentes as &$dep) {
+            $dep['restricoes'] = RestricaoAlimentar::listarPorAluno((int)$dep['id']);
+            $dep['total_restricoes'] = count($dep['restricoes']);
+        }
+        unset($dep);
+
+        // Busca pedidos recentes do responsável
+        $pedidosRecentes = Pedido::listarPorResponsavel((int)$usuario['id']);
+        $ultimosPedidos = array_slice($pedidosRecentes, 0, 5);
+
+        // Conta agendamentos ativos futuros
+        $totalAgendadosAtivos = 0;
+        foreach ($pedidosRecentes as $ped) {
+            if (in_array($ped['status'], ['agendado', 'editado'])) {
+                $totalAgendadosAtivos++;
+            }
+        }
+
+        // Data atual por extenso em português
+        $diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        $mesesAno = [1 => 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        $diaSemanaStr = $diasSemana[(int)date('w')];
+        $diaStr = date('d');
+        $mesStr = $mesesAno[(int)date('n')];
+        $anoStr = date('Y');
+        $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
+
         $this->render('portal/index', [
-            'pageTitle'       => 'Portal da Família — Início',
-            'activeMenu'      => 'inicio',
-            'usuario'         => $usuario,
-            'user'            => $usuario,
-            'responsavelNome' => $respDb['nome'] ?? $usuario['nome'] ?? 'Responsável',
-            'saldoAtual'      => $saldoAtual,
-            'dependentes'     => $dependentes,
-            'bloqueadoMed'    => (bool)($respDb['bloqueado_med'] ?? false)
+            'pageTitle'            => 'Portal da Família — Início',
+            'activeMenu'           => 'inicio',
+            'usuario'              => $usuario,
+            'user'                 => $usuario,
+            'responsavelNome'      => $respDb['nome'] ?? $usuario['nome'] ?? 'Responsável',
+            'saldoAtual'           => $saldoAtual,
+            'dependentes'          => $dependentes,
+            'ultimosPedidos'       => $ultimosPedidos,
+            'totalAgendadosAtivos' => $totalAgendadosAtivos,
+            'dataExtenso'          => $dataExtenso,
+            'bloqueadoMed'         => (bool)($respDb['bloqueado_med'] ?? false)
         ], 'portal');
     }
 

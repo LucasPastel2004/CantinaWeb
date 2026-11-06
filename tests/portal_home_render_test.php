@@ -56,6 +56,13 @@ $asserts = [
     'Linha central com alinhamento inicial (align-items-start)' => str_contains($html, 'align-items-start'),
     'Quadro de horários da rotina da cantina removido conforme solicitado' => !str_contains($html, 'Rotina da Cantina') && !str_contains($html, 'Bloqueio de Corte'),
     'Quadro de últimos pedidos removido conforme solicitado' => !str_contains($html, 'Últimos Pedidos & Lanches Agendados'),
+    'Badge Área do Responsável removida com sucesso' => !str_contains($html, 'Área do Responsável'),
+    'Botões redundantes do topo hero removidos com sucesso' => !str_contains($html, 'Recarregar Saldo Pix') && !str_contains($html, '+ Agendar Lanche</span>'),
+    'Badge Cardápio Semanal removida do pilar de agendamento' => !str_contains($html, 'Cardápio Semanal'),
+    'Badge Proteção no Balcão removida do pilar de alergias' => !str_contains($html, 'Proteção no Balcão'),
+    'Badge de contagem de agendamento removida do pilar de pedidos' => !str_contains($html, 'agendamento(s)</span>'),
+    'Botões dos 4 pilares padronizados no azul corporativo (btn-primary)' => substr_count($html, 'btn-primary btn-sm w-100') >= 4,
+    'Hover dos atalhos não aplica quadrado azul escuro no ícone' => !str_contains($html, 'background: #1d4ed8;') || !str_contains($html, '.action-tile-portal:hover .action-tile-icon'),
     'Contém versão de asset 7.2.4' => str_contains($html, 'custom.css?v=7.2.4'),
 ];
 

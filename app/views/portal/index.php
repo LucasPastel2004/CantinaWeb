@@ -130,8 +130,8 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
     transition: all 0.15s ease-in-out;
 }
 .action-tile-portal:hover .action-tile-icon {
-    background: #1d4ed8;
-    color: #ffffff;
+    background: #eff6ff;
+    color: #1d4ed8;
 }
 .action-tile-portal .action-tile-arrow {
     color: #94a3b8;
@@ -179,7 +179,6 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Portal da Família &bull; Colégio Monteiro Lobato</span>
-                <span class="badge bg-light text-secondary border font-tabular">Área do Responsável</span>
             </div>
             <h1 class="h5 font-weight-bold text-dark mb-1">
                 Olá, <?php echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8'); ?>!
@@ -189,20 +188,6 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                 <strong><?php echo count($dependentes); ?></strong> dependente(s) vinculado(s) &bull; 
                 Carteira familiar ativa
             </p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="<?php echo $baseUrl; ?>/portal/carteira" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.066l1.326-.277 5.64 3.47A1 1 0 0 1 14 13h-1.5a.5.5 0 0 0 0 1H14a2 2 0 0 0 2-1.99V4a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v6.52l-5.18-3.19a.5.5 0 0 0-.54 0L1 10.52V4a1 1 0 0 1 1-1h12z"/>
-                </svg>
-                <span>Recarregar Saldo Pix</span>
-            </a>
-            <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
-                </svg>
-                <span>+ Agendar Lanche</span>
-            </a>
         </div>
     </div>
 </div>
@@ -261,7 +246,6 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                         </svg>
                     </div>
-                    <span class="badge bg-light text-secondary border font-tabular" style="font-size: 11px;">Cardápio Semanal</span>
                 </div>
                 <div class="text-microcopy text-secondary font-weight-semibold text-uppercase" style="font-size: 11px;">
                     Lanches da Semana
@@ -274,7 +258,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                 </p>
             </div>
             <div>
-                <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                     <span>Acessar Cardápio</span>
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -294,9 +278,6 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                             <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                         </svg>
                     </div>
-                    <span class="badge bg-light text-secondary border font-tabular" style="font-size: 11px;">
-                        <?php echo $totalAgendadosAtivos; ?> agendamento(s)
-                    </span>
                 </div>
                 <div class="text-microcopy text-secondary font-weight-semibold text-uppercase" style="font-size: 11px;">
                     Histórico & Status
@@ -309,7 +290,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                 </p>
             </div>
             <div>
-                <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                     <span>Ver Pedidos</span>
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -329,7 +310,6 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                             <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.464 9.99a11.8 11.8 0 0 0 3.963 3.037.5.5 0 0 0 .464 0c1.248-.68 2.614-1.745 3.963-3.037 1.677-2.195 3.06-5.513 2.464-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 1.07c.613 0 1.698.257 2.753.543a60 60 0 0 1 2.668.803.54.54 0 0 1 .368.441c.548 4.108-.718 7.155-2.26 9.176a10.8 10.8 0 0 1-3.529 2.705 10.8 10.8 0 0 1-3.529-2.705C2.946 9.972 1.68 6.925 2.228 2.817a.54.54 0 0 1 .368-.442 60 60 0 0 1 2.668-.802C6.302 1.326 7.387 1.07 8 1.07z"/>
                         </svg>
                     </div>
-                    <span class="badge bg-light text-secondary border font-tabular" style="font-size: 11px;">Proteção no Balcão</span>
                 </div>
                 <div class="text-microcopy text-secondary font-weight-semibold text-uppercase" style="font-size: 11px;">
                     Segurança Alimentar
@@ -342,7 +322,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                 </p>
             </div>
             <div>
-                <a href="<?php echo $baseUrl; ?>/portal/alergias" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                <a href="<?php echo $baseUrl; ?>/portal/alergias" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                     <span>Configurar Restrições</span>
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -429,13 +409,13 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                                             </svg>
                                             <span>Agendar Lanche</span>
                                         </a>
-                                        <a href="<?php echo $baseUrl; ?>/portal/extrato?aluno=<?php echo $dep['id']; ?>" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+                                        <a href="<?php echo $baseUrl; ?>/portal/extrato?aluno=<?php echo $dep['id']; ?>" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1">
                                             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                                                 <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
                                             </svg>
                                             <span>Extrato de Consumo</span>
                                         </a>
-                                        <a href="<?php echo $baseUrl; ?>/portal/alergias?aluno=<?php echo $dep['id']; ?>" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+                                        <a href="<?php echo $baseUrl; ?>/portal/alergias?aluno=<?php echo $dep['id']; ?>" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1">
                                             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.464 9.99a11.8 11.8 0 0 0 3.963 3.037.5.5 0 0 0 .464 0c1.248-.68 2.614-1.745 3.963-3.037 1.677-2.195 3.06-5.513 2.464-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0z"/>
                                             </svg>

@@ -275,6 +275,7 @@ class PortalController extends Controller
         $dataSolicitada = $this->input('data', '');
         $diaSelecionado = null;
 
+        // Se informada uma data específica na URL (ex: clique manual no card), respeita a escolha
         if (!empty($dataSolicitada)) {
             foreach ($diasSemana as $dia) {
                 if ($dia['data'] === $dataSolicitada) {
@@ -284,15 +285,29 @@ class PortalController extends Controller
             }
         }
 
-        // Se não selecionou dia ou dia inválido, escolhe o primeiro dia letivo aberto (ou o primeiro dia da lista)
+        // Se não selecionou dia (ao abrir a tela) ou dia inválido:
+        // 1. Tenta selecionar prioritariamente o dia atual (hoje), caso pertença à semana exibida
         if (!$diaSelecionado) {
             foreach ($diasSemana as $dia) {
-                if ($dia['is_letivo'] && $dia['status_corte']['pode_alterar']) {
+                if (!empty($dia['is_hoje'])) {
                     $diaSelecionado = $dia;
                     break;
                 }
             }
         }
+
+        // 2. Se hoje não faz parte da semana exibida (ex: acessos no fim de semana ou na próxima semana),
+        // busca o primeiro dia letivo com horário de corte ainda aberto
+        if (!$diaSelecionado) {
+            foreach ($diasSemana as $dia) {
+                if ($dia['is_letivo'] && !empty($dia['status_corte']['pode_alterar'])) {
+                    $diaSelecionado = $dia;
+                    break;
+                }
+            }
+        }
+
+        // 3. Fallback: caso nenhum esteja aberto, seleciona o primeiro dia da semana
         if (!$diaSelecionado) {
             $diaSelecionado = $diasSemana[0];
         }

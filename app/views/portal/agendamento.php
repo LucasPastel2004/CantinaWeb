@@ -178,6 +178,24 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
         </div>
     </div>
 
+    <?php
+    // Busca um dia letivo aberto alternativo na semana para os atalhos de contingência
+    $diaAlternativoAberto = null;
+    foreach ($diasSemana as $diaAlt) {
+        if ($diaAlt['data'] !== $diaSelecionado['data'] && $diaAlt['is_letivo'] && !empty($diaAlt['status_corte']['pode_alterar'])) {
+            $diaAlternativoAberto = $diaAlt;
+            break;
+        }
+    }
+    if ($diaAlternativoAberto) {
+        $urlOutroDia = "{$baseUrl}/portal/agendamento?aluno={$alunoSelecionado['id']}&semana={$semanaRef}&data={$diaAlternativoAberto['data']}";
+    } elseif ($semanaSeguinteLiberada && $semanaRef === 'atual') {
+        $urlOutroDia = "{$baseUrl}/portal/agendamento?aluno={$alunoSelecionado['id']}&semana=seguinte";
+    } else {
+        $urlOutroDia = "{$baseUrl}/portal/agendamento?aluno={$alunoSelecionado['id']}&semana={$semanaRef}";
+    }
+    ?>
+
     <!-- Cenário 1: Dia Não Letivo (Feriado / Recesso) -->
     <?php if (!$diaSelecionado['is_letivo']): ?>
         <div class="card-enterprise p-5 text-center my-4">
@@ -191,7 +209,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
             <p class="text-secondary mb-3" style="font-size: 13px;">
                 Esta data é classificada como <strong><?php echo htmlspecialchars($diaSelecionado['descricao'], ENT_QUOTES, 'UTF-8'); ?></strong>. Não haverá funcionamento da cantina.
             </p>
-            <a href="<?php echo $baseUrl; ?>/portal/agendamento?aluno=<?php echo $alunoSelecionado['id']; ?>&semana=<?php echo $semanaRef; ?>" class="btn btn-enterprise btn-primary btn-sm">
+            <a href="<?php echo $urlOutroDia; ?>" class="btn btn-enterprise btn-primary btn-sm">
                 Selecionar Outro Dia Letivo
             </a>
         </div>
@@ -213,7 +231,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm">
                     Consultar Meus Pedidos
                 </a>
-                <a href="<?php echo $baseUrl; ?>/portal/agendamento?aluno=<?php echo $alunoSelecionado['id']; ?>&semana=<?php echo $semanaRef; ?>" class="btn btn-enterprise btn-primary btn-sm">
+                <a href="<?php echo $urlOutroDia; ?>" class="btn btn-enterprise btn-primary btn-sm">
                     Ver Outras Datas
                 </a>
             </div>

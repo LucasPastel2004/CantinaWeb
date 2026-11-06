@@ -847,21 +847,57 @@ class PortalController extends Controller
             $alunoSelecionado = $dependentes[0];
         }
 
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim    = trim((string)$this->input('data_fim', date('Y-m-d')));
+        // Carga sob demanda: inicia vazia por padrão, exibe todos ou filtrados ao clicar em Filtrar
+        $filtrar = (bool)($this->input('filtrar', false) || isset($_GET['filtrar']));
+        $jaFiltrado = $filtrar;
 
-        $relCtrl = new RelatoriosController();
-        $dadosExtrato = $relCtrl->obterDadosExtratoAluno(
-            (int)$alunoSelecionado['id'],
-            $dataInicio,
-            $dataFim,
-            false,
-            false,
-            1,
-            1,
-            50,
-            false
-        );
+        $filtroGeralParam = $this->input('filtro_geral', null);
+        $dataInicioInput  = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput     = trim((string)$this->input('data_fim', ''));
+
+        // Se filtro_geral for '1' OU (ao clicar em filtrar não foram alteradas as datas gerais iniciais)
+        $filtroGeral = false;
+        if ($filtroGeralParam === '1' || ($filtroGeralParam === null && $filtrar && empty($dataInicioInput) && empty($dataFimInput))) {
+            $filtroGeral = true;
+        }
+
+        $dataInicio = !empty($dataInicioInput) ? $dataInicioInput : date('Y-m-01');
+        $dataFim    = !empty($dataFimInput) ? $dataFimInput : date('Y-m-d');
+
+        if ($jaFiltrado) {
+            $relCtrl = new RelatoriosController();
+            if ($filtroGeral) {
+                // Lista geral de tudo (histórico completo de lançamentos do aluno)
+                $dataInicioBusca = '2020-01-01';
+                $dataFimBusca    = date('Y-m-d');
+            } else {
+                // Lista correspondente aos filtros específicos
+                $dataInicioBusca = $dataInicio;
+                $dataFimBusca    = $dataFim;
+            }
+
+            $dadosExtrato = $relCtrl->obterDadosExtratoAluno(
+                (int)$alunoSelecionado['id'],
+                $dataInicioBusca,
+                $dataFimBusca,
+                false,
+                false,
+                1,
+                1,
+                50,
+                false
+            );
+        } else {
+            // Inicialmente vazia conforme padrão de Carga Sob Demanda do sistema
+            $dadosExtrato = [
+                'saldo_inicial' => $saldoAtual,
+                'saldo_atual'   => $saldoAtual,
+                'total_recargas'=> 0.0,
+                'total_gasto'   => 0.0,
+                'total_lanches' => 0,
+                'linhas'        => []
+            ];
+        }
 
         $this->render('portal/extrato', [
             'pageTitle'        => 'Extrato do Aluno — Portal da Família',
@@ -874,6 +910,8 @@ class PortalController extends Controller
             'alunoSelecionado' => $alunoSelecionado,
             'dataInicio'       => $dataInicio,
             'dataFim'          => $dataFim,
+            'filtroGeral'      => $filtroGeral,
+            'jaFiltrado'       => $jaFiltrado,
             'dadosExtrato'     => $dadosExtrato
         ], 'portal');
     }
@@ -893,7 +931,8 @@ class PortalController extends Controller
     }
 
     /**
-     * Download do PDF Oficial A4 do Extrato do Aluno pelo Responsável
+     * Redireciona para o espelho de impressão nativo A4 (Print to PDF nativo do navegador)
+     * Sem Docker / Gotenberg, compatível com a plataforma Hostnet.
      */
     public function extratoPdf(): void
     {
@@ -901,8 +940,9 @@ class PortalController extends Controller
         $respId  = (int)$usuario['id'];
 
         $alunoId = (int)$this->input('aluno_id', (int)$this->input('aluno', 0));
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim    = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicio = trim((string)$this->input('data_inicio', ''));
+        $dataFim    = trim((string)$this->input('data_fim', ''));
+        $filtroGeral = trim((string)$this->input('filtro_geral', ''));
 
         if ($alunoId <= 0 || !$this->alunoPertence($respId, $alunoId)) {
             Session::setFlash('danger', 'Você não tem permissão para visualizar o extrato deste aluno.');
@@ -910,31 +950,16 @@ class PortalController extends Controller
             return;
         }
 
-        $relCtrl = new RelatoriosController();
-        $dadosExtrato = $relCtrl->obterDadosExtratoAluno($alunoId, $dataInicio, $dataFim, false, false, 1, 1, 50, false);
-        if (!$dadosExtrato) {
-            Session::setFlash('danger', 'Lançamentos não localizados para o aluno selecionado.');
-            $this->redirect('/portal/extrato');
-            return;
-        }
+        $query = ['aluno_id' => $alunoId];
+        if (!empty($dataInicio)) $query['data_inicio'] = $dataInicio;
+        if (!empty($dataFim)) $query['data_fim'] = $dataFim;
+        if (!empty($filtroGeral)) $query['filtro_geral'] = $filtroGeral;
 
-        $dadosExtrato['operador'] = 'Portal da Família (Autoatendimento)';
-        $pdfBinario = \App\Services\PdfService::gerarExtratoConsumoAlunoPdf($dadosExtrato);
-        $matricula = preg_replace('/[^A-Za-z0-9]/', '', $dadosExtrato['aluno']['matricula'] ?? 'aluno');
-        $nomeArquivo = 'extrato_oficial_' . $matricula . '_' . date('Ymd_His') . '.pdf';
-
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="' . $nomeArquivo . '"');
-        header('Content-Length: ' . strlen($pdfBinario));
-        header('Cache-Control: private, max-age=0, must-revalidate');
-        header('Pragma: public');
-
-        echo $pdfBinario;
-        exit;
+        $this->redirect('/portal/extrato/imprimir?' . http_build_query($query));
     }
 
     /**
-     * Espelho HTML de Impressão Direta do Extrato do Aluno no Portal da Família
+     * Espelho HTML de Impressão Direta do Extrato do Aluno no Portal da Família (Print to PDF Nativo)
      */
     public function extratoImprimir(): void
     {
@@ -942,8 +967,17 @@ class PortalController extends Controller
         $respId  = (int)$usuario['id'];
 
         $alunoId = (int)$this->input('aluno_id', (int)$this->input('aluno', 0));
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim    = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $filtroGeral = ($this->input('filtro_geral', '0') === '1');
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput    = trim((string)$this->input('data_fim', ''));
+
+        if ($filtroGeral) {
+            $dataInicio = '2020-01-01';
+            $dataFim    = date('Y-m-d');
+        } else {
+            $dataInicio = !empty($dataInicioInput) ? $dataInicioInput : date('Y-m-01');
+            $dataFim    = !empty($dataFimInput) ? $dataFimInput : date('Y-m-d');
+        }
 
         if ($alunoId <= 0 || !$this->alunoPertence($respId, $alunoId)) {
             Session::setFlash('danger', 'Você não tem permissão para visualizar o extrato deste aluno.');
@@ -961,7 +995,9 @@ class PortalController extends Controller
 
         $dadosExtrato['operador'] = 'Portal da Família (Autoatendimento)';
         echo \App\Services\PdfService::gerarEspelhoExtratoConsumoAlunoHtml($dadosExtrato);
-        exit;
+        if (!defined('CANTINA_TEST_MODE')) {
+            exit;
+        }
     }
 }
 

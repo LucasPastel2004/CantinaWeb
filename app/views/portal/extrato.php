@@ -15,6 +15,8 @@ $alunoSelecionado = $alunoSelecionado ?? ($dependentes[0] ?? null);
 $alunoId = (int)($alunoSelecionado['id'] ?? 0);
 $dataInicio = $dataInicio ?? date('Y-m-01');
 $dataFim = $dataFim ?? date('Y-m-d');
+$jaFiltrado = (bool)($jaFiltrado ?? false);
+$filtroGeral = (bool)($filtroGeral ?? false);
 
 $saldoInicial = (float)($dadosExtrato['saldo_inicial'] ?? 0.0);
 $saldoAtual = (float)($dadosExtrato['saldo_atual'] ?? ($saldoAtual ?? 0.0));
@@ -33,20 +35,15 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
         </div>
         <?php if ($alunoSelecionado): ?>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="<?php echo $baseUrl; ?>/portal/extrato/imprimir?aluno_id=<?php echo $alunoId; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?>" 
-                   target="_blank" 
-                   onclick="window.open(this.href, '_blank'); return false;" 
-                   class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5"
-                   title="Visualizar espelho para impressão A4">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
-                    Visualizar / Imprimir (A4)
-                </a>
-                <a href="<?php echo $baseUrl; ?>/portal/extrato/pdf?aluno_id=<?php echo $alunoId; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?>" 
+                <a href="<?php echo $baseUrl; ?>/portal/extrato/imprimir?aluno_id=<?php echo $alunoId; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?><?php echo !empty($filtroGeral) ? '&filtro_geral=1' : ''; ?>" 
                    target="_blank" 
                    class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5"
-                   title="Baixar Extrato Oficial em PDF Timbrado A4">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
-                    Baixar Extrato Oficial (PDF)
+                   title="Imprimir ou Salvar Extrato Oficial do Aluno em PDF (A4) pelo Navegador">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+                    </svg>
+                    Imprimir / Salvar PDF
                 </a>
             </div>
         <?php endif; ?>
@@ -71,31 +68,39 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
         </div>
     <?php endif; ?>
 
-    <!-- Barra de Filtros de Período -->
+    <!-- Barra de Filtros de Período (Padrão de Carga Sob Demanda) -->
     <div class="card-enterprise p-3 mb-4">
         <form action="<?php echo $baseUrl; ?>/portal/extrato" method="GET" class="row g-3 align-items-end" id="formFiltroExtrato">
             <input type="hidden" name="aluno_id" value="<?php echo $alunoId; ?>">
+            <input type="hidden" name="filtrar" value="1">
+            <input type="hidden" name="filtro_geral" id="filtroGeral" value="<?php echo !empty($filtroGeral) ? '1' : ($jaFiltrado ? '0' : '1'); ?>">
 
             <div class="col-12 col-md-4">
                 <label for="dataInicio" class="form-label text-microcopy text-uppercase font-weight-bold text-secondary">Data Inicial</label>
-                <input type="date" name="data_inicio" id="dataInicio" class="form-control form-control-sm font-tabular" value="<?php echo htmlspecialchars($dataInicio); ?>">
+                <input type="date" name="data_inicio" id="dataInicio" class="form-control form-control-sm font-tabular" value="<?php echo htmlspecialchars($dataInicio); ?>" onchange="marcarFiltroAlterado()">
             </div>
 
             <div class="col-12 col-md-4">
                 <label for="dataFim" class="form-label text-microcopy text-uppercase font-weight-bold text-secondary">Data Final</label>
-                <input type="date" name="data_fim" id="dataFim" class="form-control form-control-sm font-tabular" value="<?php echo htmlspecialchars($dataFim); ?>">
+                <input type="date" name="data_fim" id="dataFim" class="form-control form-control-sm font-tabular" value="<?php echo htmlspecialchars($dataFim); ?>" onchange="marcarFiltroAlterado()">
             </div>
 
             <div class="col-12 col-md-4 d-flex gap-2">
                 <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-grow-1">
                     Filtrar Período
                 </button>
+                <?php if (!empty($jaFiltrado)): ?>
+                    <a href="<?php echo $baseUrl; ?>/portal/extrato?aluno_id=<?php echo $alunoId; ?>" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar filtros e retornar à visualização inicial">
+                        Limpar
+                    </a>
+                <?php endif; ?>
             </div>
         </form>
 
         <!-- Atalhos de Período -->
         <div class="d-flex align-items-center gap-1.5 mt-2 pt-2 border-top flex-wrap">
             <span class="text-secondary text-microcopy me-1">Atalhos:</span>
+            <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" onclick="definirPeriodo('todos')">Todos / Geral</button>
             <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" onclick="definirPeriodo('hoje')">Hoje</button>
             <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" onclick="definirPeriodo('semana')">Esta Semana</button>
             <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" onclick="definirPeriodo('mes_atual')">Este Mês</button>
@@ -122,7 +127,13 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
                             </span>
                         </div>
                         <div class="text-secondary text-microcopy mt-1">
-                            Período: <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataInicio)); ?></strong> a <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataFim)); ?></strong>
+                            <?php if (!empty($jaFiltrado) && !empty($filtroGeral)): ?>
+                                Período: <strong class="font-tabular text-dark">Todo o Histórico (Geral)</strong>
+                            <?php elseif (!empty($jaFiltrado)): ?>
+                                Período: <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataInicio)); ?></strong> a <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataFim)); ?></strong>
+                            <?php else: ?>
+                                Posição contábil atualizada
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -137,109 +148,80 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
             </div>
         </div>
 
-        <!-- Stat-Strip: Resumo Financeiro do Período -->
-        <div class="stat-strip mb-4">
-            <div class="stat-item">
-                <span class="stat-label">Saldo Inicial do Período</span>
-                <span class="stat-value font-tabular text-dark">
-                    R$ <?php echo number_format($saldoInicial, 2, ',', '.'); ?>
-                </span>
-                <span class="text-secondary text-microcopy mt-1 font-tabular">
-                    Antes de <?php echo date('d/m/Y', strtotime($dataInicio)); ?>
-                </span>
-            </div>
-
-            <div class="stat-item">
-                <span class="stat-label">Total Recarregado</span>
-                <span class="stat-value font-tabular text-success">
-                    R$ <?php echo number_format($totalRecargas, 2, ',', '.'); ?>
-                </span>
-                <span class="text-secondary text-microcopy mt-1 font-tabular">
-                    Créditos Pix / Depósitos
-                </span>
-            </div>
-
-            <div class="stat-item">
-                <span class="stat-label">Total Gasto no Período</span>
-                <span class="stat-value font-tabular text-danger">
-                    R$ <?php echo number_format($totalGasto, 2, ',', '.'); ?>
-                </span>
-                <span class="text-secondary text-microcopy mt-1 font-tabular">
-                    <?php echo $totalLanches; ?> lanche(s) consumido(s)
-                </span>
-            </div>
-
-            <div class="stat-item">
-                <span class="stat-label">Saldo Final Resultante</span>
-                <span class="stat-value font-tabular text-primary">
-                    R$ <?php echo number_format($saldoAtual, 2, ',', '.'); ?>
-                </span>
-                <span class="text-secondary text-microcopy mt-1 font-tabular">
-                    Posição contábil hoje
-                </span>
-            </div>
-        </div>
-
-        <!-- Tabela Analítica Oficial com Saldo Progressivo Linha a Linha -->
+        <!-- Tabela Analítica Oficial com Saldo Progressivo Linha a Linha (Padrão Corporativo de Alta Densidade) -->
         <div class="card-enterprise mb-4">
             <div class="card-enterprise-header d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="h6 font-weight-bold text-dark mb-0">Extrato Analítico Linha a Linha</h2>
                 </div>
                 <span class="badge bg-light text-secondary border font-tabular">
-                    <?php echo count($linhas); ?> lançamento(s)
+                    <?php echo !empty($jaFiltrado) ? count($linhas) : 0; ?> lançamento(s)
                 </span>
             </div>
             <div class="table-responsive">
-                <table class="table table-enterprise table-hover mb-0">
+                <table class="table table-enterprise table-data-grid table-hover mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 12%;">Data</th>
-                            <th style="width: 38%;">Descrição</th>
-                            <th class="text-center" style="width: 8%;">Qtd</th>
-                            <th class="text-end" style="width: 12%;">V. Unitário</th>
-                            <th class="text-end" style="width: 12%;">V. Total</th>
-                            <th class="text-center" style="width: 10%;">Forma Pgto</th>
-                            <th class="text-end" style="width: 12%;">Saldo</th>
+                            <th class="cell-center" style="width: 12%;">Data</th>
+                            <th class="cell-left" style="width: 36%;">Descrição</th>
+                            <th class="cell-center" style="width: 8%;">Qtd</th>
+                            <th class="cell-right" style="width: 12%;">V. Unitário</th>
+                            <th class="cell-right" style="width: 12%;">V. Total</th>
+                            <th class="cell-center" style="width: 10%;">Forma Pgto</th>
+                            <th class="cell-right" style="width: 10%;">Saldo</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linha Inicial de Saldo -->
-                        <tr style="background-color: #f8fafc; font-weight: 600;">
-                            <td class="font-tabular text-muted">-</td>
-                            <td><em>Saldo inicial</em></td>
-                            <td class="text-center text-muted">-</td>
-                            <td class="text-end text-muted">-</td>
-                            <td class="text-end text-muted">-</td>
-                            <td class="text-center text-muted">-</td>
-                            <td class="text-end font-tabular text-dark">
-                                R$ <?php echo number_format($saldoInicial, 2, ',', '.'); ?>
-                            </td>
-                        </tr>
-
-                        <?php if (empty($linhas)): ?>
+                        <?php if (empty($jaFiltrado)): ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-secondary text-microcopy">
-                                    Nenhuma compra ou recarga registrada para este aluno no período especificado.
+                                <td colspan="7" class="p-0 border-0">
+                                    <?php 
+                                        $emptyMessage = "Não há nada para mostrar aqui";
+                                        $emptyDescription = "Clique no botão azul \"Filtrar Período\" para exibir a lista geral de tudo ou defina datas específicas nos filtros.";
+                                        require __DIR__ . '/../partials/empty_state.php';
+                                    ?>
+                                </td>
+                            </tr>
+                        <?php elseif (empty($linhas)): ?>
+                            <tr>
+                                <td colspan="7" class="p-0 border-0">
+                                    <?php 
+                                        $emptyMessage = "Nenhuma movimentação encontrada";
+                                        $emptyDescription = "Nenhuma compra ou recarga registrada para este aluno no período especificado.";
+                                        require __DIR__ . '/../partials/empty_state.php';
+                                    ?>
                                 </td>
                             </tr>
                         <?php else: ?>
+                            <!-- Linha Inicial de Saldo -->
+                            <tr style="background-color: #f8fafc; font-weight: 600;">
+                                <td class="cell-center font-tabular text-muted">-</td>
+                                <td class="cell-left"><em>Saldo inicial</em></td>
+                                <td class="cell-center text-muted">-</td>
+                                <td class="cell-right text-muted">-</td>
+                                <td class="cell-right text-muted">-</td>
+                                <td class="cell-center text-muted">-</td>
+                                <td class="cell-right font-tabular text-dark">
+                                    R$ <?php echo number_format($saldoInicial, 2, ',', '.'); ?>
+                                </td>
+                            </tr>
+
                             <?php foreach ($linhas as $l): ?>
                                 <?php 
                                     $isRec = ($l['tipo'] === 'recarga');
                                     $bgClass = $isRec ? 'style="background-color: #f0fdf4;"' : '';
                                 ?>
                                 <tr <?php echo $bgClass; ?>>
-                                    <td class="font-tabular">
+                                    <td class="cell-center font-tabular">
                                         <?php echo htmlspecialchars($l['data_formatada'] ?? date('d/m/Y', strtotime($l['data']))); ?>
                                     </td>
-                                    <td>
+                                    <td class="cell-left">
                                         <strong><?php echo htmlspecialchars($l['descricao']); ?></strong>
                                     </td>
-                                    <td class="text-center font-tabular">
+                                    <td class="cell-center font-tabular">
                                         <?php echo htmlspecialchars((string)$l['quantidade']); ?>
                                     </td>
-                                    <td class="text-end font-tabular">
+                                    <td class="cell-right font-tabular">
                                         <?php 
                                             if (is_numeric($l['valor_unitario'])) {
                                                 echo 'R$ ' . number_format((float)$l['valor_unitario'], 2, ',', '.');
@@ -248,32 +230,34 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
                                             }
                                         ?>
                                     </td>
-                                    <td class="text-end font-tabular <?php echo $isRec ? 'text-success font-weight-bold' : ''; ?>">
+                                    <td class="cell-right font-tabular <?php echo $isRec ? 'text-success font-weight-bold' : ''; ?>">
                                         R$ <?php echo number_format((float)$l['valor_total'], 2, ',', '.'); ?>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="cell-center">
                                         <span class="code-tag font-tabular" style="font-size: 11px;">
                                             <?php echo htmlspecialchars($l['forma_pagamento']); ?>
                                         </span>
                                     </td>
-                                    <td class="text-end font-tabular font-weight-bold <?php echo ($l['saldo'] < 0) ? 'text-danger' : 'text-dark'; ?>">
+                                    <td class="cell-right font-tabular font-weight-bold <?php echo ($l['saldo'] < 0) ? 'text-danger' : 'text-dark'; ?>">
                                         R$ <?php echo number_format((float)$l['saldo'], 2, ',', '.'); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
-                    <tfoot>
-                        <tr style="background-color: #f8fafc; font-weight: 800;">
-                            <td colspan="4">Total gasto no periodo</td>
-                            <td class="text-end font-tabular text-danger">
-                                R$ <?php echo number_format($totalGasto, 2, ',', '.'); ?>
-                            </td>
-                            <td colspan="2" class="text-end font-tabular text-primary">
-                                Saldo Final: R$ <?php echo number_format($saldoAtual, 2, ',', '.'); ?>
-                            </td>
-                        </tr>
-                    </tfoot>
+                    <?php if (!empty($jaFiltrado) && !empty($linhas)): ?>
+                        <tfoot>
+                            <tr style="background-color: #f8fafc; font-weight: 800;">
+                                <td colspan="4" class="cell-left">Total gasto no período</td>
+                                <td class="cell-right font-tabular text-danger">
+                                    R$ <?php echo number_format($totalGasto, 2, ',', '.'); ?>
+                                </td>
+                                <td colspan="2" class="cell-right font-tabular text-primary">
+                                    Saldo Final: R$ <?php echo number_format($saldoAtual, 2, ',', '.'); ?>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    <?php endif; ?>
                 </table>
             </div>
         </div>
@@ -282,10 +266,16 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
 </div>
 
 <script>
+function marcarFiltroAlterado() {
+    const fg = document.getElementById('filtroGeral');
+    if (fg) fg.value = '0';
+}
+
 function definirPeriodo(tipo) {
     const hoje = new Date();
     const dataIni = document.getElementById('dataInicio');
     const dataFim = document.getElementById('dataFim');
+    const fg = document.getElementById('filtroGeral');
     if (!dataIni || !dataFim) return;
 
     function formatar(d) {
@@ -294,6 +284,15 @@ function definirPeriodo(tipo) {
         const dia = String(d.getDate()).padStart(2, '0');
         return `${ano}-${mes}-${dia}`;
     }
+
+    if (tipo === 'todos') {
+        dataIni.value = '';
+        dataFim.value = '';
+        if (fg) fg.value = '1';
+        return;
+    }
+
+    if (fg) fg.value = '0';
 
     if (tipo === 'hoje') {
         dataIni.value = formatar(hoje);

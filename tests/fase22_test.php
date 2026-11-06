@@ -380,11 +380,11 @@ class Fase22Test
         $portalContent = file_get_contents($portalViewFile);
         $this->assert(str_contains($portalContent, 'Extrato Analítico do Aluno'), "Título do extrato presente no portal.");
         $this->assert(str_contains($portalContent, 'Filho(a) / Dependente:'), "Seletor de dependentes presente.");
-        $this->assert(str_contains($portalContent, 'Baixar Extrato Oficial (PDF)'), "Botão de download de PDF presente.");
-        $this->assert(str_contains($portalContent, 'Visualizar / Imprimir (A4)'), "Botão de impressão A4 presente.");
-        $this->assert(str_contains($portalContent, 'Saldo Inicial do Período'), "Stat-strip de Saldo Inicial presente.");
-        $this->assert(str_contains($portalContent, 'Total Gasto no Período'), "Stat-strip de Total Gasto presente.");
-        $this->assert(str_contains($portalContent, 'Saldo Final Resultante'), "Stat-strip de Saldo Final presente.");
+        $this->assert(str_contains($portalContent, 'Imprimir / Salvar PDF'), "Botão único de emissão Print to PDF presente no portal.");
+        $this->assert(!str_contains($portalContent, 'Baixar Extrato Oficial (PDF)'), "Botão legado Gotenberg removido com sucesso.");
+        $this->assert(!str_contains($portalContent, 'stat-strip'), "Stat-strip com X verde removida conforme solicitação.");
+        $this->assert(str_contains($portalContent, 'empty_state.php'), "Carga sob demanda com estado vazio inicial presente.");
+        $this->assert(str_contains($portalContent, 'filtro_geral'), "Controle de filtro geral de tudo vs filtros específicos presente.");
 
         // Validação da proteção LGPD em PortalController:
         // Verifica se o método extrato valida se o aluno solicitado pertence aos dependentes do responsável

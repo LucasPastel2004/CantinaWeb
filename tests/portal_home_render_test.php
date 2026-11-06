@@ -49,14 +49,17 @@ $asserts = [
     'HTML gerado com sucesso (> 2000 bytes)' => strlen($html) > 2000,
     'Contém saudação formatada (Olá,)' => str_contains($html, 'Olá,'),
     'Contém pilares de cartões (portal-pillar-card)' => str_contains($html, 'portal-pillar-card'),
+    'Pilares com direção vertical correta (flex-direction: column)' => str_contains($html, 'flex-direction: column;'),
     'Contém saldo formatado (R$)' => str_contains($html, 'R$'),
     'Contém atalhos de ação (action-tile-portal)' => str_contains($html, 'action-tile-portal'),
-    'Contém grade de horários da cantina' => str_contains($html, 'Rotina da Cantina') && str_contains($html, 'Bloqueio de Corte'),
-    'Contém seção de últimos pedidos' => str_contains($html, 'Últimos Pedidos & Lanches Agendados'),
-    'Contém versão de asset 7.2.3' => str_contains($html, 'custom.css?v=7.2.3'),
+    'Box de dependentes modular (sem h-100 rígido)' => !str_contains($html, 'card-enterprise h-100'),
+    'Linha central com alinhamento inicial (align-items-start)' => str_contains($html, 'align-items-start'),
+    'Quadro de horários da rotina da cantina removido conforme solicitado' => !str_contains($html, 'Rotina da Cantina') && !str_contains($html, 'Bloqueio de Corte'),
+    'Quadro de últimos pedidos removido conforme solicitado' => !str_contains($html, 'Últimos Pedidos & Lanches Agendados'),
+    'Contém versão de asset 7.2.4' => str_contains($html, 'custom.css?v=7.2.4'),
 ];
 
-// Teste 2: Renderização direta da view com casos de borda (pedidos com itens, itens apenas com produto_descricao, campos nulos em dependentes)
+// Teste 2: Renderização direta da view com casos de borda (campos nulos em dependentes e lista modular)
 ob_start();
 $viewData = [
     'baseUrl'              => '',
@@ -85,20 +88,6 @@ $viewData = [
             'restricoes'        => []
         ]
     ],
-    'ultimosPedidos'       => [
-        [
-            'id'            => 501,
-            'data_consumo'  => '2026-11-06',
-            'turno_consumo' => 'matutino',
-            'aluno_nome'    => 'JULIA MARTINS GARCIA',
-            'valor_total'   => 12.50,
-            'status'        => 'agendado',
-            'itens'         => [
-                ['quantidade' => 1, 'produto_descricao' => 'Pão de Queijo Tradicional', 'preco_unitario' => 6.50],
-                ['quantidade' => 1, 'produto_nome' => 'Suco de Laranja 300ml', 'preco_unitario' => 6.00],
-            ]
-        ]
-    ],
     'totalAgendadosAtivos' => 1,
     'dataExtenso'          => 'Sexta-feira, 06 de Novembro de 2026',
     'bloqueadoMed'         => false
@@ -107,10 +96,10 @@ extract($viewData);
 require __DIR__ . '/../app/views/portal/index.php';
 $htmlViewBorda = ob_get_clean();
 
-$asserts['Cenário de Borda: View renderizou sem exceções com itens e nulos'] = strlen($htmlViewBorda) > 1000;
-$asserts['Cenário de Borda: Contém item por produto_descricao (Pão de Queijo)'] = str_contains($htmlViewBorda, 'Pão de Queijo Tradicional');
-$asserts['Cenário de Borda: Contém item por produto_nome (Suco de Laranja)'] = str_contains($htmlViewBorda, 'Suco de Laranja 300ml');
+$asserts['Cenário de Borda: View renderizou sem exceções com dependentes nulos'] = strlen($htmlViewBorda) > 1000;
 $asserts['Cenário de Borda: Tratou dependente com nome nulo graciosamente'] = str_contains($htmlViewBorda, 'Matrícula: —');
+$asserts['Cenário de Borda: Dependente com restrição alimentar renderizado'] = str_contains($htmlViewBorda, 'Contém Glúten');
+$asserts['Cenário de Borda: Box modular de dependentes preservou card individual'] = str_contains($htmlViewBorda, 'student-card');
 
 $allPassed = true;
 foreach ($asserts as $label => $pass) {

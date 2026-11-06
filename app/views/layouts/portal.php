@@ -42,7 +42,7 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 15.00);
-$assetVersion = '7.2.3';
+$assetVersion = '7.2.4';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

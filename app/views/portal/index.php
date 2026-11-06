@@ -50,7 +50,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
     padding: 16px;
     height: 100%;
     display: flex;
-    flex-column;
+    flex-direction: column;
     justify-content: space-between;
     transition: all 0.15s ease-in-out;
 }
@@ -77,6 +77,9 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
     padding: 16px;
     margin-bottom: 12px;
     transition: all 0.15s ease-in-out;
+}
+.student-card:last-child {
+    margin-bottom: 0;
 }
 .student-card:hover {
     border-color: #cbd5e1;
@@ -352,11 +355,11 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
 </div>
 
 <!-- Seção Central em Duas Colunas: Dependentes e Central de Acesso Rápido -->
-<div class="row g-4 mb-4">
+<div class="row g-4 align-items-start mb-4">
 
-    <!-- Coluna 1: Dependentes Vinculados (Cards com Fichas Visuais Completas) -->
+    <!-- Coluna 1: Dependentes Vinculados (Cards com Fichas Visuais Modulares) -->
     <div class="col-12 col-lg-7">
-        <div class="card-enterprise h-100 d-flex flex-column">
+        <div class="card-enterprise">
             <div class="card-enterprise-header d-flex justify-content-between align-items-center py-2.5 px-3 bg-light border-bottom">
                 <div class="d-flex align-items-center gap-2">
                     <span class="fw-semibold text-dark text-microcopy text-uppercase">Dependentes & Alunos Vinculados</span>
@@ -365,7 +368,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                     <?php echo count($dependentes); ?> aluno(s) ativo(s)
                 </span>
             </div>
-            <div class="card-enterprise-body p-3 flex-grow-1">
+            <div class="card-enterprise-body p-3">
                 <?php if (empty($dependentes)): ?>
                     <div class="text-center py-5 text-muted text-microcopy">
                         <div class="mb-2">
@@ -448,207 +451,61 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
         </div>
     </div>
 
-    <!-- Coluna 2: Central de Acesso Rápido & Rotina da Escola -->
+    <!-- Coluna 2: Central de Acesso Rápido -->
     <div class="col-12 col-lg-5">
-        <div class="d-flex flex-column gap-3 h-100">
-            
-            <!-- Card de Ações Rápidas (Action Tiles Corporativos) -->
-            <div class="card-enterprise">
-                <div class="card-enterprise-header py-2.5 px-3 bg-light border-bottom">
-                    <span class="fw-semibold text-dark text-microcopy text-uppercase">Atalhos da Família & Gestão</span>
-                </div>
-                <div class="p-3">
-                    <a href="<?php echo $baseUrl; ?>/portal/carteira" class="action-tile-portal">
-                        <div class="d-flex align-items-center gap-2.5">
-                            <div class="action-tile-icon">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2zm13 3H1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="font-weight-semibold text-dark" style="font-size: 13px;">Recarga Rápida Pix</div>
-                                <div class="text-microcopy text-secondary">Liberação instantânea com QR Code sem tarifas</div>
-                            </div>
-                        </div>
-                        <div class="action-tile-arrow">&rarr;</div>
-                    </a>
-
-                    <a href="<?php echo $baseUrl; ?>/portal/extrato" class="action-tile-portal">
-                        <div class="d-flex align-items-center gap-2.5">
-                            <div class="action-tile-icon">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM4.5 9a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7zM4 11.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="font-weight-semibold text-dark" style="font-size: 13px;">Extrato Detalhado do Aluno</div>
-                                <div class="text-microcopy text-secondary">Espelho para impressão A4 e consulta por período</div>
-                            </div>
-                        </div>
-                        <div class="action-tile-arrow">&rarr;</div>
-                    </a>
-
-                    <a href="<?php echo $baseUrl; ?>/portal/perfil" class="action-tile-portal mb-0">
-                        <div class="d-flex align-items-center gap-2.5">
-                            <div class="action-tile-icon">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="font-weight-semibold text-dark" style="font-size: 13px;">Meus Dados & Segurança</div>
-                                <div class="text-microcopy text-secondary">Atualize seu e-mail de contato e senha</div>
-                            </div>
-                        </div>
-                        <div class="action-tile-arrow">&rarr;</div>
-                    </a>
-                </div>
+        <!-- Card de Ações Rápidas (Action Tiles Corporativos) -->
+        <div class="card-enterprise">
+            <div class="card-enterprise-header py-2.5 px-3 bg-light border-bottom">
+                <span class="fw-semibold text-dark text-microcopy text-uppercase">Atalhos da Família & Gestão</span>
             </div>
-
-            <!-- Card de Horários Oficiais & Protocolo da Cantina -->
-            <div class="card-enterprise flex-grow-1">
-                <div class="card-enterprise-header d-flex justify-content-between align-items-center py-2.5 px-3 bg-light border-bottom">
-                    <span class="fw-semibold text-dark text-microcopy text-uppercase">Rotina da Cantina &bull; Horários Oficiais</span>
-                    <span class="badge bg-white text-secondary border font-tabular" style="font-size: 11px;">Ano Letivo 2026</span>
-                </div>
-                <div class="p-3">
-                    <table class="table table-sm table-portal align-middle font-tabular mb-3">
-                        <thead>
-                            <tr>
-                                <th>Turno</th>
-                                <th>Bloqueio de Corte</th>
-                                <th>Fichas em Sala</th>
-                                <th>Recreio</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Matutino</strong></td>
-                                <td><span class="badge bg-light text-secondary border">08:00</span></td>
-                                <td>09:30</td>
-                                <td><strong>10:00</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Vespertino</strong></td>
-                                <td><span class="badge bg-light text-secondary border">13:30</span></td>
-                                <td>15:00</td>
-                                <td><strong>15:30</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="p-2.5 rounded bg-light border text-microcopy text-secondary" style="font-size: 11.5px; line-height: 1.45;">
-                        <strong>Protocolo Anti-Filas da Escola:</strong> Os tickets de 80mm dos lanches agendados são impressos e entregues diretamente na sala de aula antes do recreio. O atendimento no balcão da cantina é 100% visual e sem manuseio de dinheiro físico pelas crianças.
+            <div class="p-3">
+                <a href="<?php echo $baseUrl; ?>/portal/carteira" class="action-tile-portal">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="action-tile-icon">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2zm13 3H1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-weight-semibold text-dark" style="font-size: 13px;">Recarga Rápida Pix</div>
+                            <div class="text-microcopy text-secondary">Liberação instantânea com QR Code sem tarifas</div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                    <div class="action-tile-arrow">&rarr;</div>
+                </a>
 
-        </div>
-    </div>
+                <a href="<?php echo $baseUrl; ?>/portal/extrato" class="action-tile-portal">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="action-tile-icon">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM4.5 9a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7zM4 11.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-weight-semibold text-dark" style="font-size: 13px;">Extrato Detalhado do Aluno</div>
+                            <div class="text-microcopy text-secondary">Espelho para impressão A4 e consulta por período</div>
+                        </div>
+                    </div>
+                    <div class="action-tile-arrow">&rarr;</div>
+                </a>
 
-</div>
-
-<!-- Seção Inferior: Últimos Pedidos & Lanches Agendados -->
-<div class="card-enterprise mb-4">
-    <div class="card-enterprise-header d-flex justify-content-between align-items-center py-2.5 px-3 bg-light border-bottom">
-        <div class="d-flex align-items-center gap-2">
-            <span class="fw-semibold text-dark text-microcopy text-uppercase">Últimos Pedidos & Lanches Agendados</span>
-        </div>
-        <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="text-microcopy text-primary text-decoration-none font-weight-semibold">
-            Ver Todos os Pedidos &rarr;
-        </a>
-    </div>
-    <div class="card-enterprise-body p-0">
-        <?php if (empty($ultimosPedidos)): ?>
-            <div class="text-center py-5 text-muted text-microcopy">
-                <div class="mb-2">
-                    <svg width="36" height="36" viewBox="0 0 16 16" fill="#94a3b8">
-                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                    </svg>
-                </div>
-                <h6 class="font-weight-bold text-dark mb-1">Nenhum pedido recente registrado</h6>
-                <p class="mb-3 text-secondary">Reserve salgados, sucos e frutas do cardápio escolar para os próximos dias com antecedência!</p>
-                <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="btn btn-enterprise btn-primary btn-sm">
-                    + Realizar Primeiro Agendamento
+                <a href="<?php echo $baseUrl; ?>/portal/perfil" class="action-tile-portal mb-0">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="action-tile-icon">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-weight-semibold text-dark" style="font-size: 13px;">Meus Dados & Segurança</div>
+                            <div class="text-microcopy text-secondary">Atualize seu e-mail de contato e senha</div>
+                        </div>
+                    </div>
+                    <div class="action-tile-arrow">&rarr;</div>
                 </a>
             </div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-sm table-portal align-middle font-tabular mb-0">
-                    <thead>
-                        <tr>
-                            <th>Data de Consumo</th>
-                            <th>Aluno</th>
-                            <th>Turno</th>
-                            <th>Itens Solicitados</th>
-                            <th class="text-end">Total</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($ultimosPedidos as $p): ?>
-                            <?php 
-                                $dataFmt = date('d/m/Y', strtotime($p['data_consumo']));
-                                $statusClass = match($p['status']) {
-                                    'agendado', 'editado' => 'text-primary',
-                                    'entregue'            => 'text-success',
-                                    'cancelado', 'estornado' => 'text-danger',
-                                    default               => 'text-secondary'
-                                };
-                                $statusLabel = match($p['status']) {
-                                    'agendado' => 'Agendado',
-                                    'editado'  => 'Editado',
-                                    'entregue' => 'Entregue',
-                                    'cancelado'=> 'Cancelado',
-                                    'estornado'=> 'Estornado',
-                                    default    => ucfirst($p['status'])
-                                };
-
-                                // Formata resumo de itens de forma defensiva
-                                $resumoItens = [];
-                                if (!empty($p['itens']) && is_array($p['itens'])) {
-                                    foreach ($p['itens'] as $it) {
-                                        $qtd = (int)($it['quantidade'] ?? 1);
-                                        $nomeProd = $it['produto_nome'] ?? $it['produto_descricao'] ?? 'Produto';
-                                        $resumoItens[] = "{$qtd}x {$nomeProd}";
-                                    }
-                                }
-                                $resumoTexto = !empty($resumoItens) ? implode(', ', $resumoItens) : 'Sem itens discriminados';
-                            ?>
-                            <tr>
-                                <td>
-                                    <strong><?php echo $dataFmt; ?></strong>
-                                </td>
-                                <td>
-                                    <?php echo htmlspecialchars($formatarNome($p['aluno_nome'] ?? 'Aluno'), ENT_QUOTES, 'UTF-8'); ?>
-                                </td>
-                                <td>
-                                    <span class="badge bg-light text-secondary border">
-                                        <?php echo ucfirst($p['turno_consumo'] ?? 'matutino'); ?>
-                                    </span>
-                                </td>
-                                <td style="max-width: 320px;" class="text-truncate" title="<?php echo htmlspecialchars($resumoTexto, ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($resumoTexto, ENT_QUOTES, 'UTF-8'); ?>
-                                </td>
-                                <td class="text-end font-weight-bold text-dark">
-                                    R$ <?php echo number_format((float)$p['valor_total'], 2, ',', '.'); ?>
-                                </td>
-                                <td class="text-center">
-                                    <span class="status-indicator <?php echo $statusClass; ?>">
-                                        <span class="bullet">&bull;</span> <?php echo $statusLabel; ?>
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-secondary btn-sm py-0 px-2" style="font-size: 11.5px;">
-                                        Detalhes
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
+        </div>
     </div>
+
 </div>

@@ -60,11 +60,11 @@ return [
         ],
         'email' => [
             'provedor'         => 'smtp', // 'smtp', 'mail', 'mock'
-            'smtp_host'        => 'mail.cantinawebmonteirolobato.com.br',
+            'smtp_host'        => 'smtp.cantinawebmonteirolobato.com.br',
             'smtp_port'        => 587,
-            'smtp_user'        => 'contato@cantinawebmonteirolobato.com.br',
+            'smtp_user'        => 'contato=cantinawebmonteirolobato.com.br', // Na Hostnet Ultramail o usuário utiliza '=' em vez de '@'
             'smtp_pass'        => 'SUA_SENHA_DE_EMAIL_HOSTNET',
-            'smtp_secure'      => 'tls', // 'tls', 'ssl' ou ''
+            'smtp_secure'      => 'tls', // 'tls' (porta 587) ou 'ssl' (porta 465)
             'from_email'       => 'contato@cantinawebmonteirolobato.com.br',
             'from_name'        => 'Cantina Web — Colégio Monteiro Lobato',
         ],

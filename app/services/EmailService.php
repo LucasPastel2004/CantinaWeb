@@ -343,9 +343,14 @@ HTML;
         string $fromEmail,
         string $fromName
     ): bool {
-        $timeout = 10;
-        $remoteHost = ($secure === 'ssl' || $port === 465) ? "ssl://{$host}" : "tcp://{$host}";
+        // Normalização automática de Host: na Hostnet, o host de envio é 'smtp.dominio' (mail.dominio não existe no DNS)
+        if (str_contains($host, 'cantinawebmonteirolobato.com.br')) {
+            $host = 'smtp.cantinawebmonteirolobato.com.br';
+        } elseif (str_starts_with($host, 'mail.') && @gethostbyname($host) === $host) {
+            $host = 'smtp.' . substr($host, 5);
+        }
 
+        $timeout = 10;
         $context = stream_context_create([
             'ssl' => [
                 'verify_peer'       => false,
@@ -354,9 +359,35 @@ HTML;
             ]
         ]);
 
-        $socket = @stream_socket_client($remoteHost . ':' . $port, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
+        // Estratégia de conexão: tenta a porta configurada; se falhar, tenta a porta alternativa (587 <-> 465)
+        $tentativasConexao = [
+            ['port' => $port, 'secure' => $secure]
+        ];
+        if ($port === 587) {
+            $tentativasConexao[] = ['port' => 465, 'secure' => 'ssl'];
+        } elseif ($port === 465) {
+            $tentativasConexao[] = ['port' => 587, 'secure' => 'tls'];
+        }
+
+        $socket = null;
+        $portaConectada = $port;
+        $secureConectado = $secure;
+
+        foreach ($tentativasConexao as $tentativa) {
+            $tPort = $tentativa['port'];
+            $tSec = $tentativa['secure'];
+            $remoteHost = ($tSec === 'ssl' || $tPort === 465) ? "ssl://{$host}" : "tcp://{$host}";
+
+            $socket = @stream_socket_client($remoteHost . ':' . $tPort, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
+            if ($socket) {
+                $portaConectada = $tPort;
+                $secureConectado = $tSec;
+                break;
+            }
+        }
+
         if (!$socket) {
-            error_log("[SMTP_SOCKET_CONNECT_ERROR] {$errno}: {$errstr} - Caindo para mail() nativo");
+            error_log("[SMTP_SOCKET_CONNECT_ERROR] Falha de conexão socket com {$host}: {$errstr} - Caindo para mail() nativo");
             return $this->enviarViaMailNativo($para, $assunto, $html, $fromEmail, $fromName);
         }
 
@@ -386,7 +417,7 @@ HTML;
             $enviarComando("EHLO " . gethostname());
 
             // STARTTLS se porta 587 ou modo TLS
-            if ($secure === 'tls' || $port === 587) {
+            if ($secureConectado === 'tls' || $portaConectada === 587) {
                 $resp = $enviarComando("STARTTLS");
                 if (str_starts_with($resp, '220')) {
                     $cryptoMethod = STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
@@ -401,24 +432,49 @@ HTML;
                 }
             }
 
-            // Autenticação
-            $respAuth = $enviarComando("AUTH LOGIN");
-            if (!str_starts_with($respAuth, '334')) {
-                fclose($socket);
-                return $this->enviarViaMailNativo($para, $assunto, $html, $fromEmail, $fromName);
+            // Normalização de usuário para Hostnet (substituição de @ por = na autenticação SMTP)
+            $usuariosTentativa = [];
+            if (str_contains($host, 'cantinawebmonteirolobato.com.br') || str_contains($host, 'hostnet') || str_contains($host, 'k8.com.br')) {
+                if (str_contains($user, '@')) {
+                    $usuariosTentativa[] = str_replace('@', '=', $user);
+                }
+                $usuariosTentativa[] = $user;
+            } else {
+                $usuariosTentativa[] = $user;
+                if (str_contains($user, '@')) {
+                    $usuariosTentativa[] = str_replace('@', '=', $user);
+                }
             }
 
-            $enviarComando(base64_encode($user));
-            $respPass = $enviarComando(base64_encode($pass));
-            if (!str_starts_with($respPass, '235')) {
-                error_log("[SMTP_AUTH_ERROR] Falha de autenticação SMTP com usuário: {$user}");
+            $autenticado = false;
+            foreach ($usuariosTentativa as $tentativaUser) {
+                $respAuth = $enviarComando("AUTH LOGIN");
+                if (!str_starts_with($respAuth, '334')) {
+                    continue;
+                }
+
+                $enviarComando(base64_encode($tentativaUser));
+                $respPass = $enviarComando(base64_encode($pass));
+                if (str_starts_with($respPass, '235')) {
+                    $autenticado = true;
+                    break;
+                }
+            }
+
+            if (!$autenticado) {
+                error_log("[SMTP_AUTH_ERROR] Falha de autenticação SMTP com usuário: {$user} - Caindo para mail() nativo");
                 fclose($socket);
                 return $this->enviarViaMailNativo($para, $assunto, $html, $fromEmail, $fromName);
             }
 
             // Envelope
             $enviarComando("MAIL FROM:<{$fromEmail}>");
-            $enviarComando("RCPT TO:<{$para}>");
+            $respRcpt = $enviarComando("RCPT TO:<{$para}>");
+            if (!str_starts_with($respRcpt, '250')) {
+                error_log("[SMTP_RCPT_ERROR] Rejeição de destinatário: {$para} -> {$respRcpt}");
+                fclose($socket);
+                return false;
+            }
 
             // Conteúdo
             $enviarComando("DATA");
@@ -427,10 +483,12 @@ HTML;
             $headers[] = "Date: " . date('r');
             $headers[] = "To: <{$para}>";
             $headers[] = "From: =?UTF-8?B?" . base64_encode($fromName) . "?= <{$fromEmail}>";
+            $headers[] = "Reply-To: <{$fromEmail}>";
             $headers[] = "Subject: =?UTF-8?B?" . base64_encode($assunto) . "?=";
             $headers[] = "MIME-Version: 1.0";
             $headers[] = "Content-Type: text/html; charset=UTF-8";
             $headers[] = "Content-Transfer-Encoding: 8bit";
+            $headers[] = "X-Mailer: PHP/" . phpversion();
 
             $mensagem = implode("\r\n", $headers) . "\r\n\r\n" . $html . "\r\n.";
             $respData = $enviarComando($mensagem);

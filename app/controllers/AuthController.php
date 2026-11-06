@@ -297,7 +297,13 @@ class AuthController extends Controller
         // Gera código de 6 dígitos e despacha via EmailService
         $codigo = EmailService::generateCode();
         $emailService = new EmailService();
-        $emailService->sendFirstAccessCode($email, $codigo, $nome);
+        $enviado = $emailService->sendFirstAccessCode($email, $codigo, $nome);
+
+        if (!$enviado) {
+            Session::setFlash('danger', 'Não foi possível enviar o código por e-mail no momento. Por favor, verifique se o endereço está correto ou tente novamente em alguns instantes.');
+            $this->redirect('/primeiro-acesso/email');
+            return;
+        }
 
         // Guarda estado seguro na sessão
         Session::set('_pa_email', $email);
@@ -458,7 +464,13 @@ class AuthController extends Controller
         }
 
         $novoCodigo = EmailService::generateCode();
-        (new EmailService())->sendFirstAccessCode($email, $novoCodigo, $nome);
+        $enviado = (new EmailService())->sendFirstAccessCode($email, $novoCodigo, $nome);
+
+        if (!$enviado) {
+            Session::setFlash('danger', 'Não foi possível reenviar o código por e-mail no momento. Por favor, aguarde alguns instantes e tente novamente.');
+            $this->redirect('/primeiro-acesso/codigo');
+            return;
+        }
 
         Session::remove('_pa_codigo_bloqueado');
         Session::set('_pa_codigo', $novoCodigo);
@@ -631,7 +643,13 @@ class AuthController extends Controller
 
         $emailDestino = $resp['email'] ?? '';
         $codigo = EmailService::generateCode();
-        (new EmailService())->sendPasswordResetCode($emailDestino, $codigo, $resp['nome']);
+        $enviado = (new EmailService())->sendPasswordResetCode($emailDestino, $codigo, $resp['nome']);
+
+        if (!$enviado) {
+            Session::setFlash('danger', 'Não foi possível enviar o código de recuperação por e-mail no momento. Por favor, tente novamente em alguns instantes.');
+            $this->redirect('/recuperar-senha');
+            return;
+        }
 
         Session::set('_rec_responsavel_id', (int)$resp['id']);
         Session::set('_rec_cpf', $cleanCpf);

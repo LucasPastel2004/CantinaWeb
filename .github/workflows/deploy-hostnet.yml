@@ -89,6 +89,12 @@ jobs:
 
           echo "Caminho da aplicação na Hostnet: $TARGET_PATH"
 
+          # Garante alinhamento automático de host SMTP e formato de usuário da Hostnet no config.php
+          if [ -f "$TARGET_PATH/config/config.php" ]; then
+            sed -i "s/'mail\.cantinawebmonteirolobato\.com\.br'/'smtp\.cantinawebmonteirolobato\.com\.br'/g" "$TARGET_PATH/config/config.php"
+            sed -i "s/'smtp_user'[[:space:]]*=>[[:space:]]*'contato@cantinawebmonteirolobato\.com\.br'/'smtp_user' => 'contato=cantinawebmonteirolobato\.com\.br'/g" "$TARGET_PATH/config/config.php"
+          fi
+
           if [ ! -f "$TARGET_PATH/database/runner.php" ]; then
             echo "ERRO: Arquivo database/runner.php não encontrado em $TARGET_PATH"
             echo "Diretório atual: $(pwd)"

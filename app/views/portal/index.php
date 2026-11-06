@@ -18,9 +18,13 @@ $dataExtenso = $dataExtenso ?? date('d/m/Y');
 $bloqueadoMed = $bloqueadoMed ?? false;
 
 // Função auxiliar de capitalização elegante para nomes próprios
-$formatarNome = function(string $nome): string {
+$formatarNome = function(?string $nome): string {
+    $nome = trim((string)$nome);
+    if (empty($nome)) {
+        return '';
+    }
     $preposicoes = ['de', 'da', 'do', 'das', 'dos', 'e'];
-    $palavras = explode(' ', mb_strtolower(trim($nome), 'UTF-8'));
+    $palavras = explode(' ', mb_strtolower($nome, 'UTF-8'));
     $formatadas = array_map(function($palavra) use ($preposicoes) {
         return in_array($palavra, $preposicoes, true) ? $palavra : mb_convert_case($palavra, MB_CASE_TITLE, 'UTF-8');
     }, $palavras);
@@ -375,8 +379,8 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                 <?php else: ?>
                     <?php foreach ($dependentes as $dep): ?>
                         <?php 
-                            $nomeAluno = $formatarNome($dep['nome']);
-                            $inicial = mb_strtoupper(mb_substr($nomeAluno, 0, 1, 'UTF-8'), 'UTF-8');
+                            $nomeAluno = $formatarNome($dep['nome'] ?? 'Aluno');
+                            $inicial = mb_strtoupper(mb_substr($nomeAluno !== '' ? $nomeAluno : 'A', 0, 1, 'UTF-8'), 'UTF-8');
                             $totalRestricoes = (int)($dep['total_restricoes'] ?? 0);
                         ?>
                         <div class="student-card">
@@ -390,12 +394,12 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                                             <?php echo htmlspecialchars($nomeAluno, ENT_QUOTES, 'UTF-8'); ?>
                                         </h3>
                                         <span class="badge bg-light text-secondary border font-tabular" style="font-size: 11px;">
-                                            Matrícula: <?php echo htmlspecialchars($dep['matricula'], ENT_QUOTES, 'UTF-8'); ?>
+                                            Matrícula: <?php echo htmlspecialchars((string)($dep['matricula'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?>
                                         </span>
                                     </div>
                                     <div class="text-microcopy text-secondary font-tabular mb-2">
                                         Turma: <strong><?php echo htmlspecialchars($dep['nome_turma'] ?? 'A definir', ENT_QUOTES, 'UTF-8'); ?></strong> &bull; 
-                                        Turno: <strong><?php echo ucfirst($dep['turno'] ?? 'matutino'); ?></strong>
+                                        Turno: <strong><?php echo ucfirst($dep['turno_turma'] ?? $dep['turno'] ?? 'matutino'); ?></strong>
                                     </div>
 
                                     <!-- Faixa de Alergias & Restrições do Aluno -->
@@ -404,7 +408,7 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                                         <?php if ($totalRestricoes > 0 && !empty($dep['restricoes'])): ?>
                                             <?php foreach ($dep['restricoes'] as $rest): ?>
                                                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning" style="font-size: 10.5px;">
-                                                    <?php echo htmlspecialchars($rest['nome_exibicao'] ?? $rest['nome'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    <?php echo htmlspecialchars($rest['nome_exibicao'] ?? $rest['nome'] ?? 'Restrição', ENT_QUOTES, 'UTF-8'); ?>
                                                 </span>
                                             <?php endforeach; ?>
                                         <?php else: ?>
@@ -601,11 +605,13 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
                                     default    => ucfirst($p['status'])
                                 };
 
-                                // Formata resumo de itens
+                                // Formata resumo de itens de forma defensiva
                                 $resumoItens = [];
-                                if (!empty($p['itens'])) {
+                                if (!empty($p['itens']) && is_array($p['itens'])) {
                                     foreach ($p['itens'] as $it) {
-                                        $resumoItens[] = "{$it['quantidade']}x {$it['produto_nome']}";
+                                        $qtd = (int)($it['quantidade'] ?? 1);
+                                        $nomeProd = $it['produto_nome'] ?? $it['produto_descricao'] ?? 'Produto';
+                                        $resumoItens[] = "{$qtd}x {$nomeProd}";
                                     }
                                 }
                                 $resumoTexto = !empty($resumoItens) ? implode(', ', $resumoItens) : 'Sem itens discriminados';

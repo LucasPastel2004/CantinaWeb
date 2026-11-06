@@ -178,3 +178,14 @@ jobs:
       - name: Limpar OPcache da Hostnet via Web
         run: |
           curl -s https://www.cantinawebmonteirolobato.com.br/api/status || true
+
+      - name: Inspecionar logs recentes de erro na Hostnet
+        run: |
+          ssh -i ~/.ssh/hostnet_deploy -o IdentitiesOnly=yes -p ${{ secrets.HOSTNET_PORT }} \
+            ${{ secrets.HOSTNET_USER }}@${{ secrets.HOSTNET_HOST }} \
+            "if [ -f '${{ secrets.HOSTNET_PATH }}/storage/logs/error.log' ]; then \
+               echo 'Últimos registros de storage/logs/error.log na Hostnet:'; \
+               tail -n 25 '${{ secrets.HOSTNET_PATH }}/storage/logs/error.log'; \
+             else \
+               echo 'Nenhum arquivo error.log encontrado ou log vazio.'; \
+             fi" || true

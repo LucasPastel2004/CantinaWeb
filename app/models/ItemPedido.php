@@ -31,6 +31,7 @@ class ItemPedido extends Model
     {
         $sql = "SELECT ip.*, 
                        p.descricao AS produto_descricao, 
+                       p.descricao AS produto_nome,
                        p.codigo_interno AS produto_codigo,
                        p.tipo AS produto_tipo,
                        p.foto_url AS produto_foto,

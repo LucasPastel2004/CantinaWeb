@@ -37,23 +37,32 @@ class PortalController extends Controller
         $saldoAtual = (float)($respDb['saldo_atual'] ?? $usuario['saldo'] ?? 0.00);
         Session::set('_auth_saldo', $saldoAtual);
 
-        // Agrega restrições de cada dependente
-        foreach ($dependentes as &$dep) {
-            $dep['restricoes'] = RestricaoAlimentar::listarPorAluno((int)$dep['id']);
-            $dep['total_restricoes'] = count($dep['restricoes']);
-        }
-        unset($dep);
-
-        // Busca pedidos recentes do responsável
-        $pedidosRecentes = Pedido::listarPorResponsavel((int)$usuario['id']);
-        $ultimosPedidos = array_slice($pedidosRecentes, 0, 5);
-
-        // Conta agendamentos ativos futuros
-        $totalAgendadosAtivos = 0;
-        foreach ($pedidosRecentes as $ped) {
-            if (in_array($ped['status'], ['agendado', 'editado'])) {
-                $totalAgendadosAtivos++;
+        // Agrega restrições de cada dependente com fallback defensivo
+        try {
+            foreach ($dependentes as &$dep) {
+                $dep['restricoes'] = RestricaoAlimentar::listarPorAluno((int)$dep['id']);
+                $dep['total_restricoes'] = count($dep['restricoes']);
             }
+            unset($dep);
+        } catch (\Throwable $e) {
+            error_log('[PORTAL_RESTRICOES_ERROR] ' . $e->getMessage());
+        }
+
+        // Busca pedidos recentes do responsável com isolamento contra exceções
+        $ultimosPedidos = [];
+        $totalAgendadosAtivos = 0;
+        try {
+            $pedidosRecentes = Pedido::listarPorResponsavel((int)$usuario['id']);
+            $ultimosPedidos = array_slice($pedidosRecentes, 0, 5);
+
+            // Conta agendamentos ativos futuros
+            foreach ($pedidosRecentes as $ped) {
+                if (in_array($ped['status'] ?? '', ['agendado', 'editado'], true)) {
+                    $totalAgendadosAtivos++;
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[PORTAL_PEDIDOS_ERROR] ' . $e->getMessage());
         }
 
         // Data atual por extenso em português

@@ -618,6 +618,34 @@ textarea.form-control {
   letter-spacing: -0.01em;
 }
 
+/* Cabeçalho de Card com Acento Azul Corporativo dos Botões (#1d4ed8) */
+.card-enterprise-header.header-primary,
+.card-enterprise-header.card-header-primary {
+  background-color: var(--primary-blue, #1d4ed8);
+  border-bottom: 1px solid var(--primary-blue-hover, #1e40af);
+  color: #ffffff;
+}
+
+.card-enterprise-header.header-primary .text-secondary,
+.card-enterprise-header.header-primary .text-muted,
+.card-enterprise-header.header-primary .card-header-title,
+.card-enterprise-header.header-primary span:not(.bullet) {
+  color: #ffffff !important;
+}
+
+.card-enterprise-header.header-primary .status-indicator {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.card-enterprise-header.header-primary .status-indicator .bullet {
+  color: #4ade80 !important;
+}
+
 .card-enterprise-body {
   padding: 18px 20px;
   background-color: var(--surface-card);

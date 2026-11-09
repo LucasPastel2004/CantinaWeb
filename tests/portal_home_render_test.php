@@ -65,7 +65,7 @@ $asserts = [
     'Hover dos atalhos não aplica quadrado azul escuro no ícone' => !str_contains($html, 'background: #1d4ed8;') || !str_contains($html, '.action-tile-portal:hover .action-tile-icon'),
     'Ícone de recarga Pix atualizado para bolsa de moedas com cifrão' => str_contains($html, 'M19 7a4 4') && str_contains($html, 'M9.5 12h5a1.5 1.5 0 0 1 0 3h-5'),
     'Botões da barra superior utilizam classe do azul marinho (btn-portal-header)' => str_contains($html, 'btn-portal-header'),
-    'Contém versão de asset 7.2.6' => str_contains($html, 'custom.css?v=7.2.6'),
+    'Contém versão de asset 7.2.8' => str_contains($html, 'custom.css?v=7.2.8'),
 ];
 
 // Teste 2: Renderização direta da view com casos de borda (campos nulos em dependentes e lista modular)

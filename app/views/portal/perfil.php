@@ -28,8 +28,8 @@ $dependentes = $dependentes ?? [];
     <!-- Dados do Titular -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Titular da Conta Familiar</span>
+            <div class="card-enterprise-header header-primary">
+                <span class="text-microcopy text-uppercase font-weight-bold text-white">Titular da Conta Familiar</span>
                 <span class="status-indicator status-success"><span class="bullet">●</span> Ativo</span>
             </div>
             <div class="card-enterprise-body">
@@ -80,9 +80,9 @@ $dependentes = $dependentes ?? [];
     <!-- Dependentes Vinculados -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Dependentes Vinculados</span>
-                <span class="text-microcopy text-muted font-tabular"><?php echo count($dependentes); ?> aluno(s)</span>
+            <div class="card-enterprise-header header-primary">
+                <span class="text-microcopy text-uppercase font-weight-bold text-white">Dependentes Vinculados</span>
+                <span class="text-microcopy text-white font-tabular opacity-90"><?php echo count($dependentes); ?> aluno(s)</span>
             </div>
             <div class="card-enterprise-body">
                 <?php if (empty($dependentes)): ?>
@@ -111,7 +111,10 @@ $dependentes = $dependentes ?? [];
                 <?php endif; ?>
 
                 <div class="mt-4 p-3 bg-light rounded-2 border">
-                    <span class="text-microcopy text-muted d-block mb-1">Atualização Cadastral</span>
+                    <span class="text-microcopy text-dark d-block mb-1 fw-bold">Atualização Cadastral</span>
+                    <p class="text-microcopy text-secondary mb-0">
+                        Para inclusão de novos dependentes, transferência de turma ou alteração de dados cadastrais, favor procurar a secretaria do Colégio Monteiro Lobato.
+                    </p>
                 </div>
             </div>
         </div>
@@ -123,9 +126,9 @@ $dependentes = $dependentes ?? [];
     <!-- Card de Alteração de Senha -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Segurança de Acesso</span>
-                <span class="text-microcopy text-muted">Alteração de Senha</span>
+            <div class="card-enterprise-header header-primary">
+                <span class="text-microcopy text-uppercase font-weight-bold text-white">Segurança de Acesso</span>
+                <span class="text-microcopy text-white opacity-90">Alteração de Senha</span>
             </div>
             <div class="card-enterprise-body">
                 <form action="<?php echo $baseUrl; ?>/portal/perfil/senha" method="POST" id="form-alterar-senha">
@@ -186,17 +189,23 @@ $dependentes = $dependentes ?? [];
     <!-- Informações sobre Políticas de Acesso -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Como Funciona o Acesso</span>
+            <div class="card-enterprise-header header-primary">
+                <span class="text-microcopy text-uppercase font-weight-bold text-white">Como Funciona o Acesso</span>
                 <span class="status-indicator status-active"><span class="bullet">●</span> Protegido</span>
             </div>
             <div class="card-enterprise-body">
                 <div class="mb-3">
                     <strong class="text-dark d-block mb-1" style="font-size: 14px;">Autenticação e Senha</strong>
+                    <p class="text-secondary text-microcopy mb-0">
+                        O acesso ao Portal da Família é individual por responsável legal, autenticado pelo CPF e senha criptografada em padrão seguro.
+                    </p>
                 </div>
 
                 <div class="p-3 bg-light rounded-2 border mb-3">
                     <span class="text-microcopy text-dark d-block mb-1 fw-bold">Esqueceu sua senha?</span>
+                    <p class="text-microcopy text-secondary mb-0">
+                        Caso esqueça sua senha de acesso, na tela inicial de login clique em <strong>"Esqueci minha senha"</strong>. As orientações seguras de redefinição serão despachadas para o seu e-mail cadastrado.
+                    </p>
                 </div>
 
                 <div class="p-3 bg-light rounded-2 border">

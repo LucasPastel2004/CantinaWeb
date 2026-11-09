@@ -67,7 +67,7 @@ class WhatsAppService
     {
         $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
         $saldoFmt = number_format($saldoAtual, 2, ',', '.');
-        $mensagem = "Olá, {$primeiroNome}! O saldo da sua família na Cantina Web atingiu *R$ {$saldoFmt}* (abaixo do limite de segurança de R$ 15,00). Recarregue via Pix no Portal da Família para garantir os lanches escolares dos seus filhos!";
+        $mensagem = "Olá, {$primeiroNome}! O saldo da sua família na Cantina Web atingiu *R$ {$saldoFmt}* (abaixo do limite de segurança de R$ 5,00). Recarregue via Pix no Portal da Família para garantir os lanches escolares dos seus filhos!";
 
         return $this->sendMessage($whatsapp, $mensagem, 'alerta_saldo_baixo');
     }

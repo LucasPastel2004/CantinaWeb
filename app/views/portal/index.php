@@ -33,7 +33,7 @@ $formatarNome = function(?string $nome): string {
 
 $nomeFormatado = $formatarNome($responsavelNome ?? $usuario['nome'] ?? 'Responsável');
 $primeiroNome = explode(' ', $nomeFormatado)[0];
-$isSaldoBaixo = ($saldoAtual < 15.00);
+$isSaldoBaixo = ($saldoAtual < 5.00);
 ?>
 
 <style>

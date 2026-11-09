@@ -337,7 +337,7 @@ class TransacaoCarteira extends Model
 
         // 4. Parâmetros globais da cantina
         $configGlobal = Configuracao::obter();
-        $alertaSaldoBaixoValor = (float)($configGlobal['alerta_saldo_baixo'] ?? 5.00);
+        $alertaSaldoBaixoValor = min(5.00, (float)($configGlobal['alerta_saldo_baixo'] ?? 5.00));
         $recargaMinimaPix = (float)($configGlobal['recarga_minima_pix'] ?? 0.01);
 
         // Dispara alerta se o saldo disponível for menor que o limite de alerta

@@ -136,6 +136,13 @@ class VendaBalcao extends Model
                 ));
             }
 
+            if ($precoUnit <= 0) {
+                $precoUnit = (float)($produto['preco_venda'] ?? 0.0);
+            }
+            if ($precoUnit <= 0) {
+                throw new \InvalidArgumentException("Preço unitário inválido para o produto '{$produto['descricao']}'.");
+            }
+
             $subtotal = round($qtd * $precoUnit, 2);
             $valorTotal = round($valorTotal + $subtotal, 2);
 

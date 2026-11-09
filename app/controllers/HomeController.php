@@ -60,7 +60,16 @@ class HomeController extends Controller
 
         $opcacheReset = false;
         if (function_exists('opcache_reset')) {
-            $opcacheReset = @opcache_reset();
+            $lockFile = __DIR__ . '/../../storage/cache/opcache_reset.lock';
+            $now = time();
+            $lastReset = file_exists($lockFile) ? (int)@file_get_contents($lockFile) : 0;
+            if (!$isProduction || ($now - $lastReset) >= 30) {
+                $opcacheReset = @opcache_reset();
+                if (!is_dir(dirname($lockFile))) {
+                    @mkdir(dirname($lockFile), 0755, true);
+                }
+                @file_put_contents($lockFile, (string)$now);
+            }
         }
 
         if ($isProduction) {

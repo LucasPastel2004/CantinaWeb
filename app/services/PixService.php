@@ -41,15 +41,15 @@ class PixService
     {
         $dir = __DIR__ . '/../../storage/cache/pix';
         if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
-            @chmod(dirname($dir), 0777);
-            @chmod($dir, 0777);
+            @mkdir($dir, 0755, true);
+            @chmod(dirname($dir), 0755);
+            @chmod($dir, 0755);
             $htaccess = $dir . '/.htaccess';
             if (!file_exists($htaccess)) {
                 @file_put_contents($htaccess, "Require all denied\n");
             }
         } elseif (!is_writable($dir)) {
-            @chmod($dir, 0777);
+            @chmod($dir, 0755);
         }
         return $dir;
     }
@@ -756,7 +756,7 @@ class PixService
         $filename = $dir . '/pix_' . preg_replace('/[^A-Za-z0-9_-]/', '', $txid) . '.json';
         $saved = @file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT)) !== false;
         if ($saved) {
-            @chmod($filename, 0666);
+            @chmod($filename, 0644);
         }
 
         // Salva simultaneamente na sessão para resiliência imediata

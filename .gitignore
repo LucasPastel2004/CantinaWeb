@@ -45,6 +45,7 @@ storage/logs/*.log
 # ------------------------------------------------------------------------------
 storage/uploads/private/*
 !storage/uploads/private/.gitkeep
+!storage/uploads/private/.htaccess
 
 # Arquivos de dados reais de alunos e responsáveis (Conformidade LGPD)
 database/matriculas_reais.json

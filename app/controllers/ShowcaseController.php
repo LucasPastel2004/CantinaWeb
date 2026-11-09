@@ -15,10 +15,24 @@ use App\Core\Controller;
 class ShowcaseController extends Controller
 {
     /**
+     * Bloqueia rotas de mostruário visual em ambiente de produção
+     */
+    private function checkDevelopmentMode(): bool
+    {
+        $configFile = __DIR__ . '/../../config/config.php';
+        $config = file_exists($configFile) ? require $configFile : [];
+        if (($config['app']['env'] ?? 'development') === 'production') {
+            $this->redirect('/login');
+            return false;
+        }
+        return true;
+    }
+    /**
      * Demonstração do Layout Mestre do Portal da Família
      */
     public function portal(): void
     {
+        if (!$this->checkDevelopmentMode()) return;
         $data = [
             'pageTitle' => 'Visão Geral da Família',
             'activeMenu' => 'inicio',
@@ -43,6 +57,7 @@ class ShowcaseController extends Controller
      */
     public function admin(): void
     {
+        if (!$this->checkDevelopmentMode()) return;
         $data = [
             'pageTitle' => 'Corte do Turno Matutino',
             'pageHeading' => 'Consolidação de Demandas — Fornecedores',
@@ -76,6 +91,7 @@ class ShowcaseController extends Controller
      */
     public function components(): void
     {
+        if (!$this->checkDevelopmentMode()) return;
         $data = [
             'pageTitle' => 'Galeria de Componentes Parciais',
             'pageHeading' => 'Design System & Componentes Anti-Slop',

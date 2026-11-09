@@ -195,7 +195,9 @@ abstract class Controller
                 $this->redirect($redirectPath);
             } else {
                 $referer = $_SERVER['HTTP_REFERER'] ?? '';
-                if (!empty($referer)) {
+                $hostAtual = $_SERVER['HTTP_HOST'] ?? '';
+                $refererHost = !empty($referer) ? (string)parse_url($referer, PHP_URL_HOST) : '';
+                if (!empty($referer) && (empty($refererHost) || strcasecmp($refererHost, explode(':', $hostAtual)[0]) === 0)) {
                     if (!headers_sent()) {
                         header('Location: ' . $referer);
                     }

@@ -219,6 +219,10 @@ class CarteiraController extends Controller
      */
     public function cancelarPix(array $params = []): void
     {
+        if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
+            $this->validateCsrf();
+        }
+
         $user = Auth::user();
         $responsavelId = (int)$user['id'];
         $txid = $params['txid'] ?? $_POST['txid'] ?? '';

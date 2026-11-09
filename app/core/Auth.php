@@ -385,9 +385,17 @@ class Auth
      */
     public static function getClientIp(): string
     {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'] 
-            ?? $_SERVER['HTTP_CLIENT_IP'] 
-            ?? $_SERVER['REMOTE_ADDR'] 
-            ?? '127.0.0.1';
+        $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (!empty($remoteAddr) && filter_var($remoteAddr, FILTER_VALIDATE_IP)) {
+            return $remoteAddr;
+        }
+        $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_CLIENT_IP'] ?? '';
+        if (!empty($forwarded)) {
+            $firstIp = trim(explode(',', $forwarded)[0]);
+            if (filter_var($firstIp, FILTER_VALIDATE_IP)) {
+                return $firstIp;
+            }
+        }
+        return '127.0.0.1';
     }
 }

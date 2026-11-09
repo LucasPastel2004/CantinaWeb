@@ -18,12 +18,17 @@ if (!defined('CANTINA_SISTEMA')) {
 
 // Suporte para execução via navegador web com token
 if (php_sapi_name() !== 'cli') {
-    require_once __DIR__ . '/../config/config.php';
-    $tokenEnviado = $_GET['token'] ?? '';
-    $tokenConfig = defined('MIGRATION_TOKEN') ? MIGRATION_TOKEN : 'cantina_secret_token_change_me';
-    if (empty($tokenEnviado) || !hash_equals($tokenConfig, $tokenEnviado)) {
+    $configSecFile = __DIR__ . '/../config/config.php';
+    $configSec = file_exists($configSecFile) ? require $configSecFile : [];
+    $tokenEnviado = (string)($_POST['token'] ?? $_GET['token'] ?? '');
+    $tokenConfig = (string)($configSec['security']['migration_token'] ?? '');
+    if (empty($tokenConfig) || empty($tokenEnviado) || !hash_equals($tokenConfig, $tokenEnviado)) {
         http_response_code(403);
         die('Acesso negado: token de segurança inválido ou ausente.');
+    }
+    if (($configSec['app']['sistema_inaugurado'] ?? false) === true) {
+        http_response_code(403);
+        die('Acesso bloqueado: o sistema já se encontra oficialmente inaugurado.');
     }
 }
 

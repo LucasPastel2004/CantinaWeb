@@ -141,6 +141,16 @@ class PdvController extends Controller
             $itens = (array)$itensBrutos;
         }
 
+        // Segurança Contábil: Ignora preço unitário enviado pelo navegador para usar sempre o catálogo oficial do banco
+        if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
+            foreach ($itens as &$itRef) {
+                if (is_array($itRef)) {
+                    unset($itRef['preco_unitario']);
+                }
+            }
+            unset($itRef);
+        }
+
         if (empty($itens)) {
             $msg = 'Adicione ao menos um item na cesta antes de finalizar.';
             if ($isAjax) {

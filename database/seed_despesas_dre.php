@@ -7,6 +7,21 @@
  */
 
 define('CANTINA_SISTEMA', true);
+
+if (php_sapi_name() !== 'cli') {
+    $configSecFile = __DIR__ . '/../config/config.php';
+    $configSec = file_exists($configSecFile) ? require $configSecFile : [];
+    $tokenEnviado = (string)($_POST['token'] ?? $_GET['token'] ?? '');
+    $tokenConfig = (string)($configSec['security']['migration_token'] ?? '');
+    if (empty($tokenConfig) || empty($tokenEnviado) || !hash_equals($tokenConfig, $tokenEnviado)) {
+        http_response_code(403);
+        die('Acesso negado: token de segurança inválido ou ausente.');
+    }
+    if (($configSec['app']['sistema_inaugurado'] ?? false) === true) {
+        http_response_code(403);
+        die('Acesso bloqueado: o sistema já se encontra oficialmente inaugurado.');
+    }
+}
 require_once __DIR__ . '/../config/database.php';
 $pdo = Database::getInstance();
 

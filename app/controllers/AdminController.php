@@ -155,8 +155,8 @@ class AdminController extends Controller
         $nomeFantasia          = trim((string)$this->input('nome_fantasia', ''));
         $cnpj                  = trim((string)$this->input('cnpj', ''));
         $telefoneContato       = trim((string)$this->input('telefone_contato', ''));
-        $recargaMinimaPix      = (float)str_replace(',', '.', (string)$this->input('recarga_minima_pix', '10.00'));
-        $alertaSaldoBaixo      = (float)str_replace(',', '.', (string)$this->input('alerta_saldo_baixo', '15.00'));
+        $recargaMinimaPix      = (float)str_replace(',', '.', (string)$this->input('recarga_minima_pix', '0.01'));
+        $alertaSaldoBaixo      = (float)str_replace(',', '.', (string)$this->input('alerta_saldo_baixo', '5.00'));
         $timeoutSessaoMinutos  = (int)$this->input('timeout_sessao_minutos', 60);
         $limiteTentativasLogin = (int)$this->input('limite_tentativas_login', 5);
         $itensPorPagina        = (int)$this->input('itens_por_pagina', 25);
@@ -167,8 +167,8 @@ class AdminController extends Controller
             return;
         }
 
-        if ($recargaMinimaPix < 1.00) {
-            Session::setFlash('danger', 'O valor mínimo de recarga Pix deve ser de pelo menos R$ 1,00.');
+        if ($recargaMinimaPix < 0.00) {
+            Session::setFlash('danger', 'O valor mínimo de recarga Pix não pode ser negativo.');
             $this->redirect('/admin/configuracoes');
             return;
         }

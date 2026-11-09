@@ -41,8 +41,8 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 }, $palavrasLayout));
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
-$isSaldoBaixo = ($saldoAtual < 15.00);
-$assetVersion = '7.2.9';
+$isSaldoBaixo = ($saldoAtual < 5.00);
+$assetVersion = '7.3.0';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

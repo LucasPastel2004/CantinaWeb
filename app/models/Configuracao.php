@@ -42,8 +42,8 @@ class Configuracao extends Model
                 '12.345.678/0001-90',
                 '(11) 98765-4321',
                 'assets/img/logo-colegio.jpg',
-                10.00,
-                15.00,
+                0.01,
+                5.00,
                 60,
                 5,
                 25

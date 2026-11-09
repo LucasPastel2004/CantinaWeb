@@ -130,9 +130,6 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                     Crédito liberado no mesmo segundo da confirmação bancária, sem tarifas adicionais.
                 </p>
             </div>
-            <div class="text-muted" style="font-size: 11px;">
-                Mínimo: <strong class="font-tabular">R$ <?php echo number_format($resumo['recarga_minima_pix'], 2, ',', '.'); ?></strong>
-            </div>
         </div>
 
         <div class="row g-4 align-items-start">
@@ -146,17 +143,17 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                         Selecione um valor sugerido:
                     </label>
                     <div class="d-flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(5)">
+                            + R$ 5,00
+                        </button>
+                        <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(10)">
+                            + R$ 10,00
+                        </button>
                         <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(20)">
                             + R$ 20,00
                         </button>
                         <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(50)">
                             + R$ 50,00
-                        </button>
-                        <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(100)">
-                            + R$ 100,00
-                        </button>
-                        <button type="button" class="btn btn-enterprise btn-secondary btn-sm btn-quick-value" onclick="selecionarValor(200)">
-                            + R$ 200,00
                         </button>
                     </div>
 
@@ -171,12 +168,10 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                                    id="input-valor-pix" 
                                    name="valor" 
                                    class="form-control font-tabular input-money" 
-                                   value="<?php echo htmlspecialchars($temPixAtivo ? number_format((float)$pixAtivo['valor'], 2, ',', '.') : '50,00', ENT_QUOTES); ?>" 
+                                   value="<?php echo htmlspecialchars($temPixAtivo ? number_format((float)$pixAtivo['valor'], 2, ',', '.') : '', ENT_QUOTES); ?>" 
+                                   placeholder="0,00"
                                    required 
                                    style="font-size: 15px; font-weight: 600;">
-                        </div>
-                        <div class="form-text text-muted" style="font-size: 11px;">
-                            Insira um valor igual ou superior a R$ <?php echo number_format($resumo['recarga_minima_pix'], 2, ',', '.'); ?>.
                         </div>
                     </div>
 

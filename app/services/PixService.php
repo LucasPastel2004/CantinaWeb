@@ -69,11 +69,15 @@ class PixService
         string $descricao = 'Recarga Carteira Cantina',
         array $dadosResponsavel = []
     ): array {
+        if ($valor <= 0) {
+            throw new \InvalidArgumentException('O valor para recarga via Pix deve ser maior que zero.');
+        }
+
         // Validação de valor mínimo parametrizado nas configurações globais
         $configGlobal = Configuracao::obter();
-        $recargaMinima = (float)($configGlobal['recarga_minima_pix'] ?? 10.00);
+        $recargaMinima = (float)($configGlobal['recarga_minima_pix'] ?? 0.01);
 
-        if ($valor < $recargaMinima) {
+        if ($recargaMinima > 0.01 && $valor < $recargaMinima) {
             throw new \InvalidArgumentException(
                 sprintf('O valor mínimo para recarga via Pix é de R$ %s.', number_format($recargaMinima, 2, ',', '.'))
             );

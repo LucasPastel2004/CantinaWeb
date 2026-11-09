@@ -117,10 +117,15 @@ class CarteiraController extends Controller
         $valorLimpo = $this->sanitizarValorMonetario($valorBruto);
 
         // 3. Validação de valor mínimo
-        $configGlobal = Configuracao::obter();
-        $recargaMinima = (float)($configGlobal['recarga_minima_pix'] ?? 10.00);
+        if ($valorLimpo <= 0) {
+            $this->responderErro('Por favor, informe um valor válido para a recarga.', 422);
+            return;
+        }
 
-        if ($valorLimpo < $recargaMinima) {
+        $configGlobal = Configuracao::obter();
+        $recargaMinima = (float)($configGlobal['recarga_minima_pix'] ?? 0.01);
+
+        if ($recargaMinima > 0.01 && $valorLimpo < $recargaMinima) {
             $this->responderErro(
                 sprintf('O valor mínimo para recarga via Pix é de R$ %s.', number_format($recargaMinima, 2, ',', '.')),
                 422

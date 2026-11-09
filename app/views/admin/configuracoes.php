@@ -124,7 +124,7 @@ $csrfField = $csrf_field ?? '';
                                 Alerta de Saldo Baixo (R$) <span class="text-danger">*</span>
                             </label>
                             <input type="number" step="0.50" min="0.00" class="form-control form-control-sm font-tabular" id="alerta_saldo_baixo" name="alerta_saldo_baixo" 
-                                   value="<?php echo number_format((float)($configuracoes['alerta_saldo_baixo'] ?? 15.00), 2, '.', ''); ?>" required>
+                                   value="<?php echo number_format((float)($configuracoes['alerta_saldo_baixo'] ?? 5.00), 2, '.', ''); ?>" required>
                             <span class="text-muted" style="font-size: 11px;">Gatilho de aviso aos pais</span>
                         </div>
                     </div>

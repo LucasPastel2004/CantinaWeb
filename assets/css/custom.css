@@ -1856,7 +1856,44 @@ textarea.form-control {
 }
 
 /* Dispositivos móveis estritos (< 768px) */
+/* Faixa de Navegação dos Dias da Semana do Agendamento (Rolagem Horizontal no Mobile) */
+.dias-semana-scroll {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.dia-semana-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 @media (max-width: 767.98px) {
+  /* Rolagem Horizontal Fluida dos Dias da Semana no Agendamento Mobile */
+  .dias-semana-scroll {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x proximity !important;
+    padding: 2px 2px 8px 2px !important;
+    margin-bottom: 1rem !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .dias-semana-scroll::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .dia-semana-col {
+    flex: 0 0 110px !important;
+    min-width: 110px !important;
+    max-width: 115px !important;
+    scroll-snap-align: start !important;
+  }
+
   .app-sidebar {
     position: fixed;
     left: 0;

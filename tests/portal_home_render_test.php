@@ -65,7 +65,7 @@ $asserts = [
     'Hover dos atalhos não aplica quadrado azul escuro no ícone' => !str_contains($html, 'background: #1d4ed8;') || !str_contains($html, '.action-tile-portal:hover .action-tile-icon'),
     'Ícone de recarga Pix atualizado para bolsa de moedas com cifrão' => str_contains($html, 'M19 7a4 4') && str_contains($html, 'M9.5 12h5a1.5 1.5 0 0 1 0 3h-5'),
     'Botões da barra superior utilizam classe do azul marinho (btn-portal-header)' => str_contains($html, 'btn-portal-header'),
-    'Contém versão de asset 7.4.2' => str_contains($html, 'custom.css?v=7.4.2'),
+    'Contém versão de asset 7.4.2' => str_contains($html, 'custom.css?v=7.4.3'),
     'Links redundantes removidos do dropdown do usuário' => !str_contains($html, 'dropdown-item" href="/portal/carteira">Extrato Financeiro') && !str_contains($html, 'dropdown-item" href="/portal/extrato">Extrato do Aluno'),
 ];
 

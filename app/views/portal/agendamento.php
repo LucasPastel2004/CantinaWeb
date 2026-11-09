@@ -126,14 +126,14 @@ if (empty($categorias) && !empty($produtos)) {
     </div>
 
     <!-- Navegador dos 5 Dias Letivos da Semana -->
-    <div class="row g-2 mb-4">
+    <div class="dias-semana-scroll">
         <?php foreach ($diasSemana as $dia): ?>
             <?php 
             $isDiaSel = ($dia['data'] === $diaSelecionado['data']);
             $corte = $dia['status_corte'];
             $podePedir = ($dia['is_letivo'] && $corte['pode_alterar']);
             ?>
-            <div class="col">
+            <div class="dia-semana-col">
                 <a href="<?php echo $baseUrl; ?>/portal/agendamento?aluno=<?php echo $alunoSelecionado['id']; ?>&semana=<?php echo $semanaRef; ?>&data=<?php echo $dia['data']; ?>" 
                    class="card-enterprise h-100 p-2 text-decoration-none d-block transition-all"
                    style="border-radius: 6px; <?php echo $isDiaSel ? 'border: 2px solid #475569; background: #f8fafc;' : 'border: 1px solid #e2e8f0; background: #fff;'; ?> <?php echo !$podePedir ? 'opacity: 0.75;' : ''; ?>">
@@ -778,6 +778,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             modalAlergia.hide();
         });
+    }
+
+    // No mobile, centraliza suavemente o dia selecionado na faixa de rolagem horizontal
+    const diaSelecionadoEl = document.querySelector('.dia-semana-col .card-enterprise[style*="border: 2px"]');
+    if (diaSelecionadoEl && window.innerWidth < 768) {
+        setTimeout(function() {
+            diaSelecionadoEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 100);
     }
 
     // Inicializa comanda

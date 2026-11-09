@@ -42,7 +42,7 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 15.00);
-$assetVersion = '7.2.8';
+$assetVersion = '7.2.9';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -96,8 +96,6 @@ $assetVersion = '7.2.8';
                         <div class="text-microcopy text-muted font-tabular">Responsável Financeiro</div>
                     </li>
                     <li><a class="dropdown-item mt-1" href="<?php echo $baseUrl; ?>/portal/perfil">Meus Dados</a></li>
-                    <li><a class="dropdown-item" href="<?php echo $baseUrl; ?>/portal/carteira">Extrato Financeiro</a></li>
-                    <li><a class="dropdown-item" href="<?php echo $baseUrl; ?>/portal/extrato">Extrato do Aluno</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form action="<?php echo $baseUrl; ?>/logout" method="POST" class="m-0">

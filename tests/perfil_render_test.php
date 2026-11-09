@@ -52,7 +52,7 @@ $html = ob_get_clean();
 $testes = [
     'HTML gerado com sucesso' => strlen($html) > 1000,
     'Contém título Meus Dados Cadastrais' => str_contains($html, 'Meus Dados Cadastrais'),
-    'Contém 4 cabeçalhos com classe header-primary' => substr_count($html, 'card-enterprise-header header-primary') === 4,
+    'Contém 4 cabeçalhos de bloco corporativos neutros' => substr_count($html, 'card-enterprise-header') === 4 && !str_contains($html, 'header-primary'),
     'Cabeçalho 1: Titular da Conta Familiar estilizado' => str_contains($html, 'Titular da Conta Familiar') && str_contains($html, 'status-success'),
     'Cabeçalho 2: Dependentes Vinculados estilizado' => str_contains($html, 'Dependentes Vinculados') && str_contains($html, '1 aluno(s)'),
     'Cabeçalho 3: Segurança de Acesso estilizado' => str_contains($html, 'Segurança de Acesso') && str_contains($html, 'Alteração de Senha'),
@@ -93,7 +93,7 @@ $htmlVazio = ob_get_clean();
 
 $casoVazioPassou = str_contains($htmlVazio, 'Nenhum dependente vinculado no momento.')
     && str_contains($htmlVazio, '0 aluno(s)')
-    && (substr_count($htmlVazio, 'card-enterprise-header header-primary') === 4);
+    && (substr_count($htmlVazio, 'card-enterprise-header') === 4);
 
 if ($casoVazioPassou) {
     echo "  [PASS] Cenário de borda: Sem dependentes vinculados renderiza 0 aluno(s) e mensagem adequada\n";

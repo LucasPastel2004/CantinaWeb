@@ -28,8 +28,8 @@ $dependentes = $dependentes ?? [];
     <!-- Dados do Titular -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header header-primary">
-                <span class="text-microcopy text-uppercase font-weight-bold text-white">Titular da Conta Familiar</span>
+            <div class="card-enterprise-header">
+                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Titular da Conta Familiar</span>
                 <span class="status-indicator status-success"><span class="bullet">●</span> Ativo</span>
             </div>
             <div class="card-enterprise-body">
@@ -80,9 +80,9 @@ $dependentes = $dependentes ?? [];
     <!-- Dependentes Vinculados -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header header-primary">
-                <span class="text-microcopy text-uppercase font-weight-bold text-white">Dependentes Vinculados</span>
-                <span class="text-microcopy text-white font-tabular opacity-90"><?php echo count($dependentes); ?> aluno(s)</span>
+            <div class="card-enterprise-header">
+                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Dependentes Vinculados</span>
+                <span class="text-microcopy text-muted font-tabular"><?php echo count($dependentes); ?> aluno(s)</span>
             </div>
             <div class="card-enterprise-body">
                 <?php if (empty($dependentes)): ?>
@@ -126,9 +126,9 @@ $dependentes = $dependentes ?? [];
     <!-- Card de Alteração de Senha -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header header-primary">
-                <span class="text-microcopy text-uppercase font-weight-bold text-white">Segurança de Acesso</span>
-                <span class="text-microcopy text-white opacity-90">Alteração de Senha</span>
+            <div class="card-enterprise-header">
+                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Segurança de Acesso</span>
+                <span class="text-microcopy text-muted">Alteração de Senha</span>
             </div>
             <div class="card-enterprise-body">
                 <form action="<?php echo $baseUrl; ?>/portal/perfil/senha" method="POST" id="form-alterar-senha">
@@ -189,8 +189,8 @@ $dependentes = $dependentes ?? [];
     <!-- Informações sobre Políticas de Acesso -->
     <div class="col-12 col-md-6">
         <div class="card-enterprise h-100">
-            <div class="card-enterprise-header header-primary">
-                <span class="text-microcopy text-uppercase font-weight-bold text-white">Como Funciona o Acesso</span>
+            <div class="card-enterprise-header">
+                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Como Funciona o Acesso</span>
                 <span class="status-indicator status-active"><span class="bullet">●</span> Protegido</span>
             </div>
             <div class="card-enterprise-body">

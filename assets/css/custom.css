@@ -1864,19 +1864,51 @@ textarea.form-control {
 
 /* ==========================================================================
    ESTRUTURA DO PORTAL DA FAMÍLIA (docs/DESIGN.md & Fase 5)
+   Topbar Corporativa Unificada em Azul Marinho (#0f172a / rgb(15, 23, 42))
    ========================================================================== */
 
 .portal-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid var(--border-subtle);
+  background-color: #0f172a !important; /* Azul Marinho Corporativo Profundo (Idêntico à Barra Lateral dos Admins) */
+  border-bottom: 1px solid #1e293b !important;
   padding: 10px 0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.25);
+}
+
+.portal-header .header-logo {
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  padding: 1px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.portal-header a:hover .header-logo {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 2px #38bdf8, 0 3px 8px rgba(0, 0, 0, 0.45);
 }
 
 .portal-brand-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff !important;
   line-height: 1.2;
+}
+
+.portal-header .text-microcopy {
+  color: #94a3b8 !important; /* Slate 400 - Alto contraste sobre azul marinho */
+}
+
+.portal-header .btn-enterprise.btn-secondary {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.portal-header .btn-enterprise.btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 .portal-wallet-card {
@@ -1930,16 +1962,9 @@ textarea.form-control {
   color: #b45309;
 }
 
-.portal-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 10px 0;
-  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03);
-}
-
 .portal-nav-bar {
-  background-color: #ffffff;
-  border-bottom: 1px solid var(--border-subtle);
+  background-color: #0f172a !important; /* Azul Marinho Corporativo Profundo Contínuo */
+  border-bottom: 1px solid #1e293b !important;
 }
 
 .portal-nav-list {
@@ -1950,6 +1975,12 @@ textarea.form-control {
   padding: 0;
   overflow-x: auto;
   white-space: nowrap;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-nav-list::-webkit-scrollbar {
+  display: none;
 }
 
 .portal-nav-item {
@@ -1963,20 +1994,23 @@ textarea.form-control {
   padding: 0 14px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #94a3b8 !important; /* Slate 400 claro em repouso */
   text-decoration: none;
   border-bottom: 2px solid transparent;
-  transition: color 0.12s ease, border-color 0.12s ease;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+  border-radius: 4px 4px 0 0;
 }
 
 .portal-nav-link:hover {
-  color: var(--text-primary);
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .portal-nav-link.active {
-  color: var(--primary-blue);
+  color: #ffffff !important;
   font-weight: 600;
-  border-bottom-color: var(--primary-blue);
+  border-bottom-color: #38bdf8 !important; /* Destaque azul celeste acessível sobre fundo marinho */
+  background-color: rgba(56, 189, 248, 0.08);
 }
 
 .portal-footer,

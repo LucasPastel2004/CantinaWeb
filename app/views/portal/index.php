@@ -441,9 +441,11 @@ $isSaldoBaixo = ($saldoAtual < 15.00);
             <div class="p-3">
                 <a href="<?php echo $baseUrl; ?>/portal/carteira" class="action-tile-portal">
                     <div class="d-flex align-items-center gap-2.5">
-                        <div class="action-tile-icon">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2zm13 3H1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                        <div class="action-tile-icon" title="Recarga Pix">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 7a4 4 0 0 0-4-4H9A4 4 0 0 0 5 7c0 1.25.57 2.37 1.46 3.1A8 8 0 1 0 17.54 10.1C18.43 9.37 19 8.25 19 7z"></path>
+                                <path d="M12 10v6"></path>
+                                <path d="M9.5 12h5a1.5 1.5 0 0 1 0 3h-5"></path>
                             </svg>
                         </div>
                         <div>

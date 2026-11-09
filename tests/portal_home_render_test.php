@@ -63,7 +63,8 @@ $asserts = [
     'Badge de contagem de agendamento removida do pilar de pedidos' => !str_contains($html, 'agendamento(s)</span>'),
     'Botões dos 4 pilares padronizados no azul corporativo (btn-primary)' => substr_count($html, 'btn-primary btn-sm w-100') >= 4,
     'Hover dos atalhos não aplica quadrado azul escuro no ícone' => !str_contains($html, 'background: #1d4ed8;') || !str_contains($html, '.action-tile-portal:hover .action-tile-icon'),
-    'Contém versão de asset 7.2.4' => str_contains($html, 'custom.css?v=7.2.4'),
+    'Ícone de recarga Pix atualizado para bolsa de moedas com cifrão' => str_contains($html, 'M19 7a4 4') && str_contains($html, 'M9.5 12h5a1.5 1.5 0 0 1 0 3h-5'),
+    'Contém versão de asset 7.2.5' => str_contains($html, 'custom.css?v=7.2.5'),
 ];
 
 // Teste 2: Renderização direta da view com casos de borda (campos nulos em dependentes e lista modular)

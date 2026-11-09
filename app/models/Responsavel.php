@@ -101,6 +101,27 @@ class Responsavel extends Model
     }
 
     /**
+     * Atualiza os dados cadastrais (nome, whatsapp/telefone, email) do responsável
+     */
+    public function atualizarDadosCadastrais(int $id, array $dados): bool
+    {
+        $sql = "UPDATE {$this->table} 
+                SET nome = :nome, 
+                    whatsapp = :whatsapp, 
+                    email = :email, 
+                    updated_at = :updated_at 
+                WHERE id = :id";
+
+        return self::execute($sql, [
+            'nome'       => trim($dados['nome'] ?? ''),
+            'whatsapp'   => trim($dados['whatsapp'] ?? ''),
+            'email'      => trim($dados['email'] ?? ''),
+            'updated_at' => date('Y-m-d H:i:s'),
+            'id'         => $id
+        ]) >= 0;
+    }
+
+    /**
      * Registra o aceite formal dos Termos e Políticas da Cantina
      */
     public function aceitarTermos(int $id): bool

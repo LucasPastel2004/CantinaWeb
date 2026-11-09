@@ -3,7 +3,7 @@
  * Cantina Web — Colégio Monteiro Lobato
  * View: Perfil e Dados Cadastrais do Responsável Familiar
  * 
- * Conforme docs/DESIGN.md e skill design-taste-frontend
+ * Conforme docs/DESIGN.md e diretrizes de manutenção
  */
 
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
@@ -11,6 +11,11 @@ defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 $baseUrl = $baseUrl ?? '';
 $responsavel = $responsavel ?? [];
 $dependentes = $dependentes ?? [];
+
+$cpfLimpo = preg_replace('/\D/', '', $responsavel['cpf'] ?? '');
+$cpfFormatado = (strlen($cpfLimpo) === 11)
+    ? substr($cpfLimpo, 0, 3) . '.' . substr($cpfLimpo, 3, 3) . '.' . substr($cpfLimpo, 6, 3) . '-' . substr($cpfLimpo, 9, 2)
+    : ($responsavel['cpf'] ?? '—');
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -25,61 +30,226 @@ $dependentes = $dependentes ?? [];
 </div>
 
 <div class="row g-4">
-    <!-- Dados do Titular -->
-    <div class="col-12 col-md-6">
-        <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
+    <!-- Coluna 1: Titular da Conta Familiar & Segurança de Acesso -->
+    <div class="col-12 col-lg-6">
+        <div class="card-enterprise">
+            <div class="card-enterprise-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Titular da Conta Familiar</span>
-                <span class="status-indicator status-success"><span class="bullet">●</span> Ativo</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-indicator status-success"><span class="bullet">●</span> Ativo</span>
+                    <button type="button" class="btn btn-enterprise btn-secondary btn-sm" id="btn-toggle-editar" title="Editar dados cadastrais">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1" aria-hidden="true">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Editar Dados
+                    </button>
+                </div>
             </div>
             <div class="card-enterprise-body">
-                <div class="mb-3">
-                    <span class="text-microcopy text-muted d-block">Nome Completo</span>
-                    <strong class="text-dark" style="font-size: 15px;"><?php echo htmlspecialchars($responsavel['nome'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></strong>
-                </div>
+                <!-- ========================================== -->
+                <!-- 1. MODO DE VISUALIZAÇÃO DOS DADOS CADASTRAIS -->
+                <!-- ========================================== -->
+                <div id="dados-view-mode">
+                    <div class="mb-3">
+                        <span class="text-microcopy text-muted d-block">Nome Completo</span>
+                        <strong class="text-dark" style="font-size: 15px;"><?php echo htmlspecialchars($responsavel['nome'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></strong>
+                    </div>
 
-                <div class="row g-3 mb-3">
-                    <div class="col-6">
-                        <span class="text-microcopy text-muted d-block">CPF (Login)</span>
-                        <span class="font-tabular text-dark fw-semibold">
-                            <?php 
-                            $cpf = preg_replace('/\D/', '', $responsavel['cpf'] ?? '');
-                            if (strlen($cpf) === 11) {
-                                echo substr($cpf, 0, 3) . '.' . substr($cpf, 3, 3) . '.' . substr($cpf, 6, 3) . '-' . substr($cpf, 9, 2);
-                            } else {
-                                echo htmlspecialchars($responsavel['cpf'] ?? '—', ENT_QUOTES, 'UTF-8');
-                            }
-                            ?>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <span class="text-microcopy text-muted d-block">CPF (Login)</span>
+                            <span class="font-tabular text-dark fw-semibold"><?php echo htmlspecialchars($cpfFormatado, ENT_QUOTES, 'UTF-8'); ?></span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-microcopy text-muted d-block">Telefone / Contato</span>
+                            <span class="font-tabular text-dark fw-semibold">
+                                <?php if (!empty($responsavel['whatsapp'])): ?>
+                                    <?php echo htmlspecialchars($responsavel['whatsapp'], ENT_QUOTES, 'UTF-8'); ?>
+                                <?php else: ?>
+                                    <span class="text-muted fst-italic">Não informado</span>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="text-microcopy text-muted d-block">E-mail de Contato</span>
+                        <span class="text-dark">
+                            <?php if (!empty($responsavel['email'])): ?>
+                                <?php echo htmlspecialchars($responsavel['email'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php else: ?>
+                                <span class="text-muted fst-italic">Não informado</span>
+                            <?php endif; ?>
                         </span>
                     </div>
-                    <div class="col-6">
-                        <span class="text-microcopy text-muted d-block">Telefone / Contato</span>
-                        <span class="font-tabular text-dark fw-semibold"><?php echo htmlspecialchars($responsavel['whatsapp'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></span>
+
+                    <div class="p-3 bg-light rounded-2 border">
+                        <span class="text-microcopy text-muted d-block mb-1">Adesão aos Termos de Uso</span>
+                        <div class="text-microcopy text-secondary">
+                            <?php if (!empty($responsavel['termos_aceitos_em'])): ?>
+                                <span class="text-success fw-semibold">&check; Termos e Políticas aceitos em <?php echo date('d/m/Y \à\s H:i', strtotime($responsavel['termos_aceitos_em'])); ?>.</span>
+                            <?php else: ?>
+                                <span class="text-muted">Termos ainda não formalizados.</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <span class="text-microcopy text-muted d-block">E-mail de Contato</span>
-                    <span class="text-dark"><?php echo htmlspecialchars($responsavel['email'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></span>
+                <!-- ========================================== -->
+                <!-- 2. MODO DE EDIÇÃO DOS DADOS CADASTRAIS (CRUD) -->
+                <!-- ========================================== -->
+                <div id="dados-edit-mode" class="d-none">
+                    <form action="<?php echo $baseUrl; ?>/portal/perfil/atualizar" method="POST" id="form-atualizar-dados">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                        <div class="mb-3">
+                            <label for="perfil_nome" class="form-label text-microcopy text-muted mb-1">
+                                Nome Completo <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-sm" 
+                                   id="perfil_nome" 
+                                   name="nome" 
+                                   value="<?php echo htmlspecialchars($responsavel['nome'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" 
+                                   required 
+                                   maxlength="100"
+                                   autocomplete="name">
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-microcopy text-muted mb-1">
+                                    CPF (Login)
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-sm bg-light text-muted font-tabular" 
+                                       value="<?php echo htmlspecialchars($cpfFormatado, ENT_QUOTES, 'UTF-8'); ?>" 
+                                       readonly 
+                                       disabled>
+                                <small class="text-microcopy text-muted d-block mt-1">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1" aria-hidden="true">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    O CPF não pode ser trocado.
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <label for="perfil_whatsapp" class="form-label text-microcopy text-muted mb-1">
+                                    Telefone / Contato
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-sm input-phone font-tabular" 
+                                       id="perfil_whatsapp" 
+                                       name="whatsapp" 
+                                       value="<?php echo htmlspecialchars($responsavel['whatsapp'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" 
+                                       placeholder="(00) 00000-0000" 
+                                       maxlength="20"
+                                       autocomplete="tel">
+                                <small class="text-microcopy text-muted d-block mt-1">
+                                    Preencha, altere ou apague para remover.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="perfil_email" class="form-label text-microcopy text-muted mb-1">
+                                E-mail de Contato
+                            </label>
+                            <input type="email" 
+                                   class="form-control form-control-sm" 
+                                   id="perfil_email" 
+                                   name="email" 
+                                   value="<?php echo htmlspecialchars($responsavel['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" 
+                                   placeholder="exemplo@email.com" 
+                                   maxlength="100"
+                                   autocomplete="email">
+                            <small class="text-microcopy text-muted d-block mt-1">
+                                Preencha, altere ou apague para remover. Utilizado para recuperação de senha.
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                            <button type="button" class="btn btn-enterprise btn-secondary btn-sm" id="btn-cancelar-edicao">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-enterprise btn-primary btn-sm">
+                                Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="p-3 bg-light rounded-2 border">
-                    <span class="text-microcopy text-muted d-block mb-1">Adesão aos Termos de Uso</span>
-                    <div class="text-microcopy text-secondary">
-                        <?php if (!empty($responsavel['termos_aceitos_em'])): ?>
-                            <span class="text-success fw-semibold">&check; Termos e Políticas aceitos em <?php echo date('d/m/Y \à\s H:i', strtotime($responsavel['termos_aceitos_em'])); ?>.</span>
-                        <?php else: ?>
-                            <span class="text-muted">Termos ainda não formalizados.</span>
-                        <?php endif; ?>
-                    </div>
+                <!-- ========================================== -->
+                <!-- 3. SEGURANÇA DE ACESSO — ALTERAÇÃO DE SENHA -->
+                <!-- ========================================== -->
+                <hr class="my-4" style="border-color: var(--border-default, #e2e8f0);">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Segurança de Acesso</span>
+                    <span class="text-microcopy text-muted">Alteração de Senha</span>
                 </div>
+
+                <form action="<?php echo $baseUrl; ?>/portal/perfil/senha" method="POST" id="form-alterar-senha">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                    <div class="mb-3">
+                        <label for="senha_atual" class="form-label text-microcopy text-muted mb-1">
+                            Senha Atual <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" 
+                               class="form-control form-control-sm" 
+                               id="senha_atual" 
+                               name="senha_atual" 
+                               required 
+                               autocomplete="current-password">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nova_senha" class="form-label text-microcopy text-muted mb-1">
+                            Nova Senha <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" 
+                               class="form-control form-control-sm" 
+                               id="nova_senha" 
+                               name="nova_senha" 
+                               required 
+                               minlength="6" 
+                               autocomplete="new-password">
+                        <small class="text-microcopy text-muted">Use no mínimo 6 caracteres alfanuméricos.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmar_senha" class="form-label text-microcopy text-muted mb-1">
+                            Confirmar Nova Senha <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" 
+                               class="form-control form-control-sm" 
+                               id="confirmar_senha" 
+                               name="confirmar_senha" 
+                               required 
+                               minlength="6" 
+                               autocomplete="new-password">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <span class="text-microcopy text-muted">
+                            A alteração entra em vigor imediatamente.
+                        </span>
+                        <button type="submit" class="btn btn-enterprise btn-primary btn-sm">
+                            Atualizar Senha
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Dependentes Vinculados -->
-    <div class="col-12 col-md-6">
-        <div class="card-enterprise h-100">
+    <!-- Coluna 2: Dependentes Vinculados & Informações sobre Acesso -->
+    <div class="col-12 col-lg-6 d-flex flex-column gap-4">
+        <!-- Dependentes Vinculados -->
+        <div class="card-enterprise">
             <div class="card-enterprise-header">
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Dependentes Vinculados</span>
                 <span class="text-microcopy text-muted font-tabular"><?php echo count($dependentes); ?> aluno(s)</span>
@@ -111,84 +281,16 @@ $dependentes = $dependentes ?? [];
                 <?php endif; ?>
 
                 <div class="mt-4 p-3 bg-light rounded-2 border">
-                    <span class="text-microcopy text-dark d-block mb-1 fw-bold">Atualização Cadastral</span>
+                    <span class="text-microcopy text-dark d-block mb-1 fw-bold">Secretaria Escolar</span>
                     <p class="text-microcopy text-secondary mb-0">
-                        Para inclusão de novos dependentes, transferência de turma ou alteração de dados cadastrais, favor procurar a secretaria do Colégio Monteiro Lobato.
+                        Para inclusão de novos dependentes ou transferência de turma, favor procurar a secretaria do Colégio Monteiro Lobato.
                     </p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Segunda Linha: Segurança de Acesso & Alteração de Senha -->
-<div class="row g-4 mt-1">
-    <!-- Card de Alteração de Senha -->
-    <div class="col-12 col-md-6">
-        <div class="card-enterprise h-100">
-            <div class="card-enterprise-header">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Segurança de Acesso</span>
-                <span class="text-microcopy text-muted">Alteração de Senha</span>
-            </div>
-            <div class="card-enterprise-body">
-                <form action="<?php echo $baseUrl; ?>/portal/perfil/senha" method="POST" id="form-alterar-senha">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-
-                    <div class="mb-3">
-                        <label for="senha_atual" class="form-label text-microcopy text-muted mb-1">
-                            Senha Atual <span class="text-danger">*</span>
-                        </label>
-                        <input type="password" 
-                               class="form-control form-control-sm" 
-                               id="senha_atual" 
-                               name="senha_atual" 
-                               required 
-                               autocomplete="current-password">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="nova_senha" class="form-label text-microcopy text-muted mb-1">
-                            Nova Senha <span class="text-danger">*</span>
-                        </label>
-                        <input type="password" 
-                               class="form-control form-control-sm" 
-                               id="nova_senha" 
-                               name="nova_senha" 
-                               required 
-                               minlength="6" 
-                               autocomplete="new-password">
-                        <small class="text-microcopy text-muted">Use no mínimo 6 caracteres alfanuméricos.</small>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="confirmar_senha" class="form-label text-microcopy text-muted mb-1">
-                            Confirmar Nova Senha <span class="text-danger">*</span>
-                        </label>
-                        <input type="password" 
-                               class="form-control form-control-sm" 
-                               id="confirmar_senha" 
-                               name="confirmar_senha" 
-                               required 
-                               minlength="6" 
-                               autocomplete="new-password">
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center pt-2">
-                        <span class="text-microcopy text-muted">
-                            A alteração entra em vigor imediatamente.
-                        </span>
-                        <button type="submit" class="btn btn-enterprise btn-primary">
-                            Atualizar Senha
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Informações sobre Políticas de Acesso -->
-    <div class="col-12 col-md-6">
-        <div class="card-enterprise h-100">
+        <!-- Informações sobre Políticas de Acesso -->
+        <div class="card-enterprise">
             <div class="card-enterprise-header">
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Como Funciona o Acesso</span>
                 <span class="status-indicator status-active"><span class="bullet">●</span> Protegido</span>
@@ -220,3 +322,42 @@ $dependentes = $dependentes ?? [];
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const viewMode = document.getElementById('dados-view-mode');
+    const editMode = document.getElementById('dados-edit-mode');
+    const btnEditar = document.getElementById('btn-toggle-editar');
+    const btnCancelar = document.getElementById('btn-cancelar-edicao');
+
+    function exibirModoEdicao() {
+        if (viewMode && editMode) {
+            viewMode.classList.add('d-none');
+            editMode.classList.remove('d-none');
+            if (btnEditar) btnEditar.classList.add('d-none');
+            const inputNome = document.getElementById('perfil_nome');
+            if (inputNome) inputNome.focus();
+        }
+    }
+
+    function exibirModoVisualizacao() {
+        if (viewMode && editMode) {
+            editMode.classList.add('d-none');
+            viewMode.classList.remove('d-none');
+            if (btnEditar) btnEditar.classList.remove('d-none');
+        }
+    }
+
+    if (btnEditar) {
+        btnEditar.addEventListener('click', exibirModoEdicao);
+    }
+
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', exibirModoVisualizacao);
+    }
+
+    // Se houver hash #editar na URL (ex: redirecionamento após validação), abre direto em edição
+    if (window.location.hash === '#editar') {
+        exibirModoEdicao();
+    }
+});
+</script>

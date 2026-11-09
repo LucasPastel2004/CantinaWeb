@@ -752,6 +752,87 @@ class PortalController extends Controller
     }
 
     /**
+     * Processa a atualização de dados cadastrais (nome, telefone/whatsapp, email) do responsável
+     */
+    public function atualizarPerfil(): void
+    {
+        $dados = $this->all();
+
+        if (!Session::validateCsrfToken($dados['csrf_token'] ?? '')) {
+            Session::setFlash('danger', 'Validação de segurança expirada. Tente novamente.');
+            $this->redirect('/portal/perfil');
+            return;
+        }
+
+        $usuario = Auth::user();
+        $respId  = (int)$usuario['id'];
+        $respModel = new Responsavel();
+        $respDb = $respModel->find($respId);
+
+        if (!$respDb) {
+            Session::setFlash('danger', 'Cadastro de responsável não localizado.');
+            $this->redirect('/portal/perfil');
+            return;
+        }
+
+        $nome     = trim($dados['nome'] ?? '');
+        $whatsapp = trim($dados['whatsapp'] ?? '');
+        $email    = trim($dados['email'] ?? '');
+
+        // Validação de nome obrigatório (mínimo 3 caracteres)
+        if (empty($nome) || mb_strlen($nome) < 3) {
+            Session::setFlash('warning', 'O nome completo deve conter no mínimo 3 caracteres.');
+            $this->redirect('/portal/perfil#editar');
+            return;
+        }
+
+        // Validação de e-mail (caso informado)
+        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Session::setFlash('warning', 'O endereço de e-mail informado é inválido.');
+            $this->redirect('/portal/perfil#editar');
+            return;
+        }
+
+        // Atualiza os dados no banco de dados (o CPF nunca é alterado)
+        $respModel->atualizarDadosCadastrais($respId, [
+            'nome'     => $nome,
+            'whatsapp' => $whatsapp,
+            'email'    => $email
+        ]);
+
+        // Atualiza os dados de sessão do responsável autenticado
+        if (isset($_SESSION['_auth_user'])) {
+            $_SESSION['_auth_user']['nome']     = $nome;
+            $_SESSION['_auth_user']['whatsapp'] = $whatsapp;
+            $_SESSION['_auth_user']['email']    = $email;
+        }
+        if (Session::has('_auth_nome')) {
+            Session::set('_auth_nome', $nome);
+        }
+        if (Session::has('_auth_whatsapp')) {
+            Session::set('_auth_whatsapp', $whatsapp);
+        }
+        if (Session::has('_auth_email')) {
+            Session::set('_auth_email', $email);
+        }
+
+        // Registro de auditoria técnica de segurança
+        Auth::logSecurityEvent('dados_cadastrais_atualizados', $respDb['cpf'], [
+            'responsavel_id' => $respId,
+            'nome_antigo'    => $respDb['nome'],
+            'nome_novo'      => $nome,
+            'whats_antigo'   => $respDb['whatsapp'],
+            'whats_novo'     => $whatsapp,
+            'email_antigo'   => $respDb['email'],
+            'email_novo'     => $email,
+            'ip'             => Auth::getClientIp()
+        ]);
+
+        Session::setFlash('success', 'Dados cadastrais atualizados com sucesso!');
+        $this->redirect('/portal/perfil');
+    }
+
+    /**
      * Processa a alteração de senha do responsável autenticado no portal
      */
     public function alterarSenha(): void

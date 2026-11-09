@@ -170,6 +170,9 @@ $router->get('/portal/extrato/imprimir', [\App\Controllers\PortalController::cla
 $router->get('/portal/perfil', [\App\Controllers\PortalController::class, 'perfil'], [
     \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_RESPONSAVEL)
 ]);
+$router->post('/portal/perfil/atualizar', [\App\Controllers\PortalController::class, 'atualizarPerfil'], [
+    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_RESPONSAVEL)
+]);
 $router->post('/portal/perfil/senha', [\App\Controllers\PortalController::class, 'alterarSenha'], [
     \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_RESPONSAVEL)
 ]);

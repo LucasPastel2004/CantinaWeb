@@ -347,7 +347,7 @@ class PortalController extends Controller
                 ];
             }
         }
-        uasort($categoriasCardapio, fn($a, $b) => ($a['ordem'] <=> $b['ordem']) ?: strcoll($a['nome'], $b['nome']));
+        uasort($categoriasCardapio, fn($a, $b) => ($a['ordem'] <=> $b['ordem']) ?: strnatcasecmp($a['nome'], $b['nome']));
 
         // 5. Verifica se o aluno já possui pedido agendado nesta data
         $pedidoExistente = null;

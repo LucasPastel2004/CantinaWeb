@@ -296,7 +296,7 @@ if (empty($categorias) && !empty($produtos)) {
                     <?php if (empty($produtos)): ?>
                         <div class="card-enterprise p-5 text-center">
                             <p class="text-secondary mb-0" style="font-size: 13px;">
-                                Não há itens cadastrados para o turno <?php echo $alunoSelecionado['turno']; ?> no momento.
+                                Não há itens cadastrados para o turno <?php echo htmlspecialchars($alunoSelecionado['turno'] ?? '', ENT_QUOTES, 'UTF-8'); ?> no momento.
                             </p>
                         </div>
                     <?php else: ?>
@@ -321,7 +321,7 @@ if (empty($categorias) && !empty($produtos)) {
                                         <span class="search-icon">
                                             <svg width="13" height="13" viewBox="0 0 16 16" fill="#64748b"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
                                         </span>
-                                        <input type="text" id="agendamentoBuscaInput" class="form-control form-control-sm" placeholder="Buscar produto..." autocomplete="off" oninput="filtrarProdutos(null, this.value)">
+                                        <input type="text" id="agendamentoBuscaInput" class="form-control form-control-sm" placeholder="Buscar produto..." autocomplete="off" oninput="filtrarProdutos(null, this.value)" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); }">
                                     </div>
                                 </div>
                             </div>
@@ -550,6 +550,16 @@ if (empty($categorias) && !empty($produtos)) {
 let categoriaAtiva = 'todas';
 let textoBuscaAtivo = '';
 
+// Normalização para desconsiderar acentos e maiúsculas na busca
+function normalizarTexto(str) {
+    return (str || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
 window.filtrarProdutos = function(catId, termo) {
     if (catId !== null && catId !== undefined) {
         categoriaAtiva = String(catId);
@@ -559,7 +569,7 @@ window.filtrarProdutos = function(catId, termo) {
     }
 
     if (termo !== null && termo !== undefined) {
-        textoBuscaAtivo = termo.toLowerCase().trim();
+        textoBuscaAtivo = normalizarTexto(termo);
     }
 
     const cols = document.querySelectorAll('.agendamento-prod-col');
@@ -567,8 +577,8 @@ window.filtrarProdutos = function(catId, termo) {
 
     cols.forEach(col => {
         const catCol = col.getAttribute('data-categoria');
-        const nomeCol = (col.getAttribute('data-nome') || '').toLowerCase();
-        const codigoCol = (col.getAttribute('data-codigo') || '').toLowerCase();
+        const nomeCol = normalizarTexto(col.getAttribute('data-nome'));
+        const codigoCol = normalizarTexto(col.getAttribute('data-codigo'));
 
         const matchCat = (categoriaAtiva === 'todas' || catCol === categoriaAtiva);
         const matchBusca = (!textoBuscaAtivo || nomeCol.includes(textoBuscaAtivo) || codigoCol.includes(textoBuscaAtivo));

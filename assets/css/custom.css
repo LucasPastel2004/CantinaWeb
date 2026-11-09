@@ -1898,17 +1898,51 @@ textarea.form-control {
   color: #94a3b8 !important; /* Slate 400 - Alto contraste sobre azul marinho */
 }
 
-.portal-header .btn-enterprise.btn-secondary {
-  background-color: #ffffff;
-  border-color: #cbd5e1;
-  color: #1e293b;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+/* Botões da Topbar do Portal em Azul Marinho Elevado (#1e293b / Slate 800) com Texto 100% Visível */
+.portal-header .btn-enterprise.btn-secondary,
+.portal-header .btn-portal-header {
+  background-color: #1e293b !important; /* Azul marinho corporativo elevado */
+  border: 1px solid #334155 !important; /* Borda nítida Slate 700 */
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease-in-out;
 }
 
-.portal-header .btn-enterprise.btn-secondary:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
+.portal-header .btn-enterprise.btn-secondary:hover,
+.portal-header .btn-portal-header:hover {
+  background-color: #334155 !important; /* Destaque sutil ao passar o mouse */
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+.portal-header .btn-enterprise.btn-secondary .text-secondary,
+.portal-header .portal-header-label {
+  color: #94a3b8 !important; /* Slate 400 legível para o label Saldo: */
+}
+
+.portal-header .btn-enterprise.btn-secondary strong,
+.portal-header .portal-header-value {
+  color: #ffffff !important; /* Valor monetário em branco nítido de alta visibilidade */
+}
+
+.portal-header .portal-header-avatar {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.portal-header .portal-header-username {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.portal-header .dropdown-toggle::after {
+  color: #94a3b8;
+  vertical-align: middle;
+}
+
+.portal-header .dropdown-toggle:hover::after {
+  color: #ffffff;
 }
 
 .portal-wallet-card {

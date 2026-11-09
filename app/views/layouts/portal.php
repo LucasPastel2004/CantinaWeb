@@ -42,7 +42,7 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 15.00);
-$assetVersion = '7.2.5';
+$assetVersion = '7.2.6';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -75,20 +75,20 @@ $assetVersion = '7.2.5';
             </div>
         </a>
 
-        <!-- Widget de Saldo da Carteira Familiar (Botão Neutro sem cores, padrão menu do usuário) -->
+        <!-- Widget de Saldo da Carteira Familiar (Azul Marinho Corporativo) -->
         <div class="d-flex align-items-center gap-2">
-            <a href="<?php echo $baseUrl; ?>/portal/carteira" class="btn btn-enterprise btn-secondary btn-sm text-decoration-none" title="Ver Carteira Familiar e Extrato">
-                <span class="text-secondary" style="font-size: 12px;">Saldo:</span>
-                <strong class="font-tabular ms-1" style="font-size: 13px; color: var(--text-primary, #0f172a);">R$ <?php echo number_format($saldoAtual, 2, ',', '.'); ?></strong>
+            <a href="<?php echo $baseUrl; ?>/portal/carteira" class="btn btn-enterprise btn-secondary btn-portal-header btn-sm text-decoration-none" title="Ver Carteira Familiar e Extrato">
+                <span class="portal-header-label" style="font-size: 12px;">Saldo:</span>
+                <strong class="font-tabular ms-1 portal-header-value" style="font-size: 13px;">R$ <?php echo number_format($saldoAtual, 2, ',', '.'); ?></strong>
             </a>
 
             <!-- Perfil do Responsável e Logout -->
             <div class="dropdown d-none d-md-block">
-                <button class="btn btn-enterprise btn-secondary btn-sm dropdown-toggle d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 20px; height: 20px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 700;">
+                <button class="btn btn-enterprise btn-secondary btn-portal-header btn-sm dropdown-toggle d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="portal-header-avatar d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 20px; height: 20px; font-size: 11px; font-weight: 700;">
                         <?php echo $inicialTopo; ?>
                     </span>
-                    <span><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <span class="portal-header-username"><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; min-width: 220px;">
                     <li class="px-3 py-2 border-bottom bg-light">

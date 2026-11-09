@@ -3010,13 +3010,13 @@ input[type=number].no-spinners {
     scroll-snap-align: start;
   }
 
-  /* 3. Barra de Navega??o Inferior Fixa Estilo App Nativo (.mobile-bottom-nav) */
+  /* 3. Barra de Navegação Inferior Fixa (6 Abas: 3 à Esquerda e 3 à Direita) */
   .mobile-bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 62px;
+    height: 60px;
     background-color: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
     border-top: 1px solid #cbd5e1;
@@ -3024,32 +3024,46 @@ input[type=number].no-spinners {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 4px env(safe-area-inset-bottom, 0px) 4px;
+    padding: 0 2px env(safe-area-inset-bottom, 0px) 2px;
     z-index: 1045;
   }
 
   .mobile-bottom-nav-item {
     flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     height: 100%;
     color: #64748b !important;
     text-decoration: none !important;
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     transition: color 0.15s ease, transform 0.1s ease;
     user-select: none;
     position: relative;
+    padding: 4px 1px;
+    text-align: center;
   }
 
   .mobile-bottom-nav-item svg {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
     transition: transform 0.15s ease;
+  }
+
+  .mobile-bottom-nav-item span {
+    font-size: 10px;
+    line-height: 1.15;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    display: block;
   }
 
   .mobile-bottom-nav-item.active {
@@ -3057,11 +3071,11 @@ input[type=number].no-spinners {
     font-weight: 700;
   }
 
-  .mobile-bottom-nav-item.active:not(.mobile-nav-highlight)::before {
+  .mobile-bottom-nav-item.active::before {
     content: '';
     position: absolute;
     top: 0;
-    width: 28px;
+    width: 22px;
     height: 3px;
     background-color: #1d4ed8;
     border-radius: 0 0 3px 3px;
@@ -3073,8 +3087,8 @@ input[type=number].no-spinners {
   }
 
   .mobile-nav-cta-circle {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background-color: #1d4ed8;
     color: #ffffff;
@@ -3082,7 +3096,7 @@ input[type=number].no-spinners {
     align-items: center;
     justify-content: center;
     box-shadow: 0 3px 10px rgba(29, 78, 216, 0.35);
-    margin-top: -12px;
+    margin-top: -10px;
     border: 2px solid #ffffff;
   }
 

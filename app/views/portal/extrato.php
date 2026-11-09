@@ -35,7 +35,7 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
         </div>
         <?php if ($alunoSelecionado): ?>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="<?php echo $baseUrl; ?>/portal/extrato/imprimir?aluno_id=<?php echo $alunoId; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?><?php echo !empty($filtroGeral) ? '&filtro_geral=1' : ''; ?>" 
+                <a href="<?php echo $baseUrl; ?>/portal/extrato/imprimir?aluno_id=<?php echo $alunoId; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?><?php echo (!empty($filtroGeral) || (empty($dataInicio) && empty($dataFim))) ? '&filtro_geral=1' : ''; ?>" 
                    target="_blank" 
                    class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5"
                    title="Imprimir ou Salvar Extrato Oficial do Aluno em PDF (A4) pelo Navegador">
@@ -56,7 +56,7 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
             <div class="d-flex gap-2 flex-wrap">
                 <?php foreach ($dependentes as $dep): ?>
                     <?php $isActive = ((int)$dep['id'] === $alunoId); ?>
-                    <a href="<?php echo $baseUrl; ?>/portal/extrato?aluno_id=<?php echo (int)$dep['id']; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?>" 
+                    <a href="<?php echo $baseUrl; ?>/portal/extrato?aluno_id=<?php echo (int)$dep['id']; ?>&data_inicio=<?php echo urlencode($dataInicio); ?>&data_fim=<?php echo urlencode($dataFim); ?><?php echo (!empty($filtroGeral) || (empty($dataInicio) && empty($dataFim))) ? '&filtro_geral=1' : ''; ?>" 
                        class="btn btn-enterprise <?php echo $isActive ? 'btn-primary' : 'btn-secondary'; ?> btn-sm d-inline-flex align-items-center gap-2">
                         <span><?php echo htmlspecialchars($dep['nome']); ?></span>
                         <span class="badge <?php echo $isActive ? 'bg-white text-primary' : 'bg-light text-secondary border'; ?> font-tabular" style="font-size: 11px;">
@@ -127,7 +127,7 @@ $linhas = $dadosExtrato['linhas'] ?? ($dadosExtrato['movimentacoes'] ?? []);
                             </span>
                         </div>
                         <div class="text-secondary text-microcopy mt-1">
-                            <?php if (!empty($jaFiltrado) && !empty($filtroGeral)): ?>
+                            <?php if (!empty($jaFiltrado) && (!empty($filtroGeral) || (empty($dataInicio) && empty($dataFim)))): ?>
                                 Período: <strong class="font-tabular text-dark">Todo o Histórico (Geral)</strong>
                             <?php elseif (!empty($jaFiltrado)): ?>
                                 Período: <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataInicio)); ?></strong> a <strong class="font-tabular text-dark"><?php echo date('d/m/Y', strtotime($dataFim)); ?></strong>

@@ -100,8 +100,12 @@ class RelatoriosController extends Controller
     {
         $alunoId = (int)$this->input('aluno_id', 0);
         $turmaId = (int)$this->input('turma_id', 0);
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput = trim((string)$this->input('data_fim', ''));
+        $dataInicio = $dataInicioInput;
+        $dataFim = $dataFimInput;
+        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
 
         $apenasSaldo = ($this->input('apenas_saldo', 'nao') === 'sim');
         $saldoApenasPeriodo = ($this->input('saldo_apenas_periodo', 'nao') === 'sim');
@@ -118,8 +122,8 @@ class RelatoriosController extends Controller
         if ($alunoId > 0) {
             $dadosExtrato = $this->obterDadosExtratoAluno(
                 $alunoId,
-                $dataInicio,
-                $dataFim,
+                $dataInicioBusca,
+                $dataFimBusca,
                 $apenasSaldo,
                 $saldoApenasPeriodo,
                 $paginaRecargas,
@@ -164,8 +168,12 @@ class RelatoriosController extends Controller
     public function extratoAlunoImprimir(): void
     {
         $alunoId = (int)$this->input('aluno_id', 0);
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput = trim((string)$this->input('data_fim', ''));
+        $dataInicio = $dataInicioInput;
+        $dataFim = $dataFimInput;
+        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
         $apenasSaldo = ($this->input('apenas_saldo', 'nao') === 'sim');
         $saldoApenasPeriodo = ($this->input('saldo_apenas_periodo', 'nao') === 'sim');
 
@@ -195,8 +203,12 @@ class RelatoriosController extends Controller
     public function extratoAlunoCsv(): void
     {
         $alunoId = (int)$this->input('aluno_id', 0);
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput = trim((string)$this->input('data_fim', ''));
+        $dataInicio = $dataInicioInput;
+        $dataFim = $dataFimInput;
+        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
         $apenasSaldo = ($this->input('apenas_saldo', 'nao') === 'sim');
         $saldoApenasPeriodo = ($this->input('saldo_apenas_periodo', 'nao') === 'sim');
 
@@ -297,8 +309,12 @@ class RelatoriosController extends Controller
      */
     public function vendasAlimento(): void
     {
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput = trim((string)$this->input('data_fim', ''));
+        $dataInicio = $dataInicioInput;
+        $dataFim = $dataFimInput;
+        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
         $turno = trim((string)$this->input('turno', ''));
         $categoriaId = (int)$this->input('categoria_id', 0);
         $tipo = trim((string)$this->input('tipo', ''));
@@ -325,8 +341,12 @@ class RelatoriosController extends Controller
      */
     public function vendasAlimentoPdf(): void
     {
-        $dataInicio = trim((string)$this->input('data_inicio', date('Y-m-01')));
-        $dataFim = trim((string)$this->input('data_fim', date('Y-m-d')));
+        $dataInicioInput = trim((string)$this->input('data_inicio', ''));
+        $dataFimInput = trim((string)$this->input('data_fim', ''));
+        $dataInicio = $dataInicioInput;
+        $dataFim = $dataFimInput;
+        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
         $turno = trim((string)$this->input('turno', ''));
         $categoriaId = (int)$this->input('categoria_id', 0);
         $tipo = trim((string)$this->input('tipo', ''));

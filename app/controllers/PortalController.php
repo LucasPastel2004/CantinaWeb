@@ -873,19 +873,19 @@ class PortalController extends Controller
             $filtroGeral = true;
         }
 
-        $dataInicio = !empty($dataInicioInput) ? $dataInicioInput : date('Y-m-01');
-        $dataFim    = !empty($dataFimInput) ? $dataFimInput : date('Y-m-d');
+        $dataInicio = $dataInicioInput;
+        $dataFim    = $dataFimInput;
 
         if ($jaFiltrado) {
             $relCtrl = new RelatoriosController();
-            if ($filtroGeral) {
+            if ($filtroGeral || (empty($dataInicio) && empty($dataFim))) {
                 // Lista geral de tudo (histórico completo de lançamentos do aluno)
                 $dataInicioBusca = '2020-01-01';
                 $dataFimBusca    = date('Y-m-d');
             } else {
                 // Lista correspondente aos filtros específicos
-                $dataInicioBusca = $dataInicio;
-                $dataFimBusca    = $dataFim;
+                $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
+                $dataFimBusca    = !empty($dataFim) ? $dataFim : date('Y-m-d');
             }
 
             $dadosExtrato = $relCtrl->obterDadosExtratoAluno(
@@ -983,11 +983,11 @@ class PortalController extends Controller
         $dataInicioInput = trim((string)$this->input('data_inicio', ''));
         $dataFimInput    = trim((string)$this->input('data_fim', ''));
 
-        if ($filtroGeral) {
+        if ($filtroGeral || (empty($dataInicioInput) && empty($dataFimInput))) {
             $dataInicio = '2020-01-01';
             $dataFim    = date('Y-m-d');
         } else {
-            $dataInicio = !empty($dataInicioInput) ? $dataInicioInput : date('Y-m-01');
+            $dataInicio = !empty($dataInicioInput) ? $dataInicioInput : '2020-01-01';
             $dataFim    = !empty($dataFimInput) ? $dataFimInput : date('Y-m-d');
         }
 

@@ -83,6 +83,7 @@ $alunoId = (int)($alunoId ?? ($aluno['id'] ?? 0));
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-1.5 flex-wrap">
                     <span class="text-secondary text-microcopy me-1">Atalhos de Período:</span>
+                    <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" data-periodo="todos" onclick="definirPeriodo('todos')">Todos / Geral</button>
                     <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" data-periodo="hoje" onclick="definirPeriodo('hoje')">Hoje</button>
                     <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" data-periodo="semana" onclick="definirPeriodo('semana')">Esta Semana</button>
                     <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" style="font-size: 11px;" data-periodo="mes" onclick="definirPeriodo('mes_atual')">Este Mês</button>
@@ -137,7 +138,7 @@ function definirPeriodo(tipo) {
         return `${ano}-${mes}-${dia}`;
     }
 
-    if (tipo === 'hoje') {
+    if (tipo === 'todos') { dataIni.value = ''; dataFim.value = ''; return; } else if (tipo === 'hoje') {
         dataIni.value = formatar(hoje);
         dataFim.value = formatar(hoje);
     } else if (tipo === 'semana') {

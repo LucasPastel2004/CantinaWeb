@@ -316,7 +316,7 @@ if (empty($categorias) && !empty($produtos)) {
                                 </div>
 
                                 <!-- Barra de Pesquisa de Produto -->
-                                <div style="min-width: 220px; max-width: 280px;">
+                                <div class="agendamento-search-box" style="min-width: 220px; max-width: 280px;">
                                     <div class="search-input-wrapper">
                                         <span class="search-icon">
                                             <svg width="13" height="13" viewBox="0 0 16 16" fill="#64748b"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
@@ -447,7 +447,7 @@ if (empty($categorias) && !empty($produtos)) {
 
                 <!-- Coluna Lateral: Comanda do Pedido / Resumo Financeiro -->
                 <div class="col-12 col-lg-4">
-                    <div class="card-enterprise p-3 p-md-4 sticky-top" style="top: 20px; z-index: 10;">
+                    <div class="card-enterprise p-3 p-md-4 sticky-top" id="comanda-card-anchor" style="top: 20px; z-index: 10;">
                         <h3 class="card-title pb-2 mb-3 border-bottom border-subtle d-flex align-items-center justify-content-between" style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #475569;">
                             <span>Comanda do Lanche</span>
                             <span class="badge bg-light text-secondary border font-tabular" id="badge-itens-count" style="font-size: 11px;">0 itens</span>
@@ -503,6 +503,27 @@ if (empty($categorias) && !empty($produtos)) {
                                 <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
                             </svg>
                             Concluir Agendamento
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra Flutuante Mobile da Comanda (Visivel em < 992px quando ha itens selecionados) -->
+            <div id="mobile-comanda-sticky" class="mobile-comanda-sticky d-none d-lg-none">
+                <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+                    <div class="d-flex flex-column" onclick="document.getElementById('comanda-card-anchor').scrollIntoView({behavior: 'smooth', block: 'start'})" style="cursor: pointer;">
+                        <div class="d-flex align-items-center gap-1.5">
+                            <span class="badge bg-primary font-tabular" id="mobile-comanda-count" style="font-size: 10.5px;">0 itens</span>
+                            <span class="text-white-50" style="font-size: 11px;">Ver resumo &uarr;</span>
+                        </div>
+                        <strong class="font-tabular text-white" id="mobile-comanda-total" style="font-size: 16px; line-height: 1.2;">R$ 0,00</strong>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-enterprise btn-secondary btn-sm px-2.5 py-1.5" onclick="document.getElementById('comanda-card-anchor').scrollIntoView({behavior: 'smooth', block: 'start'})" style="font-size: 12px;">
+                            Ver Comanda
+                        </button>
+                        <button type="submit" class="btn btn-enterprise btn-primary btn-sm px-3 py-1.5 fw-semibold" id="btn-mobile-concluir" style="font-size: 12px;">
+                            Concluir
                         </button>
                     </div>
                 </div>
@@ -647,6 +668,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!comandaTotalDisplay) return;
 
         comandaTotalDisplay.textContent = formatarMoeda(total);
+        // Atualiza barra flutuante mobile da comanda
+        const mobileSticky = document.getElementById('mobile-comanda-sticky');
+        const mobileCount = document.getElementById('mobile-comanda-count');
+        const mobileTotal = document.getElementById('mobile-comanda-total');
+        const btnMobileConcluir = document.getElementById('btn-mobile-concluir');
+        if (mobileSticky && mobileCount && mobileTotal) {
+            mobileCount.textContent = totalItens + (totalItens === 1 ? ' item' : ' itens');
+            mobileTotal.textContent = formatarMoeda(total);
+            if (totalItens > 0) {
+                mobileSticky.classList.remove('d-none');
+            } else {
+                mobileSticky.classList.add('d-none');
+            }
+            if (btnMobileConcluir) {
+                btnMobileConcluir.disabled = (totalItens === 0 || saldoRestante < 0);
+            }
+        }
         badgeCount.textContent = totalItens + (totalItens === 1 ? ' item' : ' itens');
 
         const saldoRestante = saldoDisponivel - total;

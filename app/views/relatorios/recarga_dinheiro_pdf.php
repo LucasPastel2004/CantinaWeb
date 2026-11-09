@@ -30,6 +30,7 @@ $urlPdf = (defined('CANTINA_URL') ? rtrim(CANTINA_URL, '/') : '') . '/operaciona
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comprovante de Recarga #<?php echo $transacaoId; ?> — Cantina Web</title>
     <style>
         @page { size: 80mm auto; margin: 0; }

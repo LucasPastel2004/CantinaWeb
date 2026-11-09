@@ -888,7 +888,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
 
                 <!-- Detalhes de Pagamento em Dinheiro -->
                 <div id="payDetailsDinheiro" class="mb-2">
-                    <div class="d-flex align-items-center gap-2 mb-1.5">
+                    <div class="d-flex align-items-center gap-2 mb-1.5 pdv-recebido-row">
                         <label class="font-11 text-secondary text-uppercase font-bold mb-0" style="min-width: 68px; flex-shrink: 0;">Recebido:</label>
                         <input type="text" id="inputValorRecebido" class="form-control form-control-sm font-tabular text-end input-money py-1.5 font-13 font-bold" oninput="calcularTroco()" style="max-width: 125px;">
                         <div class="btn-group btn-group-sm flex-grow-1" role="group">
@@ -924,6 +924,21 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                     Concluir Venda <span class="pdv-shortcut-tag">F4</span>
                 </button>
             </div>
+        </div>
+    </div>
+    <!-- Barra Flutuante Mobile do PDV (Atalho rapido para o Cupom em Telas <= 960px) -->
+    <div id="mobilePdvCartBar" class="mobile-comanda-sticky d-none">
+        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+            <div class="d-flex flex-column" onclick="document.getElementById('pdvCartPanel').scrollIntoView({behavior: 'smooth', block: 'start'})" style="cursor: pointer;">
+                <div class="d-flex align-items-center gap-1.5">
+                    <span class="badge bg-primary font-tabular" id="mobilePdvCount" style="font-size: 10.5px;">0 itens</span>
+                    <span class="text-white-50" style="font-size: 11px;">Cupom ativo</span>
+                </div>
+                <strong class="font-tabular text-white" id="mobilePdvTotal" style="font-size: 16px; line-height: 1.2;">R$ 0,00</strong>
+            </div>
+            <button type="button" class="btn btn-enterprise btn-primary btn-sm px-3 py-1.5 fw-semibold" onclick="document.getElementById('pdvCartPanel').scrollIntoView({behavior: 'smooth', block: 'start'})" style="font-size: 12px;">
+                Ir ao Caixa &darr;
+            </button>
         </div>
     </div>
 </div>
@@ -1041,6 +1056,21 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                     Nova Venda (F2)
                 </button>
             </div>
+        </div>
+    </div>
+    <!-- Barra Flutuante Mobile do PDV (Atalho rapido para o Cupom em Telas <= 960px) -->
+    <div id="mobilePdvCartBar" class="mobile-comanda-sticky d-none">
+        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+            <div class="d-flex flex-column" onclick="document.getElementById('pdvCartPanel').scrollIntoView({behavior: 'smooth', block: 'start'})" style="cursor: pointer;">
+                <div class="d-flex align-items-center gap-1.5">
+                    <span class="badge bg-primary font-tabular" id="mobilePdvCount" style="font-size: 10.5px;">0 itens</span>
+                    <span class="text-white-50" style="font-size: 11px;">Cupom ativo</span>
+                </div>
+                <strong class="font-tabular text-white" id="mobilePdvTotal" style="font-size: 16px; line-height: 1.2;">R$ 0,00</strong>
+            </div>
+            <button type="button" class="btn btn-enterprise btn-primary btn-sm px-3 py-1.5 fw-semibold" onclick="document.getElementById('pdvCartPanel').scrollIntoView({behavior: 'smooth', block: 'start'})" style="font-size: 12px;">
+                Ir ao Caixa &darr;
+            </button>
         </div>
     </div>
 </div>
@@ -1286,6 +1316,8 @@ function renderizarCarrinho() {
         emptyState.classList.remove('d-none');
         countBadge.innerText = '0 itens';
         totalDisplay.innerText = 'R$ 0,00';
+        const mobBar = document.getElementById('mobilePdvCartBar');
+        if (mobBar) mobBar.classList.add('d-none');
         calcularTroco();
         return;
     }
@@ -1320,6 +1352,19 @@ function renderizarCarrinho() {
     itemsList.innerHTML = html;
     countBadge.innerText = `${carrinho.length} item(ns)`;
     totalDisplay.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    const mobBar = document.getElementById('mobilePdvCartBar');
+    const mobCount = document.getElementById('mobilePdvCount');
+    const mobTotal = document.getElementById('mobilePdvTotal');
+    if (mobBar && mobCount && mobTotal) {
+        const qtdTotal = carrinho.reduce((acc, cur) => acc + cur.quantidade, 0);
+        mobCount.innerText = `${qtdTotal} item(ns)`;
+        mobTotal.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        if (window.innerWidth <= 960 && carrinho.length > 0) {
+            mobBar.classList.remove('d-none');
+        } else {
+            mobBar.classList.add('d-none');
+        }
+    }
     calcularTroco();
     atualizarDemonstrativoSaldo();
 }

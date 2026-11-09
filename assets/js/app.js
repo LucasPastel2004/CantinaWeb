@@ -291,7 +291,7 @@ function abrirFlyout(category, pinned) {
   }
   if (topPos < 10) topPos = 10;
 
-  targetFlyout.style.top = topPos + 'px';
+  targetFlyout.style.top = (window.innerWidth < 768) ? '0px' : (topPos + 'px');
   targetFlyout.style.display = 'flex';
   targetFlyout.classList.add('show');
   targetBtn.classList.add('flyout-open');
@@ -348,9 +348,10 @@ function fecharFlyouts() {
   currentFlyoutCategory = null;
   isFlyoutPinned = false;
 
+  const sidebar = document.getElementById('appSidebar');
   const backdrop = document.getElementById('sidebarBackdrop');
-  if (backdrop && window.innerWidth < 768) {
-    backdrop.classList.remove('show');
+  if (window.innerWidth < 768 && (!sidebar || !sidebar.classList.contains('sidebar-open'))) {
+    if (backdrop) backdrop.classList.remove('show');
   }
 }
 
@@ -469,12 +470,25 @@ function toggleSidebar() {
   const sidebar = document.getElementById('appSidebar');
   const backdrop = document.getElementById('sidebarBackdrop');
 
-  if (sidebar) {
-    sidebar.classList.toggle('sidebar-open');
-  }
+  if (!sidebar) return;
 
-  if (backdrop) {
-    backdrop.classList.toggle('show');
+  const isOpen = sidebar.classList.toggle('sidebar-open');
+
+  if (isOpen) {
+    if (backdrop) backdrop.classList.add('show');
+    // No mobile (< 768px), ja abre automaticamente a categoria ativa no flyout para navegacao com 1 toque
+    if (window.innerWidth < 768 && !currentFlyoutCategory) {
+      const activeDockBtn = sidebar.querySelector('.dock-btn.active[data-category]') || sidebar.querySelector('.dock-btn[data-category]');
+      if (activeDockBtn) {
+        const cat = activeDockBtn.getAttribute('data-category');
+        if (cat) abrirFlyout(cat, true);
+      }
+    }
+  } else {
+    fecharFlyoutsSilencioso();
+    currentFlyoutCategory = null;
+    isFlyoutPinned = false;
+    if (backdrop) backdrop.classList.remove('show');
   }
 }
 

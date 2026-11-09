@@ -50,6 +50,7 @@ $responsavelWhatsapp = $aluno['responsavel_whatsapp'] ?? '';
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extrato de Consumo — <?php echo htmlspecialchars($aluno['nome'] ?? 'Aluno'); ?> — Colégio Monteiro Lobato</title>
     <style>
         @page {
@@ -703,7 +704,10 @@ $responsavelWhatsapp = $aluno['responsavel_whatsapp'] ?? '';
     document.addEventListener('DOMContentLoaded', function() {
         try {
             const savedZoom = localStorage.getItem('cantina_report_zoom');
-            if (savedZoom) {
+            if (window.innerWidth < 768) {
+                const mobileScale = Math.max(0.45, Math.min(1.0, Math.floor(((window.innerWidth - 16) / 794) * 20) / 20));
+                aplicarZoom(mobileScale);
+            } else if (savedZoom) {
                 const z = parseFloat(savedZoom);
                 if (!isNaN(z) && z >= minZoom && z <= maxZoom) {
                     aplicarZoom(z);

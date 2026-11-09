@@ -26,6 +26,7 @@ $logoDataUri = \App\Services\PdfService::getLogoDataUri(false);
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demonstrativo Financeiro - Canais de Entrada — Colégio Monteiro Lobato</title>
     <style>
         @page {
@@ -754,7 +755,10 @@ $logoDataUri = \App\Services\PdfService::getLogoDataUri(false);
     document.addEventListener('DOMContentLoaded', function() {
         try {
             const savedZoom = localStorage.getItem('cantina_report_zoom');
-            if (savedZoom) {
+            if (window.innerWidth < 768) {
+                const mobileScale = Math.max(0.45, Math.min(1.0, Math.floor(((window.innerWidth - 16) / 794) * 20) / 20));
+                aplicarZoom(mobileScale);
+            } else if (savedZoom) {
                 const z = parseFloat(savedZoom);
                 if (!isNaN(z) && z >= minZoom && z <= maxZoom) {
                     aplicarZoom(z);

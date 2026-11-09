@@ -42,7 +42,7 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 5.00);
-$assetVersion = '7.3.0';
+$assetVersion = '7.4.0';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -83,12 +83,12 @@ $assetVersion = '7.3.0';
             </a>
 
             <!-- Perfil do Responsável e Logout -->
-            <div class="dropdown d-none d-md-block">
+            <div class="dropdown">
                 <button class="btn btn-enterprise btn-secondary btn-portal-header btn-sm dropdown-toggle d-inline-flex align-items-center gap-1.5" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="portal-header-avatar d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 20px; height: 20px; font-size: 11px; font-weight: 700;">
                         <?php echo $inicialTopo; ?>
                     </span>
-                    <span class="portal-header-username"><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <span class="portal-header-username d-none d-md-inline"><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; min-width: 220px;">
                     <li class="px-3 py-2 border-bottom bg-light">
@@ -170,10 +170,48 @@ $assetVersion = '7.3.0';
     </div>
 </footer>
 
+<!-- Barra de Navegacao Inferior Mobile (Estilo App Nativo para Telas < 768px) -->
+<nav class="mobile-bottom-nav d-md-none" aria-label="Navegação Rápida Mobile">
+    <a href="<?php echo $baseUrl; ?>/portal" class="mobile-bottom-nav-item <?php echo ($activeMenu === 'inicio') ? 'active' : ''; ?>">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146z"/>
+        </svg>
+        <span>Início</span>
+    </a>
+    <a href="<?php echo $baseUrl; ?>/portal/carteira" class="mobile-bottom-nav-item <?php echo ($activeMenu === 'carteira') ? 'active' : ''; ?>">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
+        </svg>
+        <span>Carteira</span>
+    </a>
+    <a href="<?php echo $baseUrl; ?>/portal/agendamento" class="mobile-bottom-nav-item mobile-nav-highlight <?php echo ($activeMenu === 'agendamento') ? 'active' : ''; ?>">
+        <span class="mobile-nav-cta-circle">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+        </span>
+        <span>Agendar</span>
+    </a>
+    <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="mobile-bottom-nav-item <?php echo ($activeMenu === 'pedidos') ? 'active' : ''; ?>">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+            <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+        </svg>
+        <span>Pedidos</span>
+    </a>
+    <a href="<?php echo $baseUrl; ?>/portal/extrato" class="mobile-bottom-nav-item <?php echo ($activeMenu === 'extrato') ? 'active' : ''; ?>">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27z"/>
+        </svg>
+        <span>Extrato</span>
+    </a>
+</nav>
+
 <!-- Bootstrap 5 Bundle Local -->
 <script src="<?php echo $baseUrl; ?>/assets/js/bootstrap.bundle.min.js"></script>
 
 <!-- Scripts Vanilla JS Locais -->
-<script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.2.1'; ?>"></script>
+<script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.4.0'; ?>"></script>
 </body>
 </html>

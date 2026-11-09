@@ -32,7 +32,7 @@ echo "6. View extrato_aluno - Com window.alertaAcao: " . ($temAlertaAcaoView ? "
 
 // 3. Validar assetVersion >= 7.2.0 em Controller.php
 $ctrl = file_get_contents(__DIR__ . '/../app/core/Controller.php');
-$temVersion = preg_match("/'7\.2\.[0-9]+'/", $ctrl) === 1;
+$temVersion = preg_match("/'7\.[2-9]\.[0-9]+'/", $ctrl) === 1;
 echo "7. Controller - assetVersion 7.2.x: " . ($temVersion ? "OK" : "FALHA") . "\n";
 
 $sucesso = $temModal && $temAlertaAcao && $temOverrideAlert && $temDataAlert && !$temAlertNativo && $temAlertaAcaoView && $temVersion;

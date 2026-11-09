@@ -11,6 +11,20 @@ defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 
 $baseUrl = $baseUrl ?? '';
 $csrfToken = \App\Core\Session::generateCsrfToken();
+$categorias = $categorias ?? [];
+if (empty($categorias) && !empty($produtos)) {
+    $categoriasMap = [];
+    foreach ($produtos as $p) {
+        $cid = (int)$p['categoria_id'];
+        if (!isset($categoriasMap[$cid])) {
+            $categoriasMap[$cid] = [
+                'id'   => $cid,
+                'nome' => $p['categoria_nome'] ?? 'Outros',
+            ];
+        }
+    }
+    $categorias = array_values($categoriasMap);
+}
 ?>
 
 <style>
@@ -277,124 +291,157 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
             <input type="hidden" name="data_consumo" value="<?php echo $diaSelecionado['data']; ?>">
 
             <div class="row g-4">
-                <!-- Coluna Principal: Grade de Produtos por Categoria -->
+                <!-- Coluna Principal: Catálogo Unificado com Filtro de Categorias e Busca (Estilo Balcão PDV) -->
                 <div class="col-12 col-lg-8">
-                    <?php if (empty($produtosPorCategoria)): ?>
+                    <?php if (empty($produtos)): ?>
                         <div class="card-enterprise p-5 text-center">
                             <p class="text-secondary mb-0" style="font-size: 13px;">
                                 Não há itens cadastrados para o turno <?php echo $alunoSelecionado['turno']; ?> no momento.
                             </p>
                         </div>
                     <?php else: ?>
-                        <?php foreach ($produtosPorCategoria as $categoriaNome => $produtosCat): ?>
-                            <div class="card-enterprise p-3 p-md-4 mb-4">
-                                <h3 class="card-title pb-2 mb-3 border-bottom border-subtle d-flex justify-content-between align-items-center" style="font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #475569;">
-                                    <span><?php echo htmlspecialchars($categoriaNome, ENT_QUOTES, 'UTF-8'); ?></span>
-                                    <span class="badge bg-light text-secondary border font-tabular" style="font-size: 11px;">
-                                        <?php echo count($produtosCat); ?> itens
-                                    </span>
-                                </h3>
-
-                                <div class="row g-3">
-                                    <?php foreach ($produtosCat as $prod): ?>
-                                        <?php 
-                                        $esgotado = (bool)$prod['esgotado']; 
-                                        $temConflito = (bool)$prod['tem_conflito_alergia'];
-                                        $conflitosStr = implode(', ', $prod['conflitos_nomes']);
-                                        ?>
-                                        <div class="col-12 col-md-6">
-                                            <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between transition-all product-card <?php echo $esgotado ? 'bg-light border-subtle' : 'bg-white'; ?>"
-                                                 id="product-box-<?php echo $prod['id']; ?>"
-                                                 style="<?php echo $esgotado ? 'opacity: 0.55; cursor: not-allowed;' : ''; ?>">
-                                                
-                                                <div>
-                                                    <!-- Topo do Card de Produto -->
-                                                    <div class="d-flex align-items-start gap-2 mb-2">
-                                                        <!-- Miniatura / Thumbnail -->
-                                                        <div class="product-thumb flex-shrink-0" style="width: 44px; height: 44px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                                            <?php if (!empty($prod['foto_url'])): ?>
-                                                                <img src="<?php echo $baseUrl; ?>/<?php echo htmlspecialchars($prod['foto_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                                                            <?php else: ?>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#94a3b8" viewBox="0 0 16 16">
-                                                                    <path d="M8 1a5 5 0 0 0-5 5v1h10V6a5 5 0 0 0-5-5m4 7H4c-.55 0-1 .45-1 1v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9c0-.55-.45-1-1-1"/>
-                                                                </svg>
-                                                            <?php endif; ?>
-                                                        </div>
-
-                                                        <div class="flex-grow-1">
-                                                            <div class="d-flex justify-content-between align-items-start">
-                                                                <h4 class="mb-0 text-dark fw-semibold" style="font-size: 13px; line-height: 1.3;">
-                                                                    <?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>
-                                                                </h4>
-                                                            </div>
-                                                            <div class="text-secondary mt-1" style="font-size: 11px;">
-                                                                Código: <code class="code-tag font-tabular" style="font-size: 10px;"><?php echo htmlspecialchars($prod['codigo_interno'], ENT_QUOTES, 'UTF-8'); ?></code>
-                                                                &bull; <?php echo ($prod['tipo'] === 'salgado_diario') ? 'Salgado Diário' : 'Industrializado'; ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Tags de Alérgenos -->
-                                                    <?php if ($temConflito): ?>
-                                                        <div class="mb-2 p-1 px-2 rounded" style="background: #fffbeb; border: 1px solid #fde68a; font-size: 11px; color: #92400e;">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-exclamation-triangle-fill me-1" viewBox="0 0 16 16">
-                                                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-                                                            </svg>
-                                                            <strong>Contém:</strong> <?php echo htmlspecialchars($conflitosStr, ENT_QUOTES, 'UTF-8'); ?> (incompatível)
-                                                        </div>
-                                                    <?php elseif (!empty($prod['alergenos'])): ?>
-                                                        <div class="text-muted mb-2" style="font-size: 10px;">
-                                                            Alérgenos: <?php echo htmlspecialchars(implode(', ', array_column($prod['alergenos'], 'nome')), ENT_QUOTES, 'UTF-8'); ?>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-
-                                                <!-- Rodapé do Card: Preço e Seletor de Quantidade -->
-                                                <div class="d-flex align-items-center justify-content-between pt-2 border-top border-subtle mt-2">
-                                                    <div class="font-tabular" style="font-size: 15px; font-weight: 700; color: #0f172a;">
-                                                        R$ <?php echo number_format($prod['preco_venda'], 2, ',', '.'); ?>
-                                                    </div>
-
-                                                    <?php if ($esgotado): ?>
-                                                        <code class="code-tag text-uppercase font-tabular" style="font-size: 10px; color: #64748b;">Esgotado</code>
-                                                    <?php else: ?>
-                                                        <!-- Controles de Quantidade -->
-                                                        <div class="d-flex align-items-center gap-1">
-                                                            <button type="button" 
-                                                                    class="btn btn-enterprise btn-secondary btn-sm btn-qtd-diminuir" 
-                                                                    data-id="<?php echo $prod['id']; ?>"
-                                                                    style="width: 28px; height: 28px; padding: 0;">-</button>
-                                                            
-                                                            <input type="text" 
-                                                                   inputmode="numeric" 
-                                                                   pattern="[0-9]*" 
-                                                                   name="itens[<?php echo $prod['id']; ?>]" 
-                                                                   id="qtd-<?php echo $prod['id']; ?>" 
-                                                                   value="0" 
-                                                                   min="0" 
-                                                                   max="<?php echo ($prod['tipo'] === 'industrializado_continuo') ? $prod['estoque_disponivel'] : 10; ?>" 
-                                                                   class="form-control form-control-sm text-center font-tabular input-qtd" 
-                                                                   style="width: 44px; height: 28px; font-weight: 600; padding: 0 4px; text-align: center; -moz-appearance: textfield; appearance: textfield;"
-                                                                   data-id="<?php echo $prod['id']; ?>"
-                                                                   data-nome="<?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>"
-                                                                   data-preco="<?php echo $prod['preco_venda']; ?>"
-                                                                   data-conflito="<?php echo $temConflito ? '1' : '0'; ?>"
-                                                                   data-conflitos-msg="<?php echo htmlspecialchars($conflitosStr, ENT_QUOTES, 'UTF-8'); ?>"
-                                                                   readonly>
-
-                                                            <button type="button" 
-                                                                    class="btn btn-enterprise btn-secondary btn-sm btn-qtd-aumentar" 
-                                                                    data-id="<?php echo $prod['id']; ?>"
-                                                                    style="width: 28px; height: 28px; padding: 0;">+</button>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div class="card-enterprise p-3 p-md-4 mb-4">
+                            <!-- Barra de Filtros: Categorias + Busca Rápida (Padrão Balcão PDV) -->
+                            <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-3 pb-3 mb-3 border-bottom border-subtle">
+                                <!-- Navegador de Categorias (Scroll Horizontal Suave) -->
+                                <div class="pdv-category-nav" id="agendamentoCatNav" style="flex: 1; overflow-x: auto; white-space: nowrap;">
+                                    <button type="button" class="pdv-cat-btn active" data-cat="todas" onclick="filtrarProdutos('todas', null)">
+                                        Tudo
+                                    </button>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <button type="button" class="pdv-cat-btn" data-cat="<?php echo (int)$cat['id']; ?>" onclick="filtrarProdutos(<?php echo (int)$cat['id']; ?>, null)">
+                                            <?php echo htmlspecialchars($cat['nome'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </button>
                                     <?php endforeach; ?>
                                 </div>
+
+                                <!-- Barra de Pesquisa de Produto -->
+                                <div style="min-width: 220px; max-width: 280px;">
+                                    <div class="search-input-wrapper">
+                                        <span class="search-icon">
+                                            <svg width="13" height="13" viewBox="0 0 16 16" fill="#64748b"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+                                        </span>
+                                        <input type="text" id="agendamentoBuscaInput" class="form-control form-control-sm" placeholder="Buscar produto..." autocomplete="off" oninput="filtrarProdutos(null, this.value)">
+                                    </div>
+                                </div>
                             </div>
-                        <?php endforeach; ?>
+
+                            <!-- Grade Única de Produtos -->
+                            <div class="row g-3" id="agendamentoProdutosGrid">
+                                <?php foreach ($produtos as $prod): ?>
+                                    <?php 
+                                    $esgotado = (bool)$prod['esgotado']; 
+                                    $temConflito = (bool)$prod['tem_conflito_alergia'];
+                                    $conflitosStr = implode(', ', $prod['conflitos_nomes']);
+                                    $nomeBusca = mb_strtolower($prod['descricao'], 'UTF-8');
+                                    $codigoBusca = mb_strtolower($prod['codigo_interno'] ?? '', 'UTF-8');
+                                    $catId = (int)$prod['categoria_id'];
+                                    ?>
+                                    <div class="col-12 col-md-6 agendamento-prod-col"
+                                         data-id="<?php echo (int)$prod['id']; ?>"
+                                         data-categoria="<?php echo $catId; ?>"
+                                         data-nome="<?php echo htmlspecialchars($nomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
+                                         data-codigo="<?php echo htmlspecialchars($codigoBusca, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between transition-all product-card <?php echo $esgotado ? 'bg-light border-subtle' : 'bg-white'; ?>"
+                                             id="product-box-<?php echo $prod['id']; ?>"
+                                             style="<?php echo $esgotado ? 'opacity: 0.55; cursor: not-allowed;' : ''; ?>">
+                                            
+                                            <div>
+                                                <!-- Topo do Card de Produto -->
+                                                <div class="d-flex align-items-start gap-2 mb-2">
+                                                    <!-- Miniatura / Thumbnail -->
+                                                    <div class="product-thumb flex-shrink-0" style="width: 44px; height: 44px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                                        <?php if (!empty($prod['foto_url'])): ?>
+                                                            <img src="<?php echo $baseUrl; ?>/<?php echo htmlspecialchars($prod['foto_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        <?php else: ?>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#94a3b8" viewBox="0 0 16 16">
+                                                                <path d="M8 1a5 5 0 0 0-5 5v1h10V6a5 5 0 0 0-5-5m4 7H4c-.55 0-1 .45-1 1v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9c0-.55-.45-1-1-1"/>
+                                                            </svg>
+                                                        <?php endif; ?>
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <h4 class="mb-0 text-dark fw-semibold" style="font-size: 13px; line-height: 1.3;">
+                                                                <?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>
+                                                            </h4>
+                                                        </div>
+                                                        <div class="text-secondary mt-1" style="font-size: 11px;">
+                                                            Código: <code class="code-tag font-tabular" style="font-size: 10px;"><?php echo htmlspecialchars($prod['codigo_interno'], ENT_QUOTES, 'UTF-8'); ?></code>
+                                                            &bull; <?php echo ($prod['tipo'] === 'salgado_diario') ? 'Salgado Diário' : 'Industrializado'; ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tags de Alérgenos -->
+                                                <?php if ($temConflito): ?>
+                                                    <div class="mb-2 p-1 px-2 rounded" style="background: #fffbeb; border: 1px solid #fde68a; font-size: 11px; color: #92400e;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-exclamation-triangle-fill me-1" viewBox="0 0 16 16">
+                                                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                                        </svg>
+                                                        <strong>Contém:</strong> <?php echo htmlspecialchars($conflitosStr, ENT_QUOTES, 'UTF-8'); ?> (incompatível)
+                                                    </div>
+                                                <?php elseif (!empty($prod['alergenos'])): ?>
+                                                    <div class="text-muted mb-2" style="font-size: 10px;">
+                                                        Alérgenos: <?php echo htmlspecialchars(implode(', ', array_column($prod['alergenos'], 'nome')), ENT_QUOTES, 'UTF-8'); ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <!-- Rodapé do Card: Preço e Seletor de Quantidade -->
+                                            <div class="d-flex align-items-center justify-content-between pt-2 border-top border-subtle mt-2">
+                                                <div class="font-tabular" style="font-size: 15px; font-weight: 700; color: #0f172a;">
+                                                    R$ <?php echo number_format($prod['preco_venda'], 2, ',', '.'); ?>
+                                                </div>
+
+                                                <?php if ($esgotado): ?>
+                                                    <code class="code-tag text-uppercase font-tabular" style="font-size: 10px; color: #64748b;">Esgotado</code>
+                                                <?php else: ?>
+                                                    <!-- Controles de Quantidade -->
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <button type="button" 
+                                                                class="btn btn-enterprise btn-secondary btn-sm btn-qtd-diminuir" 
+                                                                data-id="<?php echo $prod['id']; ?>"
+                                                                style="width: 28px; height: 28px; padding: 0;">-</button>
+                                                        
+                                                        <input type="text" 
+                                                               inputmode="numeric" 
+                                                               pattern="[0-9]*" 
+                                                               name="itens[<?php echo $prod['id']; ?>]" 
+                                                               id="qtd-<?php echo $prod['id']; ?>" 
+                                                               value="0" 
+                                                               min="0" 
+                                                               max="<?php echo ($prod['tipo'] === 'industrializado_continuo') ? $prod['estoque_disponivel'] : 10; ?>" 
+                                                               class="form-control form-control-sm text-center font-tabular input-qtd" 
+                                                               style="width: 44px; height: 28px; font-weight: 600; padding: 0 4px; text-align: center; -moz-appearance: textfield; appearance: textfield;"
+                                                               data-id="<?php echo $prod['id']; ?>"
+                                                               data-nome="<?php echo htmlspecialchars($prod['descricao'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                               data-preco="<?php echo $prod['preco_venda']; ?>"
+                                                               data-conflito="<?php echo $temConflito ? '1' : '0'; ?>"
+                                                               data-conflitos-msg="<?php echo htmlspecialchars($conflitosStr, ENT_QUOTES, 'UTF-8'); ?>"
+                                                               readonly>
+
+                                                        <button type="button" 
+                                                                class="btn btn-enterprise btn-secondary btn-sm btn-qtd-aumentar" 
+                                                                data-id="<?php echo $prod['id']; ?>"
+                                                                style="width: 28px; height: 28px; padding: 0;">+</button>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                                <!-- Mensagem de Busca Vazia -->
+                                <div id="agendamentoEmptySearch" class="col-12 text-center py-5 d-none">
+                                    <div class="text-secondary mb-2">
+                                        <svg width="32" height="32" viewBox="0 0 16 16" fill="#94a3b8"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+                                    </div>
+                                    <div class="fw-semibold text-secondary" style="font-size: 13px;">Nenhum produto encontrado com os filtros selecionados.</div>
+                                    <div class="text-muted" style="font-size: 11px;">Tente buscar com outro termo ou selecione a categoria "Tudo".</div>
+                                </div>
+                            </div>
+                        </div>
                     <?php endif; ?>
                 </div>
 
@@ -500,6 +547,46 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
 </div>
 
 <script>
+let categoriaAtiva = 'todas';
+let textoBuscaAtivo = '';
+
+window.filtrarProdutos = function(catId, termo) {
+    if (catId !== null && catId !== undefined) {
+        categoriaAtiva = String(catId);
+        document.querySelectorAll('#agendamentoCatNav .pdv-cat-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-cat') === categoriaAtiva);
+        });
+    }
+
+    if (termo !== null && termo !== undefined) {
+        textoBuscaAtivo = termo.toLowerCase().trim();
+    }
+
+    const cols = document.querySelectorAll('.agendamento-prod-col');
+    let visiveis = 0;
+
+    cols.forEach(col => {
+        const catCol = col.getAttribute('data-categoria');
+        const nomeCol = (col.getAttribute('data-nome') || '').toLowerCase();
+        const codigoCol = (col.getAttribute('data-codigo') || '').toLowerCase();
+
+        const matchCat = (categoriaAtiva === 'todas' || catCol === categoriaAtiva);
+        const matchBusca = (!textoBuscaAtivo || nomeCol.includes(textoBuscaAtivo) || codigoCol.includes(textoBuscaAtivo));
+
+        if (matchCat && matchBusca) {
+            col.classList.remove('d-none');
+            visiveis++;
+        } else {
+            col.classList.add('d-none');
+        }
+    });
+
+    const emptySearch = document.getElementById('agendamentoEmptySearch');
+    if (emptySearch) {
+        emptySearch.classList.toggle('d-none', visiveis > 0);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const saldoDisponivel = <?php echo (float)$saldoDisponivel; ?>;
     const nomeAluno = <?php echo json_encode($alunoSelecionado['nome'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;

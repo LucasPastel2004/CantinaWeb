@@ -331,12 +331,23 @@ class PortalController extends Controller
         }
         unset($prod);
 
-        // Agrupa produtos por categoria
+        // Agrupa produtos por categoria e extrai lista ordenada de categorias para o filtro superior (Estilo PDV)
         $produtosPorCategoria = [];
+        $categoriasCardapio = [];
         foreach ($produtos as $prod) {
-            $cat = $prod['categoria_nome'] ?? 'Outros';
-            $produtosPorCategoria[$cat][] = $prod;
+            $catId = (int)$prod['categoria_id'];
+            $catNome = $prod['categoria_nome'] ?? 'Outros';
+            $produtosPorCategoria[$catNome][] = $prod;
+
+            if (!isset($categoriasCardapio[$catId])) {
+                $categoriasCardapio[$catId] = [
+                    'id'   => $catId,
+                    'nome' => $catNome,
+                    'ordem'=> $prod['ordem_exibicao'] ?? 999
+                ];
+            }
         }
+        uasort($categoriasCardapio, fn($a, $b) => ($a['ordem'] <=> $b['ordem']) ?: strcoll($a['nome'], $b['nome']));
 
         // 5. Verifica se o aluno já possui pedido agendado nesta data
         $pedidoExistente = null;
@@ -367,6 +378,7 @@ class PortalController extends Controller
             'statusCorte'            => $statusCorteDia,
             'produtosPorCategoria'   => $produtosPorCategoria,
             'produtos'               => $produtos,
+            'categorias'             => array_values($categoriasCardapio),
             'pedidoExistente'        => $pedidoExistente,
         ], 'portal');
     }

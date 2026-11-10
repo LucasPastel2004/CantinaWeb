@@ -84,8 +84,8 @@ class PixService
         }
 
         // Gera um identificador único de transação (txid) no padrão do Banco Central
-        // Alfanumérico entre 26 e 35 caracteres
-        $txid = 'PIX' . date('YmdHis') . strtoupper(bin2hex(random_bytes(5)));
+        // Alfanumérico de até 25 caracteres para QR Code estático com chave Pix
+        $txid = 'PIX' . date('YmdHis') . strtoupper(bin2hex(random_bytes(4)));
 
         // Obtém chave Pix institucional e dados do recebedor
         $configPix = self::getConfig();
@@ -176,7 +176,7 @@ class PixService
         }
 
         if (empty($txid)) {
-            $txid = 'PDV' . date('YmdHis') . strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
+            $txid = 'PDV' . date('YmdHis') . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
         }
 
         // Obtém chave Pix institucional e dados do recebedor
@@ -792,16 +792,28 @@ class PixService
         // 1. Merchant Account Information (Tag 26)
         $gui = self::formatarTlv('00', 'BR.GOV.BCB.PIX');
         $chave = self::formatarTlv('01', $chavePix);
-        $desc = !empty($descricao) ? self::formatarTlv('02', substr(self::removerAcentos($descricao), 0, 40)) : '';
+        
+        // Limpeza rigorosa da descrição (apenas caracteres alfanuméricos e espaços, máx 40 chars)
+        $descLimpa = substr(preg_replace('/[^A-Za-z0-9 ]/', '', self::removerAcentos($descricao)), 0, 40);
+        $desc = !empty($descLimpa) ? self::formatarTlv('02', $descLimpa) : '';
         $merchantAccountInfo = self::formatarTlv('26', $gui . $chave . $desc);
 
         // 2. Additional Data Field Template (Tag 62)
-        $referenceLabel = self::formatarTlv('05', $txid);
+        // Txid no padrão do Banco Central para QR Code estático: máximo 25 caracteres
+        $txidLimpo = substr(preg_replace('/[^A-Za-z0-9]/', '', $txid), 0, 25);
+        if (empty($txidLimpo)) {
+            $txidLimpo = '***';
+        }
+        $referenceLabel = self::formatarTlv('05', $txidLimpo);
         $additionalDataField = self::formatarTlv('62', $referenceLabel);
 
         // 3. Montagem dos campos TLV raiz
+        // Tag 01: Point of Initiation Method:
+        // '11' = QR Code Estático / Chave Direta Reutilizável com valor pré-definido.
+        // Conforme a regulamentação do Banco Central, o valor '12' exige obrigatoriamente
+        // o subcampo 25 (URL de cobrança imediata via API). Para chave direta, deve ser '11'.
         $payload = self::formatarTlv('00', '01') .                 // Payload Format Indicator
-                   self::formatarTlv('01', '12') .                 // Point of Initiation Method (12 = Dinâmico)
+                   self::formatarTlv('01', '11') .                 // Point of Initiation Method (11 = Estático/Chave)
                    $merchantAccountInfo .                          // Conta do comerciante
                    self::formatarTlv('52', '0000') .               // Merchant Category Code
                    self::formatarTlv('53', '986') .                // Moeda (986 = Real Brasileiro)

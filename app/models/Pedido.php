@@ -554,6 +554,7 @@ class Pedido extends Model
         ?\DateTimeInterface $agora = null
     ): array {
         $now = $agora ? \DateTimeImmutable::createFromInterface($agora) : new \DateTimeImmutable();
+        $contaFamiliarId = (new Responsavel())->getContaFamiliarId($responsavelId);
 
         $pdo = self::getPdo();
         $iniciouTransacao = false;
@@ -563,15 +564,15 @@ class Pedido extends Model
         }
 
         try {
-            // 1. Busca o pedido com bloqueio
+            // 1. Busca o pedido com bloqueio garantindo acesso a qualquer membro da conta familiar
             $stmt = $pdo->prepare("
                 SELECT p.*, a.nome AS aluno_nome 
                 FROM pedidos p
                 INNER JOIN alunos a ON a.id = p.aluno_id
-                WHERE p.id = :id AND p.responsavel_id = :resp_id
+                WHERE p.id = :id AND (p.responsavel_id = :resp_id OR p.responsavel_id = :conta_id)
                 FOR UPDATE
             ");
-            $stmt->execute(['id' => $pedidoId, 'resp_id' => $responsavelId]);
+            $stmt->execute(['id' => $pedidoId, 'resp_id' => $responsavelId, 'conta_id' => $contaFamiliarId]);
             $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if (!$pedido) {
@@ -596,15 +597,16 @@ class Pedido extends Model
                 );
             }
 
-            // 3. Atualiza status do pedido
+            // 3. Atualiza status do pedido e audita o autor do cancelamento
             $stmtUpPedido = $pdo->prepare("
                 UPDATE pedidos 
-                SET status = :status, updated_at = NOW() 
+                SET status = :status, autor_responsavel_id = :autor_id, updated_at = NOW() 
                 WHERE id = :id
             ");
             $stmtUpPedido->execute([
-                'status' => self::STATUS_CANCELADO,
-                'id'     => $pedidoId
+                'status'   => self::STATUS_CANCELADO,
+                'autor_id' => $responsavelId,
+                'id'       => $pedidoId
             ]);
 
             // 4. Cancela os tickets vinculados
@@ -642,7 +644,7 @@ class Pedido extends Model
             // 6. Estorno integral de 100% na carteira familiar (RN-03)
             $valorEstorno = (float)$pedido['valor_total'];
             TransacaoCarteira::creditar(
-                $responsavelId,
+                $contaFamiliarId,
                 $valorEstorno,
                 TransacaoCarteira::TIPO_ESTORNO_CANCELAMENTO,
                 "Estorno integral por cancelamento do pedido #{$pedido['codigo_pedido']}",
@@ -697,6 +699,7 @@ class Pedido extends Model
         }
 
         $now = $agora ? \DateTimeImmutable::createFromInterface($agora) : new \DateTimeImmutable();
+        $contaFamiliarId = (new Responsavel())->getContaFamiliarId($responsavelId);
 
         $pdo = self::getPdo();
         $iniciouTransacao = false;
@@ -706,15 +709,15 @@ class Pedido extends Model
         }
 
         try {
-            // 1. Busca o pedido com bloqueio
+            // 1. Busca o pedido com bloqueio garantindo acesso a qualquer membro da conta familiar
             $stmt = $pdo->prepare("
                 SELECT p.*, a.nome AS aluno_nome, a.turno 
                 FROM pedidos p
                 INNER JOIN alunos a ON a.id = p.aluno_id
-                WHERE p.id = :id AND p.responsavel_id = :resp_id
+                WHERE p.id = :id AND (p.responsavel_id = :resp_id OR p.responsavel_id = :conta_id)
                 FOR UPDATE
             ");
-            $stmt->execute(['id' => $pedidoId, 'resp_id' => $responsavelId]);
+            $stmt->execute(['id' => $pedidoId, 'resp_id' => $responsavelId, 'conta_id' => $contaFamiliarId]);
             $pedido = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if (!$pedido) {
@@ -859,7 +862,7 @@ class Pedido extends Model
             if ($diferenca > 0) {
                 // Novo pedido é mais caro: debita a diferença da carteira
                 TransacaoCarteira::debitar(
-                    $responsavelId,
+                    $contaFamiliarId,
                     $diferenca,
                     TransacaoCarteira::TIPO_DEBITO_PEDIDO,
                     "Diferença por adição de itens no pedido #{$pedido['codigo_pedido']}",
@@ -870,7 +873,7 @@ class Pedido extends Model
                 // Novo pedido é mais barato: estorna a diferença para a carteira
                 $valorEstorno = abs($diferenca);
                 TransacaoCarteira::creditar(
-                    $responsavelId,
+                    $contaFamiliarId,
                     $valorEstorno,
                     TransacaoCarteira::TIPO_ESTORNO_CANCELAMENTO,
                     "Estorno de diferença na edição do pedido #{$pedido['codigo_pedido']}",
@@ -941,16 +944,17 @@ class Pedido extends Model
                 }
             }
 
-            // 9. Atualiza o cabeçalho do pedido
+            // 9. Atualiza o cabeçalho do pedido e audita o autor da edição
             $stmtUpHead = $pdo->prepare("
                 UPDATE pedidos 
-                SET valor_total = :total, status = :status, updated_at = NOW() 
+                SET valor_total = :total, status = :status, autor_responsavel_id = :autor_id, updated_at = NOW() 
                 WHERE id = :id
             ");
             $stmtUpHead->execute([
-                'total'  => $novoTotal,
-                'status' => self::STATUS_EDITADO,
-                'id'     => $pedidoId
+                'total'    => $novoTotal,
+                'status'   => self::STATUS_EDITADO,
+                'autor_id' => $responsavelId,
+                'id'       => $pedidoId
             ]);
 
             if ($iniciouTransacao) {

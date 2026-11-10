@@ -340,7 +340,8 @@ class Responsavel extends Model
      */
     public static function consultarSaldo(int $id): float
     {
-        $resp = self::fetchOne("SELECT saldo_atual FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $id]);
+        $contaFamiliarId = (new self())->getContaFamiliarId($id);
+        $resp = self::fetchOne("SELECT saldo_atual FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $contaFamiliarId]);
         return (float)($resp['saldo_atual'] ?? 0.00);
     }
 
@@ -349,18 +350,20 @@ class Responsavel extends Model
      */
     public static function isBloqueadoMed(int $id): bool
     {
-        $resp = self::fetchOne("SELECT bloqueado_med FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $id]);
+        $contaFamiliarId = (new self())->getContaFamiliarId($id);
+        $resp = self::fetchOne("SELECT bloqueado_med FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $contaFamiliarId]);
         return (int)($resp['bloqueado_med'] ?? 0) === 1;
     }
 
     /**
-     * Atualiza a flag de bloqueio MED do responsável
+     * Atualiza a flag de bloqueio MED do responsável e de toda a sua conta familiar
      */
     public static function definirBloqueioMed(int $id, bool $bloquear): bool
     {
+        $contaFamiliarId = (new self())->getContaFamiliarId($id);
         return self::execute(
-            "UPDATE responsaveis SET bloqueado_med = :bloqueado, updated_at = NOW() WHERE id = :id",
-            ['bloqueado' => $bloquear ? 1 : 0, 'id' => $id]
+            "UPDATE responsaveis SET bloqueado_med = :bloqueado, updated_at = NOW() WHERE id = :id OR titular_id = :id2",
+            ['bloqueado' => $bloquear ? 1 : 0, 'id' => $contaFamiliarId, 'id2' => $contaFamiliarId]
         ) > 0;
     }
 

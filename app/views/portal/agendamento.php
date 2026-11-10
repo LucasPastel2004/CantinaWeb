@@ -667,6 +667,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!comandaTotalDisplay) return;
 
+        const saldoRestante = saldoDisponivel - total;
+
         comandaTotalDisplay.textContent = formatarMoeda(total);
         // Atualiza barra flutuante mobile da comanda
         const mobileSticky = document.getElementById('mobile-comanda-sticky');
@@ -687,7 +689,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         badgeCount.textContent = totalItens + (totalItens === 1 ? ' item' : ' itens');
 
-        const saldoRestante = saldoDisponivel - total;
         comandaSaldoRestante.textContent = formatarMoeda(Math.max(0, saldoRestante));
 
         if (saldoRestante < 0) {
@@ -736,7 +737,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let current = parseInt(input.value) || 0;
 
             if (current >= max) {
-                alert('Limite máximo disponível atingido para este item.');
+                if (typeof window.alertaAcao === 'function') {
+                    window.alertaAcao('Limite Máximo', 'Limite máximo disponível atingido para este item.');
+                } else if (typeof window.confirmarAcao === 'function') {
+                    window.confirmarAcao('Limite Máximo', 'Limite máximo disponível atingido para este item.');
+                }
                 return;
             }
 

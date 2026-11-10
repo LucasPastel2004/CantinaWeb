@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Teste Automatizado da Barra de Navegação Inferior do Portal da Família
  * Cantina Web — Colégio Monteiro Lobato
@@ -126,7 +126,7 @@ assertCondition(
 // 8. Validação da versão do asset para cache busting
 assertCondition(
     str_contains($html, 'custom.css?v=7.4.3'),
-    "Versão do custom.css incrementada para 7.4.2 no layout master",
+    "Versão do custom.css incrementada para 7.4.3 no layout master",
     $pass, $fail
 );
 

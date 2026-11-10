@@ -43,7 +43,7 @@ abstract class Controller
         $data['baseUrl'] = $baseUrl;
         $data['csrf_token'] = Session::getCsrfToken();
         $data['csrf_field'] = Session::csrfField();
-        $data['assetVersion'] = '7.4.2';
+        $data['assetVersion'] = '7.4.3';
         if (!isset($data['user']) && Auth::check()) {
             $data['user'] = Auth::user();
         }

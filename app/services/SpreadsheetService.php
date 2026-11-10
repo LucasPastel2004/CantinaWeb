@@ -505,6 +505,12 @@ class SpreadsheetService
                     $novosAlunos++;
                 } else {
                     $alunosAtualizados++;
+                    // Se o aluno já existia vinculado a outro responsável, une à mesma Conta Familiar
+                    $titularOriginalId = (int)($resAluno['registro']['responsavel_id'] ?? 0);
+                    if ($titularOriginalId > 0 && $titularOriginalId !== $respId) {
+                        $pdo->prepare("UPDATE responsaveis SET titular_id = :tid, parentesco = 'co_responsavel' WHERE id = :id AND (titular_id IS NULL OR titular_id = 0)")
+                            ->execute(['tid' => $titularOriginalId, 'id' => $respId]);
+                    }
                 }
 
                 // 4. Alérgenos declarados na planilha (opcional)

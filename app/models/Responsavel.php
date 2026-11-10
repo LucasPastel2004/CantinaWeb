@@ -138,10 +138,58 @@ class Responsavel extends Model
     }
 
     /**
-     * Retorna os alunos dependentes vinculados ao responsável
+     * Localiza um responsável pelo ID, agregando saldo e status do titular caso seja co-responsável
+     */
+    public function find(mixed $id): ?array
+    {
+        $resp = parent::find($id);
+        if ($resp && !empty($resp['titular_id'])) {
+            $titular = parent::find((int)$resp['titular_id']);
+            if ($titular) {
+                $resp['saldo_atual'] = $titular['saldo_atual'];
+                $resp['bloqueado_med'] = $titular['bloqueado_med'];
+            }
+        }
+        return $resp;
+    }
+
+    /**
+     * Retorna o ID da conta familiar (o ID do titular financeiro da família)
+     */
+    public function getContaFamiliarId(int $responsavelId): int
+    {
+        $sql = "SELECT id, titular_id FROM {$this->table} WHERE id = :id LIMIT 1";
+        $row = self::fetchOne($sql, ['id' => $responsavelId]);
+        if ($row && !empty($row['titular_id'])) {
+            return (int)$row['titular_id'];
+        }
+        return $responsavelId;
+    }
+
+    /**
+     * Retorna todos os membros (responsáveis) associados à mesma conta familiar
+     */
+    public function getMembrosFamilia(int $responsavelId): array
+    {
+        $contaFamiliarId = $this->getContaFamiliarId($responsavelId);
+        $sql = "SELECT id, titular_id, nome, cpf, email, whatsapp, parentesco, termos_aceitos_em, saldo_atual 
+                FROM {$this->table} 
+                WHERE id = :titular_id OR titular_id = :titular_id2 
+                ORDER BY CASE WHEN titular_id IS NULL THEN 0 ELSE 1 END, id ASC";
+
+        return self::fetchAll($sql, [
+            'titular_id'  => $contaFamiliarId,
+            'titular_id2' => $contaFamiliarId
+        ]);
+    }
+
+    /**
+     * Retorna os alunos dependentes vinculados ao responsável ou à sua conta familiar
      */
     public function getDependentes(int $responsavelId): array
     {
+        $contaFamiliarId = $this->getContaFamiliarId($responsavelId);
+
         $sql = "SELECT a.*, t.serie, t.nome_turma, t.turno AS turno_turma 
                 FROM alunos a 
                 LEFT JOIN turmas t ON t.id = a.turma_id AND t.deleted_at IS NULL 
@@ -149,7 +197,7 @@ class Responsavel extends Model
                 AND a.deleted_at IS NULL 
                 ORDER BY a.nome ASC";
 
-        return self::fetchAll($sql, ['responsavel_id' => $responsavelId]);
+        return self::fetchAll($sql, ['responsavel_id' => $contaFamiliarId]);
     }
 
     /**
@@ -197,6 +245,12 @@ class Responsavel extends Model
                 $updateFields[] = "email = :email";
                 $updateParams['email'] = trim($dados['email']);
             }
+            // Atualiza titular_id se informado e ainda não associado
+            if (!empty($dados['titular_id']) && empty($existente['titular_id']) && (int)$existente['id'] !== (int)$dados['titular_id']) {
+                $updateFields[] = "titular_id = :titular_id, parentesco = :parentesco";
+                $updateParams['titular_id'] = (int)$dados['titular_id'];
+                $updateParams['parentesco'] = trim($dados['parentesco'] ?? 'co_responsavel');
+            }
 
             if (!empty($updateFields)) {
                 $updateFields[] = "updated_by = :updated_by";
@@ -213,19 +267,26 @@ class Responsavel extends Model
             ];
         }
 
+        $titularId = !empty($dados['titular_id']) ? (int)$dados['titular_id'] : null;
+        $parentesco = !empty($dados['parentesco']) ? trim($dados['parentesco']) : ($titularId ? 'co_responsavel' : 'titular');
+
         // Se não existe, cria novo registro com saldo 0.00 e sem senha (pendente de primeiro acesso)
         $now = date('Y-m-d H:i:s');
         $sql = "INSERT INTO responsaveis (
+                    titular_id, parentesco,
                     cpf, nome, email, whatsapp, senha_hash,
                     saldo_atual, termos_aceitos_em, bloqueado_med,
                     created_by, updated_by, created_at, updated_at
                 ) VALUES (
+                    :titular_id, :parentesco,
                     :cpf, :nome, :email, :whatsapp, '',
                     0.00, NULL, 0,
                     :created_by, :updated_by, :created_at, :updated_at
                 )";
 
         self::execute($sql, [
+            'titular_id' => $titularId,
+            'parentesco' => $parentesco,
             'cpf'        => $cleanCpf,
             'nome'       => trim($dados['nome'] ?? 'Responsável ' . substr($cleanCpf, 0, 3)),
             'email'      => trim($dados['email'] ?? ''),

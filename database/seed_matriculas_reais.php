@@ -192,6 +192,62 @@ try {
     echo "Responsáveis financeiros processados: " . count($mapaResponsaveisCpf) . " (Novos: {$respCriados}, Atualizados: {$respAtualizados})\n\n";
 
     // ------------------------------------------------------------------------
+    // 2.1 Carga e Vínculo dos Co-responsáveis (Responsáveis Pedagógicos / Cônjuges)
+    // ------------------------------------------------------------------------
+    echo "--- 2.1 VINCULANDO CO-RESPONSÁVEIS À CONTA FAMILIAR COMPARTILHADA ---\n";
+    $coRespCriados = 0;
+    $coRespVinculados = 0;
+
+    foreach ($dadosJson as $g) {
+        $rf = $g['responsavel_financeiro'];
+        $cpfFinanceiro = preg_replace('/\D/', '', $rf['cpf_limpo'] ?? '');
+        $titularId = $mapaResponsaveisCpf[$cpfFinanceiro] ?? null;
+
+        if (!$titularId || empty($g['responsavel_pedagogico'])) {
+            continue;
+        }
+
+        $rp = $g['responsavel_pedagogico'];
+        $cpfPedLimpo = preg_replace('/\D/', '', $rp['cpf_limpo'] ?? '');
+
+        // Só cria se tiver CPF válido de 11 dígitos e for diferente do titular
+        if (strlen($cpfPedLimpo) === 11 && $cpfPedLimpo !== $cpfFinanceiro) {
+            $nomePed = trim($rp['nome']);
+            $rawPhone = trim($rp['whatsapp'] ?? ($rp['telefones'][0] ?? ''));
+            $digitsPhone = preg_replace('/\D/', '', $rawPhone);
+            if (strlen($digitsPhone) >= 10 && strlen($digitsPhone) <= 11) {
+                if (strlen($digitsPhone) === 11) {
+                    $whatsPed = '(' . substr($digitsPhone, 0, 2) . ') ' . substr($digitsPhone, 2, 5) . '-' . substr($digitsPhone, 7);
+                } else {
+                    $whatsPed = '(' . substr($digitsPhone, 0, 2) . ') ' . substr($digitsPhone, 2, 4) . '-' . substr($digitsPhone, 6);
+                }
+            } else {
+                $whatsPed = substr(trim($rawPhone), 0, 20);
+            }
+            $emailPed = $cpfPedLimpo . '@colegiomonteirolobato.com.br';
+
+            $resPed = Responsavel::localizarOuCriarPorCpf([
+                'cpf'        => $cpfPedLimpo,
+                'nome'       => $nomePed,
+                'whatsapp'   => $whatsPed,
+                'email'      => $emailPed,
+                'titular_id' => $titularId,
+                'parentesco' => 'pedagogico'
+            ]);
+
+            $pdo->prepare("UPDATE responsaveis SET titular_id = :tid, parentesco = 'pedagogico' WHERE id = :id AND (titular_id IS NULL OR titular_id = 0)")
+                ->execute(['tid' => $titularId, 'id' => (int)$resPed['id']]);
+
+            if ($resPed['novo']) {
+                $coRespCriados++;
+            }
+            $coRespVinculados++;
+        }
+    }
+
+    echo "Co-responsáveis vinculados à Conta Familiar: {$coRespVinculados} (Novos cadastrados: {$coRespCriados})\n\n";
+
+    // ------------------------------------------------------------------------
     // 3. Carga e Vínculo dos 232 Alunos Reais
     // ------------------------------------------------------------------------
     echo "--- 3. CARREGANDO ALUNOS REAIS E VÍNCULOS DE TURMA/RESPONSÁVEL ---\n";

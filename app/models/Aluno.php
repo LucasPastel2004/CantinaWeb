@@ -198,10 +198,13 @@ class Aluno extends Model
     }
 
     /**
-     * Retorna os alunos ativos vinculados a um responsável
+     * Retorna os alunos ativos vinculados a um responsável ou à sua conta familiar
      */
     public static function listarPorResponsavel(int $responsavelId, bool $apenasAtivos = true): array
     {
+        $respModel = new Responsavel();
+        $contaFamiliarId = $respModel->getContaFamiliarId($responsavelId);
+
         $sql = "SELECT a.*, t.serie, t.nome_turma, t.turno AS turno_turma,
                        (
                            SELECT GROUP_CONCAT(ra.nome ORDER BY ra.id SEPARATOR ', ')
@@ -219,7 +222,7 @@ class Aluno extends Model
 
         $sql .= " ORDER BY a.nome ASC";
 
-        return self::fetchAll($sql, ['responsavel_id' => $responsavelId]);
+        return self::fetchAll($sql, ['responsavel_id' => $contaFamiliarId]);
     }
 
     /**

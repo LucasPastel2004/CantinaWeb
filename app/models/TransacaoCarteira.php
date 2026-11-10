@@ -59,6 +59,8 @@ class TransacaoCarteira extends Model
             throw new \InvalidArgumentException('O valor do crédito deve ser maior que zero.');
         }
 
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $valor = round($valor, 2);
         $pdo = self::getPdo();
         $iniciouTransacao = false;
@@ -189,6 +191,8 @@ class TransacaoCarteira extends Model
             throw new \InvalidArgumentException('O valor do débito deve ser maior que zero.');
         }
 
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $valor = round($valor, 2);
         $pdo = self::getPdo();
         $iniciouTransacao = false;
@@ -307,6 +311,8 @@ class TransacaoCarteira extends Model
      */
     public static function obterResumoCarteira(int $responsavelId): array
     {
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         // 1. Dados cadastrais e saldo atual do responsável
         $resp = self::fetchOne(
             "SELECT id, nome, cpf, whatsapp, saldo_atual, bloqueado_med FROM responsaveis WHERE id = :id LIMIT 1",
@@ -372,6 +378,8 @@ class TransacaoCarteira extends Model
         int $pagina = 1,
         int $porPagina = 25
     ): array {
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $where = ["tc.responsavel_id = :resp_id"];
         $params = ['resp_id' => $responsavelId];
 

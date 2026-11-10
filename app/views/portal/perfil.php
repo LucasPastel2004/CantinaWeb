@@ -94,6 +94,32 @@ $cpfFormatado = (strlen($cpfLimpo) === 11)
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <?php 
+                    $outrosMembros = array_filter($membrosFamilia ?? [], fn($m) => (int)$m['id'] !== (int)($responsavel['id'] ?? 0));
+                    if (!empty($outrosMembros)): 
+                    ?>
+                        <div class="mt-3 p-3 bg-light rounded-2 border">
+                            <span class="text-microcopy text-muted d-block mb-2 font-weight-bold">Conta Familiar Compartilhada (Pai & Mãe)</span>
+                            <div class="text-microcopy text-dark">
+                                <?php foreach ($outrosMembros as $om): ?>
+                                    <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-light">
+                                        <div>
+                                            <strong class="d-block text-dark"><?php echo htmlspecialchars($om['nome'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            <span class="text-muted font-tabular">CPF: <?php 
+                                                $cpfOm = preg_replace('/\D/', '', $om['cpf']);
+                                                echo substr($cpfOm, 0, 3) . '.***.***-' . substr($cpfOm, -2);
+                                            ?></span>
+                                        </div>
+                                        <span class="badge bg-secondary-subtle text-secondary border font-tabular">Co-responsável</span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <small class="text-microcopy text-muted d-block mt-2">
+                                Os responsáveis vinculados compartilham a carteira familiar, o saldo e os mesmos dependentes.
+                            </small>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- ========================================== -->

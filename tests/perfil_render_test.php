@@ -52,12 +52,12 @@ $html = ob_get_clean();
 $testes = [
     'HTML gerado com sucesso' => strlen($html) > 1000,
     'Contém título Meus Dados Cadastrais' => str_contains($html, 'Meus Dados Cadastrais'),
-    'Contém 4 cabeçalhos de bloco corporativos neutros' => substr_count($html, 'card-enterprise-header') === 4 && !str_contains($html, 'header-primary'),
+    'Contém 3 cabeçalhos de bloco corporativos neutros' => substr_count($html, 'card-enterprise-header') === 3 && !str_contains($html, 'header-primary'),
     'Cabeçalho 1: Titular da Conta Familiar estilizado' => str_contains($html, 'Titular da Conta Familiar') && str_contains($html, 'status-success'),
     'Cabeçalho 2: Dependentes Vinculados estilizado' => str_contains($html, 'Dependentes Vinculados') && str_contains($html, '1 aluno(s)'),
-    'Cabeçalho 3: Segurança de Acesso estilizado' => str_contains($html, 'Segurança de Acesso') && str_contains($html, 'Alteração de Senha'),
-    'Cabeçalho 4: Como Funciona o Acesso estilizado' => str_contains($html, 'Como Funciona o Acesso') && str_contains($html, 'Protegido'),
-    'Texto informativo de Atualização Cadastral restaurado' => str_contains($html, 'Para inclusão de novos dependentes, transferência de turma ou alteração de dados cadastrais, favor procurar a secretaria do Colégio Monteiro Lobato.'),
+    'Cabeçalho 3: Como Funciona o Acesso estilizado' => str_contains($html, 'Como Funciona o Acesso') && str_contains($html, 'Protegido'),
+    'Seção de Alteração de Senha integrada no primeiro card' => str_contains($html, 'Segurança de Acesso') && str_contains($html, 'Alteração de Senha'),
+    'Texto informativo de Atualização Cadastral sem menção restritiva' => str_contains($html, 'Para inclusão de novos dependentes ou transferência de turma, favor procurar a secretaria do Colégio Monteiro Lobato.') && !str_contains($html, 'ou alteração de dados cadastrais'),
     'Texto informativo de Esqueceu sua senha? restaurado' => str_contains($html, 'Caso esqueça sua senha de acesso, na tela inicial de login clique em') && str_contains($html, 'As orientações seguras de redefinição serão despachadas para o seu e-mail cadastrado.'),
     'Texto explicativo de Autenticação e Senha presente' => str_contains($html, 'O acesso ao Portal da Família é individual por responsável legal, autenticado pelo CPF e senha criptografada em padrão seguro.')
 ];
@@ -93,7 +93,7 @@ $htmlVazio = ob_get_clean();
 
 $casoVazioPassou = str_contains($htmlVazio, 'Nenhum dependente vinculado no momento.')
     && str_contains($htmlVazio, '0 aluno(s)')
-    && (substr_count($htmlVazio, 'card-enterprise-header') === 4);
+    && (substr_count($htmlVazio, 'card-enterprise-header') === 3);
 
 if ($casoVazioPassou) {
     echo "  [PASS] Cenário de borda: Sem dependentes vinculados renderiza 0 aluno(s) e mensagem adequada\n";

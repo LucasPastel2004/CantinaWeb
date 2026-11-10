@@ -747,6 +747,7 @@ class PortalController extends Controller
             'responsavelNome' => $respDb['nome'] ?? $usuario['nome'] ?? 'Responsável',
             'saldoAtual'      => $saldoAtual,
             'dependentes'     => $dependentes,
+            'membrosFamilia'  => $respModel->getMembrosFamilia($respId),
             'csrfToken'       => $csrfToken
         ], 'portal');
     }

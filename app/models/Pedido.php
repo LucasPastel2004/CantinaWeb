@@ -239,7 +239,10 @@ class Pedido extends Model
                 throw new \DomainException('Aluno não localizado ou inativo.');
             }
 
-            if ((int)$aluno['responsavel_id'] !== $responsavelId) {
+            $respModel = new Responsavel();
+            $contaFamiliarId = $respModel->getContaFamiliarId($responsavelId);
+
+            if ((int)$aluno['responsavel_id'] !== $contaFamiliarId && (int)$aluno['responsavel_id'] !== $responsavelId) {
                 throw new \DomainException('Aluno dependente não pertence à conta familiar autenticada.');
             }
 
@@ -248,6 +251,30 @@ class Pedido extends Model
             }
 
             $turnoConsumo = $aluno['turno'] ?? self::TURNO_MATUTINO;
+
+            // 1.1 Trava Antiduplicidade Atômica de Pedidos (Pai e Mãe ou cliques simultâneos)
+            $stmtDup = $pdo->prepare("
+                SELECT id, status, responsavel_id, autor_responsavel_id 
+                FROM pedidos 
+                WHERE aluno_id = :aluno_id 
+                  AND data_consumo = :data_consumo 
+                  AND turno_consumo = :turno 
+                  AND status NOT IN ('cancelado', 'estornado')
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $stmtDup->execute([
+                'aluno_id'     => $alunoId,
+                'data_consumo' => $dataConsumo,
+                'turno'        => $turnoConsumo
+            ]);
+            $pedidoExistente = $stmtDup->fetch(\PDO::FETCH_ASSOC);
+
+            if ($pedidoExistente) {
+                throw new \DomainException(
+                    "Já existe um lanche agendado para este dependente nesta data e turno. O pedido já foi confirmado pelo outro responsável da família!"
+                );
+            }
 
             // 2. Valida se a data é um dia letivo
             if (!CalendarioEscolar::isDiaLetivo($dataConsumo)) {
@@ -386,7 +413,7 @@ class Pedido extends Model
 
             // 8. Débito compulsório na carteira familiar (modelo pré-pago)
             TransacaoCarteira::debitar(
-                $responsavelId,
+                $contaFamiliarId,
                 $valorTotal,
                 TransacaoCarteira::TIPO_DEBITO_PEDIDO,
                 "Agendamento do pedido #{$codigoPedido} para {$aluno['nome']}",
@@ -412,16 +439,17 @@ class Pedido extends Model
             // 10. Insere o registro mestre em pedidos
             $stmtPedido = $pdo->prepare("
                 INSERT INTO pedidos (
-                    codigo_pedido, responsavel_id, aluno_id, data_consumo,
+                    codigo_pedido, responsavel_id, autor_responsavel_id, aluno_id, data_consumo,
                     turno_consumo, valor_total, status, created_at, updated_at
                 ) VALUES (
-                    :codigo, :resp_id, :aluno_id, :data_consumo,
+                    :codigo, :resp_id, :autor_id, :aluno_id, :data_consumo,
                     :turno, :total, :status, NOW(), NOW()
                 )
             ");
             $stmtPedido->execute([
                 'codigo'       => $codigoPedido,
-                'resp_id'      => $responsavelId,
+                'resp_id'      => $contaFamiliarId,
+                'autor_id'     => $responsavelId,
                 'aluno_id'     => $alunoId,
                 'data_consumo' => $dataConsumo,
                 'turno'        => $turnoConsumo,
@@ -955,12 +983,14 @@ class Pedido extends Model
         ?string $dataInicio = null, 
         ?string $dataFim = null
     ): int {
+        $contaFamiliarId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $sql = "SELECT COUNT(*) AS total
                 FROM pedidos p
                 INNER JOIN alunos a ON a.id = p.aluno_id
                 WHERE p.responsavel_id = :resp_id";
 
-        $params = ['resp_id' => $responsavelId];
+        $params = ['resp_id' => $contaFamiliarId];
 
         if ($alunoId !== null && $alunoId > 0) {
             $sql .= " AND p.aluno_id = :aluno_id";
@@ -992,6 +1022,8 @@ class Pedido extends Model
         ?int $limite = null,
         ?int $offset = null
     ): array {
+        $contaFamiliarId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $sql = "SELECT p.*, 
                        a.nome AS aluno_nome, 
                        a.matricula AS aluno_matricula,
@@ -1002,7 +1034,7 @@ class Pedido extends Model
                 LEFT JOIN turmas t ON t.id = a.turma_id
                 WHERE p.responsavel_id = :resp_id";
 
-        $params = ['resp_id' => $responsavelId];
+        $params = ['resp_id' => $contaFamiliarId];
 
         if ($alunoId !== null && $alunoId > 0) {
             $sql .= " AND p.aluno_id = :aluno_id";
@@ -1054,6 +1086,8 @@ class Pedido extends Model
      */
     public static function buscarDetalhado(int $pedidoId, int $responsavelId): ?array
     {
+        $contaFamiliarId = (new Responsavel())->getContaFamiliarId($responsavelId);
+
         $sql = "SELECT p.*, 
                        a.nome AS aluno_nome, 
                        a.matricula AS aluno_matricula,
@@ -1064,7 +1098,7 @@ class Pedido extends Model
                 WHERE p.id = :id AND p.responsavel_id = :resp_id
                 LIMIT 1";
 
-        $pedido = self::fetchOne($sql, ['id' => $pedidoId, 'resp_id' => $responsavelId]);
+        $pedido = self::fetchOne($sql, ['id' => $pedidoId, 'resp_id' => $contaFamiliarId]);
 
         if (!$pedido) {
             return null;

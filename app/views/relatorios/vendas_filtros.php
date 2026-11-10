@@ -536,12 +536,6 @@ $ordPor       = $filtros['ordenar_por'] ?? 'maior_consumo';
 
     </form>
 
-    <!-- Rodapé Institucional Enxuto -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 text-microcopy text-muted pt-2 border-top">
-        <span>Cantina Web &bull; Colégio Monteiro Lobato &bull; Módulo de Relatórios de Vendas</span>
-        <span class="font-tabular">Emissão Oficial A4 &bull; Impressão / Salvar PDF</span>
-    </div>
-
 </div>
 
 <script>

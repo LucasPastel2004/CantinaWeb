@@ -34,7 +34,11 @@ $cpfFormatado = (strlen($cpfLimpo) === 11)
     <div class="col-12 col-lg-6">
         <div class="card-enterprise">
             <div class="card-enterprise-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Titular da Conta Familiar</span>
+                <?php
+                $isCoRespPerfil = !empty($responsavel['titular_id']) || (($responsavel['parentesco'] ?? '') === 'co_responsavel');
+                $tituloCardPerfil = $isCoRespPerfil ? 'Dados do Co-responsável' : 'Titular da Conta Familiar';
+                ?>
+                <span class="text-microcopy text-uppercase font-weight-bold text-secondary"><?php echo $tituloCardPerfil; ?></span>
                 <div class="d-flex align-items-center gap-2">
                     <span class="status-indicator status-success"><span class="bullet">●</span> Ativo</span>
                     <button type="button" class="btn btn-enterprise btn-secondary btn-sm" id="btn-toggle-editar" title="Editar dados cadastrais">
@@ -111,7 +115,9 @@ $cpfFormatado = (strlen($cpfLimpo) === 11)
                                                 echo substr($cpfOm, 0, 3) . '.***.***-' . substr($cpfOm, -2);
                                             ?></span>
                                         </div>
-                                        <span class="badge bg-secondary-subtle text-secondary border font-tabular">Co-responsável</span>
+                                        <span class="badge bg-secondary-subtle text-secondary border font-tabular">
+                                            <?php echo empty($om['titular_id']) ? 'Titular' : 'Co-responsável'; ?>
+                                        </span>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

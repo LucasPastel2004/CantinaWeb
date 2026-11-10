@@ -242,7 +242,7 @@ if (empty($categorias) && !empty($produtos)) {
                 O horário limite de compras para o turno <?php echo $alunoSelecionado['turno']; ?> (<?php echo $statusCorte['hora_corte']; ?>) foi atingido. Novos agendamentos para esta data foram finalizados.
             </p>
             <div class="d-flex justify-content-center gap-2">
-                <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm">
+                <a href="<?php echo $baseUrl; ?>/portal/pedidos?filtrar=1" class="btn btn-enterprise btn-primary btn-sm">
                     Consultar Meus Pedidos
                 </a>
                 <a href="<?php echo $urlOutroDia; ?>" class="btn btn-enterprise btn-primary btn-sm">
@@ -276,7 +276,7 @@ if (empty($categorias) && !empty($produtos)) {
                     <a href="<?php echo $baseUrl; ?>/portal/pedidos/editar/<?php echo $pedidoExistente['id']; ?>" class="btn btn-enterprise btn-primary btn-sm">
                         Editar Itens do Pedido
                     </a>
-                    <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm">
+                    <a href="<?php echo $baseUrl; ?>/portal/pedidos?filtrar=1" class="btn btn-enterprise btn-primary btn-sm">
                         Ver em Meus Pedidos
                     </a>
                 </div>

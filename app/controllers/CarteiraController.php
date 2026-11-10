@@ -83,7 +83,7 @@ class CarteiraController extends Controller
             'title'           => 'Carteira Familiar & Extrato — Cantina Web',
             'activeMenu'      => 'carteira',
             'user'            => $user,
-            'responsavelNome' => $user['name'] ?? $resumo['responsavel_nome'],
+            'responsavelNome' => $user['nome'] ?? 'Responsável',
             'saldoAtual'      => $resumo['saldo_atual'],
             'resumo'          => $resumo,
             'dependentes'     => $dependentes,

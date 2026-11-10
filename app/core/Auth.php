@@ -183,6 +183,8 @@ class Auth
         Session::set('_auth_role', 'responsavel');
         Session::set('_auth_saldo', (float)$responsavel['saldo_atual']);
         Session::set('_auth_bloqueado_med', (bool)$responsavel['bloqueado_med']);
+        Session::set('_auth_titular_id', !empty($responsavel['titular_id']) ? (int)$responsavel['titular_id'] : null);
+        Session::set('_auth_parentesco', $responsavel['parentesco'] ?? (!empty($responsavel['titular_id']) ? 'co_responsavel' : 'titular'));
     }
 
     /**
@@ -205,6 +207,8 @@ class Auth
         Session::remove('_auth_role');
         Session::remove('_auth_saldo');
         Session::remove('_auth_bloqueado_med');
+        Session::remove('_auth_titular_id');
+        Session::remove('_auth_parentesco');
 
         Session::regenerate(true);
     }
@@ -234,6 +238,20 @@ class Auth
             return null;
         }
 
+        $titularId = Session::get('_auth_titular_id');
+        $parentesco = Session::get('_auth_parentesco');
+
+        // Fallback defensivo para sessões de responsáveis iniciadas antes do refresh
+        if ($titularId === null && Session::get('_auth_type') === 'responsavel' && Session::get('_auth_id')) {
+            $respDb = (new \App\Models\Responsavel())->find((int)Session::get('_auth_id'));
+            if ($respDb) {
+                $titularId = !empty($respDb['titular_id']) ? (int)$respDb['titular_id'] : null;
+                $parentesco = $respDb['parentesco'] ?? ($titularId ? 'co_responsavel' : 'titular');
+                Session::set('_auth_titular_id', $titularId);
+                Session::set('_auth_parentesco', $parentesco);
+            }
+        }
+
         return [
             'id'            => Session::get('_auth_id'),
             'type'          => Session::get('_auth_type'),
@@ -244,7 +262,9 @@ class Auth
             'role'          => Session::get('_auth_role'),
             'perfil'        => Session::get('_auth_role'),
             'saldo'         => Session::get('_auth_saldo', 0.00),
-            'bloqueado_med' => Session::get('_auth_bloqueado_med', false)
+            'bloqueado_med' => Session::get('_auth_bloqueado_med', false),
+            'titular_id'    => $titularId,
+            'parentesco'    => $parentesco ?? 'titular'
         ];
     }
 

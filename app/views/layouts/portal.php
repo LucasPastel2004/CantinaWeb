@@ -27,22 +27,22 @@ if (!isset($saldoAtual) || $saldoAtual === null) {
 
 $saldoReservado = $saldoReservado ?? 0.00;
 
-if (empty($responsavelNome) || $responsavelNome === 'Responsável') {
-    $responsavelNome = !empty($loggedUser['nome']) 
-        ? $loggedUser['nome'] 
-        : (\App\Core\Session::get('_auth_nome') ?? 'Responsável');
-}
+// O topo do portal (avatar, nome e menu do usuário) representa ESTRITAMENTE
+// quem está logado na sessão ativa (ex: Danilla ou Aelson), nunca o titular financeiro.
+$nomeUsuarioTopo = !empty($loggedUser['nome']) 
+    ? $loggedUser['nome'] 
+    : (\App\Core\Session::get('_auth_nome') ?? (!empty($responsavelNome) ? $responsavelNome : 'Responsável'));
 
 // Formatação elegante do nome para evitar texto todo em maiúsculas
 $preposicoesLayout = ['de', 'da', 'do', 'das', 'dos', 'e'];
-$palavrasLayout = explode(' ', mb_strtolower(trim($responsavelNome), 'UTF-8'));
+$palavrasLayout = explode(' ', mb_strtolower(trim($nomeUsuarioTopo), 'UTF-8'));
 $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout) {
     return in_array($p, $preposicoesLayout, true) ? $p : mb_convert_case($p, MB_CASE_TITLE, 'UTF-8');
 }, $palavrasLayout));
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 5.00);
-$assetVersion = '7.4.3';
+$assetVersion = '7.4.4';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -93,7 +93,11 @@ $assetVersion = '7.4.3';
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; min-width: 220px;">
                     <li class="px-3 py-2 border-bottom bg-light">
                         <div class="font-weight-bold text-dark text-truncate" style="font-size: 13px;"><?php echo htmlspecialchars($nomeFormatadoTopo, ENT_QUOTES, 'UTF-8'); ?></div>
-                        <div class="text-microcopy text-muted font-tabular">Responsável Financeiro</div>
+                        <?php
+                        $isCoRespLayout = !empty($loggedUser['titular_id']) || (($loggedUser['parentesco'] ?? '') === 'co_responsavel');
+                        $subtituloCargoLayout = $isCoRespLayout ? 'Co-responsável (Conta Familiar)' : 'Responsável Financeiro';
+                        ?>
+                        <div class="text-microcopy text-muted font-tabular"><?php echo $subtituloCargoLayout; ?></div>
                     </li>
                     <li><a class="dropdown-item mt-1" href="<?php echo $baseUrl; ?>/portal/perfil">Meus Dados</a></li>
                     <li><hr class="dropdown-divider"></li>

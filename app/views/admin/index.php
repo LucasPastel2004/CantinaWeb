@@ -163,7 +163,7 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
                     </p>
                 </div>
                 <div>
-                    <a href="<?php echo $baseUrl; ?>/operacional/corte" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                    <a href="<?php echo $baseUrl; ?>/operacional/corte" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                         <span>Acessar Corte</span>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -192,7 +192,7 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
                     </p>
                 </div>
                 <div>
-                    <a href="<?php echo $baseUrl; ?>/operacional/tickets" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                    <a href="<?php echo $baseUrl; ?>/operacional/tickets" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                         <span>Imprimir Tickets</span>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -223,7 +223,7 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
                     </p>
                 </div>
                 <div>
-                    <a href="<?php echo $baseUrl; ?>/operacional/caixa" class="btn btn-enterprise btn-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
+                    <a href="<?php echo $baseUrl; ?>/operacional/caixa" class="btn btn-enterprise btn-primary btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-1.5">
                         <span>Gerenciar Caixa</span>
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
@@ -475,12 +475,6 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
             </div>
         </div>
 
-    </div>
-
-    <!-- Rodapé Institucional Enxuto -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 text-microcopy text-muted pt-3 mt-3 border-top">
-        <span>Colégio Monteiro Lobato &bull; Sistema Cantina Web &bull; Visão Geral</span>
-        <span class="font-tabular">Valores para o Futuro! &bull; &copy; <?php echo date('Y'); ?></span>
     </div>
 
 </div>

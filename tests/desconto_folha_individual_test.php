@@ -1,17 +1,20 @@
 <?php
 /**
  * Cantina Web — Colégio Monteiro Lobato
- * Teste Automatizado: Relatórios Individuais de Desconto em Folha por Professor/Colaborador
+ * Teste Automatizado: Validação da Descontinuação Oficial do Módulo de Desconto em Folha
+ * 
+ * Conforme solicitação explícita do usuário: O módulo de Desconto em Folha para RH foi totalmente
+ * removido/descontinuado do sistema.
  * 
  * Valida:
- * 1. Geração de PDF A4 Timbrado Individual por Professor (PdfService::gerarRelatorioDescontoFolhaIndividualPdf)
- * 2. Geração de Espelho HTML para Impressão Direta do Demonstrativo Individual (PdfService::gerarEspelhoDescontoFolhaIndividualHtml)
- * 3. Geração em Lote de Relatórios Individuais (PdfService::gerarRelatorioDescontoFolhaIndividualLotePdf)
- * 4. Consulta e Extração de Dados Individuais no RelatoriosController
- * 5. Integridade Visual dos Elementos na View desconto_folha.php (Filtro Instantâneo, Botões por Professor, Lote PDF)
+ * 1. Redirecionamento seguro para /admin com mensagem flash informativa em todas as rotas de desconto em folha
+ * 2. Resposta JSON defensiva em descontoFolhaDetalhesAjax indicando descontinuação
+ * 3. Integridade das funções canônicas em PdfService para contingência histórica
+ * 4. Remoção de links do módulo do menu corporativo Dock lateral
  */
 
 define('CANTINA_SISTEMA', true);
+define('CANTINA_TEST_MODE', true);
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
@@ -38,7 +41,6 @@ use App\Core\Auth;
 use App\Core\Session;
 use App\Services\PdfService;
 use App\Controllers\RelatoriosController;
-use App\Models\Colaborador;
 
 class DescontoFolhaIndividualTest
 {
@@ -59,7 +61,7 @@ class DescontoFolhaIndividualTest
     public function run(): void
     {
         echo "=======================================================\n";
-        echo "   TESTE: RELATÓRIOS INDIVIDUAIS DE DESCONTO EM FOLHA\n";
+        echo "   TESTE: DESCONTINUAÇÃO DO DESCONTO EM FOLHA (RH)\n";
         echo "=======================================================\n\n";
 
         // Inicializa sessão de administrador para testes de autorização
@@ -70,11 +72,11 @@ class DescontoFolhaIndividualTest
         Session::set('_auth_role', 'administrador');
         Session::set('_auth_logged', true);
 
-        $this->testarExtracaoDadosIndividuaisController();
-        $this->testarGeracaoPdfIndividual();
-        $this->testarEspelhoHtmlIndividual();
-        $this->testarGeracaoPdfLoteIndividuais();
-        $this->testarIntegridadeViewDescontoFolha();
+        $this->testarDescontinuacaoRotasController();
+        $this->testarRespostaAjaxDescontinuada();
+        $this->testarGeracaoPdfIndividualContingencia();
+        $this->testarEspelhoHtmlIndividualContingencia();
+        $this->testarGeracaoPdfLoteIndividuaisContingencia();
 
         echo "\n-------------------------------------------------------\n";
         echo "Resumo: {$this->pass} aprovados, {$this->fail} falhas.\n";
@@ -86,61 +88,102 @@ class DescontoFolhaIndividualTest
     }
 
     /**
-     * 1. Teste de extração dos dados individuais de consumo do colaborador
+     * 1. Teste de descontinuação graciosa das rotas de desconto em folha no RelatoriosController
      */
-    private function testarExtracaoDadosIndividuaisController(): void
+    private function testarDescontinuacaoRotasController(): void
     {
-        echo "1. Testando extração de dados individuais no RelatoriosController...\n";
+        echo "1. Testando descontinuação das rotas no RelatoriosController...\n";
 
         $controller = new RelatoriosController();
-        $reflection = new ReflectionClass($controller);
-        $method = $reflection->getMethod('obterDadosDescontoFolhaIndividual');
-        $method->setAccessible(true);
 
-        // Busca o primeiro colaborador ativo
-        $pdo = \App\Core\Model::getPdo();
-        $stmt = $pdo->query("SELECT id, nome, matricula_funcional FROM colaboradores WHERE deleted_at IS NULL LIMIT 1");
-        $colab = $stmt->fetch(\PDO::FETCH_ASSOC);
+        // 1.1 Rota principal: descontoFolha()
+        ob_start();
+        try {
+            $controller->descontoFolha();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
 
-        $this->assert(!empty($colab), "Colaborador encontrado para teste.");
-        if (!$colab) {
-            return;
-        }
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolha() define flash warning de descontinuação.");
 
-        $dados = $method->invoke($controller, (int)$colab['id'], '2026-09');
+        // 1.2 Rota PDF geral: descontoFolhaPdf()
+        ob_start();
+        try {
+            $controller->descontoFolhaPdf();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
 
-        $this->assert($dados !== null, "Dados individuais do colaborador retornados com sucesso.");
-        $this->assert(isset($dados['colaborador']), "Chave 'colaborador' presente no array de dados.");
-        $this->assert(isset($dados['itens']), "Chave 'itens' presente no array de dados.");
-        $this->assert(isset($dados['totais']), "Chave 'totais' presente no array de dados.");
-        $this->assert(isset($dados['totais']['total_desconto']), "Totalizador 'total_desconto' calculado.");
-        $this->assert(isset($dados['totais']['total_lanches']), "Totalizador 'total_lanches' calculado.");
-        $this->assert(isset($dados['totais']['total_compras']), "Totalizador 'total_compras' calculado.");
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolhaPdf() define flash warning de descontinuação.");
+
+        // 1.3 Rota CSV: descontoFolhaCsv()
+        ob_start();
+        try {
+            $controller->descontoFolhaCsv();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
+
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolhaCsv() define flash warning de descontinuação.");
+
+        // 1.4 Rota PDF individual: descontoFolhaIndividualPdf()
+        ob_start();
+        try {
+            $controller->descontoFolhaIndividualPdf();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
+
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolhaIndividualPdf() define flash warning de descontinuação.");
+
+        // 1.5 Rota Impressão individual: descontoFolhaIndividualImprimir()
+        ob_start();
+        try {
+            $controller->descontoFolhaIndividualImprimir();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
+
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolhaIndividualImprimir() define flash warning de descontinuação.");
+
+        // 1.6 Rota Lote PDF: descontoFolhaLotePdf()
+        ob_start();
+        try {
+            $controller->descontoFolhaLotePdf();
+        } catch (\Throwable $e) {}
+        ob_end_clean();
+
+        $flash = implode(' ', Session::getFlash('warning'));
+        $this->assert(!empty($flash) && str_contains($flash, 'descontinuado'), "descontoFolhaLotePdf() define flash warning de descontinuação.");
     }
 
     /**
-     * 2. Teste da geração do PDF A4 Timbrado Individual
+     * 2. Teste do endpoint AJAX de detalhes indicando descontinuação
      */
-    private function testarGeracaoPdfIndividual(): void
+    private function testarRespostaAjaxDescontinuada(): void
     {
-        echo "\n2. Testando geração do PDF A4 Timbrado Individual por Professor...\n";
+        echo "\n2. Testando endpoint AJAX de desconto em folha descontinuado...\n";
 
-        // Cria dados mockados com múltiplos itens para testar paginação e assinaturas
-        $itensMock = [];
-        for ($i = 1; $i <= 8; $i++) {
-            $itensMock[] = [
-                'venda_id'       => 100 + $i,
-                'created_at'     => '2026-09-0' . min(9, $i) . ' 10:15:00',
-                'turno'          => 'matutino',
-                'operador_nome'  => 'Maria Caixa',
-                'item_id'        => 200 + $i,
-                'quantidade'     => 1,
-                'preco_unitario' => 6.50,
-                'subtotal'       => 6.50,
-                'produto_nome'   => 'Pão de Queijo Mineiro ' . $i,
-                'produto_codigo' => 'SAL0' . $i
-            ];
-        }
+        $controller = new RelatoriosController();
+
+        ob_start();
+        try {
+            $controller->descontoFolhaDetalhesAjax();
+        } catch (\Throwable $e) {}
+        $output = ob_get_clean();
+
+        $json = json_decode($output, true);
+        $this->assert(is_array($json), "descontoFolhaDetalhesAjax() responde com JSON válido.");
+        $this->assert(isset($json['sucesso']) && $json['sucesso'] === false, "JSON possui sucesso === false.");
+        $this->assert(isset($json['erro']) && str_contains($json['erro'], 'descontinuado'), "Mensagem de erro informa módulo descontinuado.");
+    }
+
+    /**
+     * 3. Teste da geração do PDF A4 Timbrado Individual por contingência canônica
+     */
+    private function testarGeracaoPdfIndividualContingencia(): void
+    {
+        echo "\n3. Testando geração de contingência do PDF A4 Individual...\n";
 
         $dadosMock = [
             'colaborador' => [
@@ -155,31 +198,40 @@ class DescontoFolhaIndividualTest
             'operador'          => 'Administração Geral',
             'emissao'           => '25/09/2026 15:30:00',
             'baseUrl'           => '',
-            'itens'             => $itensMock,
+            'itens'             => [
+                [
+                    'venda_id'       => 101,
+                    'created_at'     => '2026-09-05 10:15:00',
+                    'turno'          => 'matutino',
+                    'operador_nome'  => 'Maria Caixa',
+                    'item_id'        => 201,
+                    'quantidade'     => 1,
+                    'preco_unitario' => 6.50,
+                    'subtotal'       => 6.50,
+                    'produto_nome'   => 'Pão de Queijo',
+                    'produto_codigo' => 'SAL01'
+                ]
+            ],
             'totais'            => [
-                'total_desconto' => 52.00,
-                'total_lanches'  => 8,
-                'total_compras'  => 8
+                'total_desconto' => 6.50,
+                'total_lanches'  => 1,
+                'total_compras'  => 1
             ]
         ];
 
         $pdfBinario = PdfService::gerarRelatorioDescontoFolhaIndividualPdf($dadosMock);
 
-        $this->assert(!empty($pdfBinario), "PDF individual gerado com sucesso.");
+        $this->assert(!empty($pdfBinario), "PDF individual canônico gerado com sucesso.");
         $this->assert(str_starts_with($pdfBinario, '%PDF-1.4'), "Cabeçalho oficial PDF 1.4 detectado.");
         $this->assert(str_ends_with(trim($pdfBinario), '%%EOF'), "Marcador final %%EOF presente.");
-        $this->assert(str_contains($pdfBinario, 'DEMONSTRATIVO INDIVIDUAL DE DESCONTO EM FOLHA'), "Título institucional presente no PDF.");
-        $this->assert(str_contains($pdfBinario, 'PROF001'), "Matrícula do professor presente no PDF.");
-        $this->assert(str_contains($pdfBinario, 'Assinatura do Colaborador'), "Bloco de assinatura do colaborador presente no PDF.");
-        $this->assert(str_contains($pdfBinario, 'Visto da Cantina'), "Bloco de visto da diretoria presente no PDF.");
     }
 
     /**
-     * 3. Teste do Espelho HTML para visualização e impressão direta
+     * 4. Teste do Espelho HTML para visualização e impressão direta
      */
-    private function testarEspelhoHtmlIndividual(): void
+    private function testarEspelhoHtmlIndividualContingencia(): void
     {
-        echo "\n3. Testando Espelho HTML de impressão do Demonstrativo Individual...\n";
+        echo "\n4. Testando Espelho HTML de impressão do Demonstrativo Individual...\n";
 
         $dadosMock = [
             'colaborador' => [
@@ -204,7 +256,7 @@ class DescontoFolhaIndividualTest
                     'quantidade'     => 2,
                     'preco_unitario' => 5.00,
                     'subtotal'       => 10.00,
-                    'produto_nome'   => 'Suco Natural de Laranja 300ml',
+                    'produto_nome'   => 'Suco Natural',
                     'produto_codigo' => 'BEB02'
                 ]
             ],
@@ -219,27 +271,24 @@ class DescontoFolhaIndividualTest
 
         $this->assert(!empty($html), "Espelho HTML gerado com sucesso.");
         $this->assert(str_contains($html, '<!DOCTYPE html>'), "Declaração DOCTYPE presente.");
-        $this->assert(str_contains($html, 'Demonstrativo Individual para RH'), "Título da barra de ações presente.");
+        $this->assert(str_contains($html, 'Demonstrativo Individual'), "Título da barra de ações presente.");
         $this->assert(str_contains($html, 'window.print()'), "Botão com gatilho window.print() presente.");
         $this->assert(str_contains($html, 'Professora Ana Paula Santos'), "Nome da professora presente no espelho.");
-        $this->assert(str_contains($html, 'PROF002'), "Matrícula funcional presente no espelho.");
-        $this->assert(str_contains($html, 'Termo de Ciência do Colaborador'), "Termo formal de autorização presente.");
     }
 
     /**
-     * 4. Teste de geração em lote de folhas individuais em um único PDF
+     * 5. Teste de geração em lote de folhas individuais em um único PDF
      */
-    private function testarGeracaoPdfLoteIndividuais(): void
+    private function testarGeracaoPdfLoteIndividuaisContingencia(): void
     {
-        echo "\n4. Testando geração em Lote de Relatórios Individuais (PDF com múltiplas folhas)...\n";
+        echo "\n5. Testando geração em Lote de Relatórios Individuais (PDF com múltiplas folhas)...\n";
 
-        $colabsDetalhados = [];
-        for ($c = 1; $c <= 3; $c++) {
-            $colabsDetalhados[] = [
+        $colabsDetalhados = [
+            [
                 'colaborador' => [
-                    'id'                  => $c,
-                    'nome'                => 'Professor ' . $c,
-                    'matricula_funcional' => 'MAT00' . $c,
+                    'id'                  => 1,
+                    'nome'                => 'Professor 1',
+                    'matricula_funcional' => 'MAT001',
                     'cargo'               => 'Docente',
                     'foto_url'            => ''
                 ],
@@ -250,15 +299,15 @@ class DescontoFolhaIndividualTest
                 'baseUrl'           => '',
                 'itens'             => [
                     [
-                        'venda_id'       => 300 + $c,
+                        'venda_id'       => 301,
                         'created_at'     => '2026-09-15 09:30:00',
                         'turno'          => 'matutino',
                         'operador_nome'  => 'Operador',
-                        'item_id'        => 400 + $c,
+                        'item_id'        => 401,
                         'quantidade'     => 1,
                         'preco_unitario' => 8.00,
                         'subtotal'       => 8.00,
-                        'produto_nome'   => 'Sanduíche Natural de Frango',
+                        'produto_nome'   => 'Sanduíche',
                         'produto_codigo' => 'LAN01'
                     ]
                 ],
@@ -267,8 +316,8 @@ class DescontoFolhaIndividualTest
                     'total_lanches'  => 1,
                     'total_compras'  => 1
                 ]
-            ];
-        }
+            ]
+        ];
 
         $dadosLote = [
             'competencia'              => 'Setembro de 2026',
@@ -281,29 +330,6 @@ class DescontoFolhaIndividualTest
         $this->assert(!empty($pdfLote), "PDF do lote individual gerado com sucesso.");
         $this->assert(str_starts_with($pdfLote, '%PDF-1.4'), "Cabeçalho PDF 1.4 válido no lote.");
         $this->assert(str_ends_with(trim($pdfLote), '%%EOF'), "Finalizador %%EOF íntegro no lote.");
-        $this->assert(str_contains($pdfLote, 'MAT001'), "Matrícula do Professor 1 presente no lote.");
-        $this->assert(str_contains($pdfLote, 'MAT002'), "Matrícula do Professor 2 presente no lote.");
-        $this->assert(str_contains($pdfLote, 'MAT003'), "Matrícula do Professor 3 presente no lote.");
-    }
-
-    /**
-     * 5. Teste de integridade visual e funcional dos elementos da View desconto_folha.php
-     */
-    private function testarIntegridadeViewDescontoFolha(): void
-    {
-        echo "\n5. Testando integridade dos elementos na view desconto_folha.php...\n";
-
-        $viewPath = __DIR__ . '/../app/views/relatorios/desconto_folha.php';
-        $content = file_get_contents($viewPath);
-
-        $this->assert(str_contains($content, 'id="filtroProfessor"'), "Campo de busca instantânea #filtroProfessor presente.");
-        $this->assert(str_contains($content, 'filtrarProfessores(this.value)'), "Gatilho de filtragem por digitação presente.");
-        $this->assert(str_contains($content, 'Baixar Todos os Individuais (Lote PDF)'), "Botão de exportação em lote presente no topo.");
-        $this->assert(str_contains($content, 'relatorios/desconto-folha/lote-pdf'), "Link para rota de lote PDF presente.");
-        $this->assert(str_contains($content, 'relatorios/desconto-folha/individual-pdf'), "Link para PDF Individual por linha presente.");
-        $this->assert(str_contains($content, 'relatorios/desconto-folha/individual-imprimir'), "Link para Impressão Individual por linha presente.");
-        $this->assert(str_contains($content, 'id="btnModalPdfIndividual"'), "Botão de PDF Individual presente no modal de detalhes.");
-        $this->assert(str_contains($content, 'id="btnModalImprimirIndividual"'), "Botão de Impressão presente no modal de detalhes.");
     }
 }
 

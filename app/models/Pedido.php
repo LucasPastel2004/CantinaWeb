@@ -207,7 +207,8 @@ class Pedido extends Model
         int $alunoId,
         string $dataConsumo,
         array $itens,
-        ?\DateTimeInterface $agora = null
+        ?\DateTimeInterface $agora = null,
+        bool $permitirDuplicado = false
     ): array {
         if (empty($itens)) {
             throw new \InvalidArgumentException('O pedido deve conter pelo menos um item de lanche.');
@@ -253,27 +254,29 @@ class Pedido extends Model
             $turnoConsumo = $aluno['turno'] ?? self::TURNO_MATUTINO;
 
             // 1.1 Trava Antiduplicidade Atômica de Pedidos (Pai e Mãe ou cliques simultâneos)
-            $stmtDup = $pdo->prepare("
-                SELECT id, status, responsavel_id, autor_responsavel_id 
-                FROM pedidos 
-                WHERE aluno_id = :aluno_id 
-                  AND data_consumo = :data_consumo 
-                  AND turno_consumo = :turno 
-                  AND status NOT IN ('cancelado', 'estornado')
-                LIMIT 1
-                FOR UPDATE
-            ");
-            $stmtDup->execute([
-                'aluno_id'     => $alunoId,
-                'data_consumo' => $dataConsumo,
-                'turno'        => $turnoConsumo
-            ]);
-            $pedidoExistente = $stmtDup->fetch(\PDO::FETCH_ASSOC);
+            if (!$permitirDuplicado) {
+                $stmtDup = $pdo->prepare("
+                    SELECT id, status, responsavel_id, autor_responsavel_id 
+                    FROM pedidos 
+                    WHERE aluno_id = :aluno_id 
+                      AND data_consumo = :data_consumo 
+                      AND turno_consumo = :turno 
+                      AND status NOT IN ('cancelado', 'estornado')
+                    LIMIT 1
+                    FOR UPDATE
+                ");
+                $stmtDup->execute([
+                    'aluno_id'     => $alunoId,
+                    'data_consumo' => $dataConsumo,
+                    'turno'        => $turnoConsumo
+                ]);
+                $pedidoExistente = $stmtDup->fetch(\PDO::FETCH_ASSOC);
 
-            if ($pedidoExistente) {
-                throw new \DomainException(
-                    "Já existe um lanche agendado para este dependente nesta data e turno. O pedido já foi confirmado pelo outro responsável da família!"
-                );
+                if ($pedidoExistente) {
+                    throw new \DomainException(
+                        "Já existe um lanche agendado para este dependente nesta data e turno. O pedido já foi confirmado pelo outro responsável da família!"
+                    );
+                }
             }
 
             // 2. Valida se a data é um dia letivo
@@ -291,7 +294,6 @@ class Pedido extends Model
             }
 
             // 4. Valida se a data pertence à semana seguinte e se já abriu (Sexta 18:00)
-            $hojeIso = $now->format('Y-m-d');
             $diasSemanaAtual = array_column(CalendarioEscolar::obterDiasSemanaLetiva('atual', $now), 'data');
             if (!in_array($dataConsumo, $diasSemanaAtual, true)) {
                 // É semana seguinte ou além
@@ -342,9 +344,9 @@ class Pedido extends Model
                 }
 
                 // Valida limite de quantidade para salgados diários
-                if ($prod['tipo'] === 'salgado_diario' && $qtd > 10) {
+                if ($prod['tipo'] === 'salgado_diario' && $qtd > 50) {
                     throw new \DomainException(
-                        "Quantidade máxima permitida para o produto [{$prod['descricao']}] é de 10 unidades por pedido."
+                        "Quantidade máxima permitida para o produto [{$prod['descricao']}] é de 50 unidades por pedido."
                     );
                 }
 
@@ -804,8 +806,8 @@ class Pedido extends Model
                     throw new \DomainException("O produto [{$prod['descricao']}] não está disponível para o turno {$turnoConsumo}.");
                 }
 
-                if ($prod['tipo'] === 'salgado_diario' && $qtd > 10) {
-                    throw new \DomainException("Quantidade máxima permitida para o produto [{$prod['descricao']}] é de 10 unidades por pedido.");
+                if ($prod['tipo'] === 'salgado_diario' && $qtd > 50) {
+                    throw new \DomainException("Quantidade máxima permitida para o produto [{$prod['descricao']}] é de 50 unidades por pedido.");
                 }
 
                 if ($prod['tipo'] === 'industrializado_continuo') {
@@ -1437,6 +1439,7 @@ class Pedido extends Model
         ?string $observacao = null,
         string $ipOrigem = '127.0.0.1'
     ): array {
+        $operadorId = self::validarUsuarioId($operadorId, true);
         if (empty($itensRecebidos)) {
             throw new \InvalidArgumentException('Nenhum item informado para conferência de recebimento.');
         }
@@ -1683,14 +1686,12 @@ class Pedido extends Model
                 p.responsavel_id,
                 r.nome AS responsavel_nome,
                 r.cpf AS responsavel_cpf,
-                COUNT(ip.id) AS total_itens
+                (SELECT COUNT(*) FROM itens_pedido ip WHERE ip.pedido_id = p.id) AS total_itens
             FROM pedidos p
             INNER JOIN alunos a ON a.id = p.aluno_id
             LEFT JOIN turmas tur ON tur.id = a.turma_id
             INNER JOIN responsaveis r ON r.id = p.responsavel_id
-            LEFT JOIN itens_pedido ip ON ip.pedido_id = p.id
             WHERE {$whereSql}
-            GROUP BY p.id
             ORDER BY p.data_consumo DESC, p.id DESC
         ";
 
@@ -1714,6 +1715,7 @@ class Pedido extends Model
         string $ipOrigem = '127.0.0.1',
         bool $produtoConsumido = false
     ): array {
+        $operadorId = self::validarUsuarioId($operadorId, true);
         $motivoLimpo = trim($motivo);
         if (mb_strlen($motivoLimpo) < 5) {
             throw new \InvalidArgumentException('O motivo do estorno deve conter no mínimo 5 caracteres.');

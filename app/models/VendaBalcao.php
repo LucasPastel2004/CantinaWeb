@@ -361,12 +361,11 @@ class VendaBalcao extends Model
                 c.nome AS colaborador_nome,
                 c.cargo AS colaborador_cargo,
                 a.nome AS aluno_nome,
-                COUNT(ivb.id) AS total_itens
+                (SELECT COUNT(*) FROM itens_venda_balcao ivb WHERE ivb.venda_balcao_id = vb.id) AS total_itens
             FROM vendas_balcao vb
             INNER JOIN usuarios u ON u.id = vb.operador_id
             LEFT JOIN colaboradores c ON c.id = vb.colaborador_id
             LEFT JOIN alunos a ON a.id = vb.aluno_id
-            LEFT JOIN itens_venda_balcao ivb ON ivb.venda_balcao_id = vb.id
             WHERE (vb.status IS NULL OR vb.status = 'concluida')
         ";
 
@@ -377,7 +376,6 @@ class VendaBalcao extends Model
         }
 
         $sql .= "
-            GROUP BY vb.id
             ORDER BY vb.id DESC
             LIMIT {$limite}
         ";
@@ -502,15 +500,13 @@ class VendaBalcao extends Model
                     WHEN a.nome IS NOT NULL THEN CONCAT('Aluno • Matrícula: ', COALESCE(a.matricula, 'S/M'), ' • ', COALESCE(tur.nome_turma, 'Geral'))
                     ELSE 'Venda Avulsa de Balcão'
                 END AS pessoa_detalhe,
-                COUNT(ivb.id) AS total_itens
+                (SELECT COUNT(*) FROM itens_venda_balcao ivb WHERE ivb.venda_balcao_id = vb.id) AS total_itens
             FROM vendas_balcao vb
             INNER JOIN usuarios u ON u.id = vb.operador_id
             LEFT JOIN alunos a ON a.id = vb.aluno_id
             LEFT JOIN turmas tur ON tur.id = a.turma_id
             LEFT JOIN colaboradores c ON c.id = vb.colaborador_id
-            LEFT JOIN itens_venda_balcao ivb ON ivb.venda_balcao_id = vb.id
             WHERE {$whereSql}
-            GROUP BY vb.id
             ORDER BY vb.created_at DESC, vb.id DESC
         ";
 

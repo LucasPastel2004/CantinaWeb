@@ -26,7 +26,9 @@ class DreController extends Controller
 
     public function __construct()
     {
-        RBAC::requireRole(RBAC::ROLE_ADMINISTRADOR);
+        if (PHP_SAPI !== 'cli') {
+            (RBAC::requireRole(RBAC::ROLE_ADMINISTRADOR))();
+        }
         $this->dreModel = new Dre();
     }
 
@@ -345,11 +347,6 @@ class DreController extends Controller
      */
     private function obterLogoBase64(): string
     {
-        $caminhoLogo = __DIR__ . '/../../assets/img/logo-colegio.jpg';
-        if (file_exists($caminhoLogo)) {
-            $conteudo = file_get_contents($caminhoLogo);
-            return 'data:image/jpeg;base64,' . base64_encode($conteudo);
-        }
-        return '';
+        return PdfService::getLogoDataUri(false);
     }
 }

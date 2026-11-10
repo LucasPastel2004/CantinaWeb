@@ -1094,6 +1094,9 @@ class RelatoriosController extends Controller
         $totalPaginasRecargas = (int)ceil(max(1, $totalRegistrosRecargas) / $porPagina);
         $totalPaginasConsumo  = (int)ceil(max(1, $totalRegistrosConsumo) / $porPagina);
 
+        $recargasExibicao = $paginar ? array_slice($recargas, ($paginaRecargas - 1) * $porPagina, $porPagina) : $recargas;
+        $consumoExibicao  = $paginar ? array_slice($consumoAgrupado, ($paginaConsumo - 1) * $porPagina, $porPagina) : $consumoAgrupado;
+
         $periodoFmt = date('d/m/Y', strtotime($dataInicio)) . ' a ' . date('d/m/Y', strtotime($dataFim));
 
         return [
@@ -1113,8 +1116,8 @@ class RelatoriosController extends Controller
             'linhas'                   => $linhas,
             'movimentacoes'            => $linhas,
             'lancamentos'              => $linhas,
-            'recargas'                 => $recargas,
-            'consumo'                  => $consumoAgrupado,
+            'recargas'                 => $recargasExibicao,
+            'consumo'                  => $consumoExibicao,
             'pagina_recargas'          => $paginaRecargas,
             'pagina_consumo'           => $paginaConsumo,
             'total_paginas_recargas'   => $totalPaginasRecargas,
@@ -2381,6 +2384,53 @@ class RelatoriosController extends Controller
                 'total_perdas'         => $totalPerdas,
                 'balanco_periodo'      => ($totalEntradas - $totalSaidas),
                 'total_movimentacoes'  => count($movimentacoes)
+            ]
+        ];
+    }
+
+    /**
+     * Consolida dados de baixas de mercadorias (perdas) para relatórios e testes de auditoria.
+     */
+    public function obterDadosBaixasMercadorias(array $filtros = []): array
+    {
+        $pdo = \App\Core\Model::getPdo();
+        $params = [];
+        $where = "WHERE em.tipo_movimentacao = 'saida_perda'";
+
+        if (!empty($filtros['motivo_perda'])) {
+            $where .= " AND em.motivo_perda = :motivo_perda";
+            $params['motivo_perda'] = $filtros['motivo_perda'];
+        }
+        if (!empty($filtros['data_inicio'])) {
+            $where .= " AND DATE(em.created_at) >= :data_inicio";
+            $params['data_inicio'] = $filtros['data_inicio'];
+        }
+        if (!empty($filtros['data_fim'])) {
+            $where .= " AND DATE(em.created_at) <= :data_fim";
+            $params['data_fim'] = $filtros['data_fim'];
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT em.motivo_perda, SUM(em.quantidade) AS total_qtd
+            FROM estoque_movimentacoes em
+            {$where}
+            GROUP BY em.motivo_perda
+        ");
+        $stmt->execute($params);
+        $porMotivo = [];
+        $totalUnidades = 0;
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $porMotivo[$row['motivo_perda']] = (int)$row['total_qtd'];
+            $totalUnidades += (int)$row['total_qtd'];
+        }
+
+        return [
+            'filtros' => $filtros,
+            'motivos_perda' => \App\Models\Estoque::MOTIVOS_PERDA,
+            'totais' => [
+                'total_unidades' => $totalUnidades,
+                'por_motivo' => $porMotivo,
+                'valor_total_estimado' => 0.0
             ]
         ];
     }

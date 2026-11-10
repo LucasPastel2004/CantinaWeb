@@ -924,6 +924,10 @@ class PortalController extends Controller
 
         if ($alunoIdSolicitado > 0) {
             if (!$this->alunoPertence($respId, $alunoIdSolicitado)) {
+                Auth::logSecurityEvent('acesso_negado_idor', (string)$respId, [
+                    'rota'             => '/portal/extrato',
+                    'aluno_id_tentado' => $alunoIdSolicitado
+                ]);
                 Session::setFlash('danger', 'Você não tem permissão para visualizar o extrato deste aluno.');
                 $this->redirect('/portal/extrato');
                 return;
@@ -1039,6 +1043,12 @@ class PortalController extends Controller
         $filtroGeral = trim((string)$this->input('filtro_geral', ''));
 
         if ($alunoId <= 0 || !$this->alunoPertence($respId, $alunoId)) {
+            if ($alunoId > 0) {
+                Auth::logSecurityEvent('acesso_negado_idor', (string)$respId, [
+                    'rota'             => '/portal/extrato',
+                    'aluno_id_tentado' => $alunoId
+                ]);
+            }
             Session::setFlash('danger', 'Você não tem permissão para visualizar o extrato deste aluno.');
             $this->redirect('/portal/extrato');
             return;
@@ -1074,6 +1084,12 @@ class PortalController extends Controller
         }
 
         if ($alunoId <= 0 || !$this->alunoPertence($respId, $alunoId)) {
+            if ($alunoId > 0) {
+                Auth::logSecurityEvent('acesso_negado_idor', (string)$respId, [
+                    'rota'             => '/portal/extrato',
+                    'aluno_id_tentado' => $alunoId
+                ]);
+            }
             Session::setFlash('danger', 'Você não tem permissão para visualizar o extrato deste aluno.');
             $this->redirect('/portal/extrato');
             return;

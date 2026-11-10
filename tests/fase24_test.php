@@ -50,7 +50,7 @@ class Fase24Test
         $this->testModelDreDadosGraficos();
         $this->testRotasDespesasController();
         $this->testRotasDreController();
-        $this->testGotenbergCompilacaoDrePdf();
+        $this->testPrintToPdfCompilacaoDre();
         $this->testIntegridadeSidebarEHub();
 
         echo "\n----------------------------------------------------------------------\n";
@@ -392,7 +392,7 @@ class Fase24Test
         $this->assert(str_contains($htmlPrint, 'table-dre-doc'), "Grade tipo Excel presente no documento de impressão.");
     }
 
-    private function testGotenbergCompilacaoDrePdf(): void
+    private function testPrintToPdfCompilacaoDre(): void
     {
         echo "\n[10] Testando Espelho A4 Paisagem do DRE (Print to PDF Nativo — Hostnet Compatible)...\n";
 

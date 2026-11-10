@@ -143,17 +143,9 @@ class EstornoVendasController extends Controller
         // Se o tipo especificado for pedido ou encomenda
         if ($tipo === 'pedido' || $tipo === 'encomenda' || $tipo === 'nao') {
             $pedidoOnline = Pedido::buscarDetalhadoPorId($id) ?? Pedido::buscarPorId($id);
-            if (!$pedidoOnline) {
-                // Fallback defensivo: se não achar em pedidos, procura em balcão
-                $vendaBalcao = VendaBalcao::buscarPorId($id);
-            }
         } else {
             // Padrão balcão
             $vendaBalcao = VendaBalcao::buscarPorId($id);
-            if (!$vendaBalcao) {
-                // Fallback defensivo: se não achou em balcão, procura em pedidos
-                $pedidoOnline = Pedido::buscarDetalhadoPorId($id) ?? Pedido::buscarPorId($id);
-            }
         }
 
         if ($vendaBalcao) {
@@ -277,17 +269,6 @@ class EstornoVendasController extends Controller
                     $valorTotalEstornado += (float)$pedidoEstornado['valor_total'];
                 }
             } catch (\Throwable $e) {
-                // Fallback defensivo: se falhar como pedido, tenta como balcão
-                if ($itemTipo === 'pedido') {
-                    try {
-                        $vendaEstornada = VendaBalcao::estornarVenda($id, $operadorId, $motivo, $ipOrigem, $produtoConsumido);
-                        $totalEstornados++;
-                        $valorTotalEstornado += (float)$vendaEstornada['valor_total'];
-                        continue;
-                    } catch (\Throwable $e2) {
-                        // mantém erro original
-                    }
-                }
                 $erros[] = "Venda #{$id}: " . $e->getMessage();
             }
         }
@@ -328,7 +309,7 @@ class EstornoVendasController extends Controller
     {
         $queryParams = http_build_query([
             'carregar'       => '1',
-            'venda_avulsa'   => $_POST['venda_avulsa'] ?? 'nao',
+            'venda_avulsa'   => $_POST['venda_avulsa'] ?? ($_POST['tipo_venda'] ?? 'nao'),
             'filtrar_por'    => $_POST['filtrar_por'] ?? 'aluno',
             'pessoa_id'      => $_POST['pessoa_id'] ?? '',
             'aluno_id'       => $_POST['aluno_id'] ?? '',

@@ -223,6 +223,7 @@ class SpreadsheetService
         $amostra          = [];
         $matriculasVistas = [];
         $cpfsVistos       = [];
+        $turmasVistas     = [];
 
         $novosRespCount    = 0;
         $existRespCount    = 0;
@@ -316,13 +317,20 @@ class SpreadsheetService
                     }
                 }
 
-                // Turma
-                $turmaDb = Turma::buscarPorNomeETurno($turma, $turno);
-                if ($turmaDb) {
-                    $turmaStatus = 'existente';
-                    $existTurmasCount++;
+                // Turma (com cache de deduplicação por linha na prévia)
+                $chaveTurma = mb_strtolower($turma, 'UTF-8') . '|' . $turno;
+                if (isset($turmasVistas[$chaveTurma])) {
+                    $turmaStatus = $turmasVistas[$chaveTurma];
                 } else {
-                    $novasTurmasCount++;
+                    $turmaDb = Turma::buscarPorNomeETurno($turma, $turno);
+                    if ($turmaDb) {
+                        $turmaStatus = 'existente';
+                        $existTurmasCount++;
+                    } else {
+                        $turmaStatus = 'nova';
+                        $novasTurmasCount++;
+                    }
+                    $turmasVistas[$chaveTurma] = $turmaStatus;
                 }
 
                 // Aluno
@@ -508,8 +516,10 @@ class SpreadsheetService
                     // Se o aluno já existia vinculado a outro responsável, une à mesma Conta Familiar
                     $titularOriginalId = (int)($resAluno['registro']['responsavel_id'] ?? 0);
                     if ($titularOriginalId > 0 && $titularOriginalId !== $respId) {
-                        $pdo->prepare("UPDATE responsaveis SET titular_id = :tid, parentesco = 'co_responsavel' WHERE id = :id AND (titular_id IS NULL OR titular_id = 0)")
-                            ->execute(['tid' => $titularOriginalId, 'id' => $respId]);
+                        Model::execute(
+                            "UPDATE responsaveis SET titular_id = :tid, parentesco = 'co_responsavel' WHERE id = :id AND (titular_id IS NULL OR titular_id = 0)",
+                            ['tid' => $titularOriginalId, 'id' => $respId]
+                        );
                     }
                 }
 

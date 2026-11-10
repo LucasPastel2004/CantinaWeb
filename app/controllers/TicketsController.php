@@ -11,7 +11,6 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Auth;
 use App\Core\Session;
-use App\Core\RBAC;
 use App\Models\Ticket;
 use App\Models\Turma;
 use App\Services\PdfService;
@@ -177,7 +176,7 @@ class TicketsController extends Controller
         $ticketIds = array_column($tickets, 'ticket_id');
         Ticket::marcarComoImpresso($ticketIds);
 
-        $baseUrl = '';
+        $baseUrl = $this->getBaseUrl();
         $parametros = [
             'data'    => $dataConsumo,
             'turno'   => $turnoConsumo,
@@ -233,7 +232,7 @@ class TicketsController extends Controller
         $ticketIds = array_column($tickets, 'ticket_id');
         Ticket::marcarComoImpresso($ticketIds);
 
-        $baseUrl = '';
+        $baseUrl = $this->getBaseUrl();
         $parametros = [
             'data'     => $dataConsumo,
             'turno'    => $turnoConsumo,
@@ -323,7 +322,7 @@ class TicketsController extends Controller
             return;
         }
 
-        $baseUrl = '';
+        $baseUrl = $this->getBaseUrl();
         $html = PdfService::gerarEspelhoTicketIndividualHtml($ticket, [
             'baseUrl' => $baseUrl
         ]);

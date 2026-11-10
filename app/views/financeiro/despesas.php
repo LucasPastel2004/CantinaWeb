@@ -452,7 +452,7 @@ function abrirModalNovaDespesa() {
     form.action = '<?php echo $baseUrl; ?>/financeiro/despesas/salvar';
     document.getElementById('despesaId').value = '';
     document.getElementById('modalDespesaLabel').innerText = 'Lançamento de Despesa Operacional';
-    document.getElementById('despesaCompetencia').value = '<?php echo $competenciaAtual !== "todas" ? $competenciaAtual : date("Y-m"); ?>';
+    document.getElementById('despesaCompetencia').value = '<?php echo htmlspecialchars($competenciaAtual !== "todas" ? $competenciaAtual : date("Y-m"), ENT_QUOTES, "UTF-8"); ?>';
     document.getElementById('despesaDataVencimento').value = '<?php echo date("Y-m-d"); ?>';
     document.getElementById('despesaStatus').value = 'pendente';
     alternarCamposPagamento();
@@ -466,7 +466,9 @@ function editarDespesa(id) {
         .then(response => response.json())
         .then(data => {
             if (!data.sucesso || !data.despesa) {
-                alert('Erro ao carregar dados da despesa.');
+                if (typeof window.alertaAcao === 'function') {
+                    window.alertaAcao('Erro ao carregar dados da despesa.', 'Erro', 'danger');
+                }
                 return;
             }
             const d = data.despesa;

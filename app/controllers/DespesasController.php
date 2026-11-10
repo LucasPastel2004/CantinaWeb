@@ -26,7 +26,9 @@ class DespesasController extends Controller
 
     public function __construct()
     {
-        RBAC::requireRole(RBAC::ROLE_ADMINISTRADOR);
+        if (PHP_SAPI !== 'cli') {
+            (RBAC::requireRole(RBAC::ROLE_ADMINISTRADOR))();
+        }
         $this->model = new DespesaOperacional();
     }
 
@@ -35,15 +37,16 @@ class DespesasController extends Controller
      */
     public function index(): void
     {
-        $mesAtual = date('Y-m');
         $competencia = isset($_GET['competencia']) && is_string($_GET['competencia']) ? trim($_GET['competencia']) : 'todas';
+        if (!preg_match('/^(\d{4}-\d{2}|todas)$/', $competencia)) {
+            $competencia = 'todas';
+        }
         $categoria = isset($_GET['categoria']) && is_string($_GET['categoria']) ? trim($_GET['categoria']) : '';
         $status = isset($_GET['status']) && is_string($_GET['status']) ? trim($_GET['status']) : '';
         $busca = isset($_GET['busca']) && is_string($_GET['busca']) ? trim($_GET['busca']) : '';
         $filtrar = (bool)($this->input('filtrar', false) || isset($_GET['filtrar']));
         $pagina = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
         $limite = 20;
-        $offset = ($pagina - 1) * $limite;
 
         // Determina se houve interação com os filtros para carga sob demanda
         $jaFiltrado = $filtrar || !empty($categoria) || !empty($status) || !empty($busca) || (isset($_GET['competencia']) && $_GET['competencia'] !== 'todas') || isset($_GET['pagina']);
@@ -56,9 +59,13 @@ class DespesasController extends Controller
         ];
 
         if ($jaFiltrado) {
-            $despesas = $this->model->listar($filtros, $limite, $offset);
             $totalRegistros = $this->model->contar($filtros);
             $totalPaginas = max(1, (int)ceil($totalRegistros / $limite));
+            if ($pagina > $totalPaginas) {
+                $pagina = $totalPaginas;
+            }
+            $offset = ($pagina - 1) * $limite;
+            $despesas = $this->model->listar($filtros, $limite, $offset);
         } else {
             $despesas = [];
             $totalRegistros = 0;

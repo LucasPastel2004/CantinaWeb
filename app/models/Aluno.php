@@ -31,7 +31,8 @@ class Aluno extends Model
     {
         $sql = "SELECT a.*,
                        t.serie, t.nome_turma, t.turno AS turno_turma,
-                       r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.whatsapp AS responsavel_whatsapp, r.saldo_atual,
+                       r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.whatsapp AS responsavel_whatsapp,
+                       COALESCE(rt.saldo_atual, r.saldo_atual) AS saldo_atual,
                        (
                            SELECT GROUP_CONCAT(ra.nome ORDER BY ra.id SEPARATOR ', ')
                            FROM aluno_restricoes ar
@@ -41,6 +42,7 @@ class Aluno extends Model
                 FROM alunos a
                 INNER JOIN turmas t ON t.id = a.turma_id
                 INNER JOIN responsaveis r ON r.id = a.responsavel_id
+                LEFT JOIN responsaveis rt ON rt.id = r.titular_id
                 WHERE 1=1";
 
         $params = [];
@@ -142,11 +144,7 @@ class Aluno extends Model
         if (isset($filtros['status']) && $filtros['status'] === 'ativo') {
             $filtros['status'] = 'ativos';
         }
-        $resultado = self::listarTodos($filtros);
-        if ($limite > 0 && count($resultado) > $limite) {
-            return array_slice($resultado, 0, $limite);
-        }
-        return $resultado;
+        return self::listarTodos($filtros, $limite > 0 ? $limite : null, 0);
     }
 
 
@@ -157,7 +155,8 @@ class Aluno extends Model
     {
         $sql = "SELECT a.*,
                        t.serie, t.nome_turma, t.turno AS turno_turma,
-                       r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.whatsapp AS responsavel_whatsapp, r.email AS responsavel_email, r.saldo_atual,
+                       r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.whatsapp AS responsavel_whatsapp, r.email AS responsavel_email,
+                       COALESCE(rt.saldo_atual, r.saldo_atual) AS saldo_atual,
                        (
                            SELECT GROUP_CONCAT(ra.nome ORDER BY ra.id SEPARATOR ', ')
                            FROM aluno_restricoes ar
@@ -167,6 +166,7 @@ class Aluno extends Model
                 FROM alunos a
                 INNER JOIN turmas t ON t.id = a.turma_id
                 INNER JOIN responsaveis r ON r.id = a.responsavel_id
+                LEFT JOIN responsaveis rt ON rt.id = r.titular_id
                 WHERE a.id = :id";
 
         if (!$incluirInativos) {
@@ -230,6 +230,7 @@ class Aluno extends Model
      */
     public static function criar(array $dados, ?int $usuarioId = null): int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
 
         $sql = "INSERT INTO alunos (
@@ -271,6 +272,7 @@ class Aluno extends Model
      */
     public static function atualizar(int $id, array $dados, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $sql = "UPDATE alunos 
                 SET responsavel_id = :responsavel_id,
                     turma_id       = :turma_id,
@@ -317,6 +319,7 @@ class Aluno extends Model
      */
     public static function inativar(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "UPDATE alunos 
                 SET ativo = 0, deleted_at = :deleted_at, updated_by = :updated_by, updated_at = :updated_at 
@@ -335,6 +338,7 @@ class Aluno extends Model
      */
     public static function reativar(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "UPDATE alunos 
                 SET ativo = 1, deleted_at = NULL, updated_by = :updated_by, updated_at = :updated_at 

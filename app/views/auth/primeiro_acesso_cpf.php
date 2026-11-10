@@ -25,7 +25,7 @@ $cpfPreenchido = $cpfPreenchido ?? '';
                class="form-control form-control-enterprise font-tabular" 
                id="cpf" 
                name="cpf" 
-               value="<?php echo $cpfPreenchido; ?>" 
+               value="<?php echo htmlspecialchars(html_entity_decode((string)$cpfPreenchido, ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>" 
                maxlength="14" 
                required>
         <div class="text-microcopy text-muted mt-1">Apenas os números ou no formato com pontos e traço.</div>

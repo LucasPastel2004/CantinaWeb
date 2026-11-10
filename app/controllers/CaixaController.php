@@ -13,7 +13,6 @@ use App\Core\Session;
 use App\Core\Auth;
 use App\Models\Configuracao;
 use App\Models\SessaoCaixa;
-use App\Models\Responsavel;
 use App\Services\PdfService;
 
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');

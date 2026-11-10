@@ -15,11 +15,11 @@ namespace App\Controllers;
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 
 use App\Core\Controller;
+use App\Core\Auth;
 use App\Models\TransacaoCarteira;
 use App\Models\Responsavel;
 use App\Services\PixService;
 use App\Services\EmailService;
-use App\Services\WhatsAppService;
 
 class WebhookController extends Controller
 {
@@ -344,26 +344,7 @@ class WebhookController extends Controller
      * Registra evento na tabela logs_seguranca com contingência em arquivo
      */
     private function registrarLogSeguranca(string $evento, array $detalhes): void
-
     {
-        try {
-            $sql = "INSERT INTO logs_seguranca (evento, cpf_ou_usuario, detalhes_json, ip_origem, created_at)
-                    VALUES (:evento, :identificador, :detalhes, :ip, NOW())";
-
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-            Responsavel::execute($sql, [
-                'evento'        => $evento,
-                'identificador' => 'WEBHOOK_PIX',
-                'detalhes'      => json_encode($detalhes, JSON_UNESCAPED_UNICODE),
-                'ip'            => $ip
-            ]);
-        } catch (\Throwable $e) {
-            $logPath = __DIR__ . '/../../storage/logs/security.log';
-            @file_put_contents(
-                $logPath,
-                sprintf("[%s] [%s] %s\n", date('Y-m-d H:i:s'), $evento, json_encode($detalhes)),
-                FILE_APPEND
-            );
-        }
+        Auth::logSecurityEvent($evento, 'WEBHOOK_PIX', $detalhes);
     }
 }

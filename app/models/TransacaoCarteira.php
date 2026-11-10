@@ -60,6 +60,7 @@ class TransacaoCarteira extends Model
         }
 
         $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+        $operadorId = self::validarUsuarioId($operadorId, false);
 
         $valor = round($valor, 2);
         $pdo = self::getPdo();
@@ -72,7 +73,7 @@ class TransacaoCarteira extends Model
 
         try {
             // 1. Bloqueia o registro do responsável para leitura e escrita atômica
-            $stmt = $pdo->prepare("SELECT id, saldo_atual, bloqueado_med, nome, whatsapp FROM responsaveis WHERE id = :id FOR UPDATE");
+            $stmt = $pdo->prepare("SELECT id, saldo_atual, bloqueado_med, nome, whatsapp, email FROM responsaveis WHERE id = :id FOR UPDATE");
             $stmt->execute(['id' => $responsavelId]);
             $resp = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -192,6 +193,7 @@ class TransacaoCarteira extends Model
         }
 
         $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+        $operadorId = self::validarUsuarioId($operadorId, false);
 
         $valor = round($valor, 2);
         $pdo = self::getPdo();
@@ -493,6 +495,9 @@ class TransacaoCarteira extends Model
         ?int $operadorId = null,
         bool $dispararNotificacao = true
     ): array {
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+        $operadorId = self::validarUsuarioId($operadorId, false);
+
         // 1. Garantia de Idempotência: verifica se esta devolução já foi processada
         $transacaoExistente = self::fetchOne(
             "SELECT * FROM transacoes_carteira 
@@ -626,6 +631,10 @@ class TransacaoCarteira extends Model
             throw new \InvalidArgumentException('O valor da quitação deve ser maior que zero.');
         }
 
+        $responsavelId = (new Responsavel())->getContaFamiliarId($responsavelId);
+        $operadorId = self::validarUsuarioId($operadorId, false);
+        $estavaBloqueadoAntes = Responsavel::isBloqueadoMed($responsavelId);
+
         $protocolo = 'QUIT-' . date('YmdHis') . '-' . $responsavelId;
         $descricao = sprintf(
             'Quitação de Débito MED / Regularização Presencial (%s) - Prot: %s. %s',
@@ -645,10 +654,10 @@ class TransacaoCarteira extends Model
         );
 
         $saldoResultante = (float)$transacao['saldo_resultante'];
-        $desbloqueado = false;
+        $desbloqueado = $estavaBloqueadoAntes && $saldoResultante >= 0;
 
-        // Se o saldo agora é não-negativo (>= 0), remove a suspensão MED
-        if ($desbloquearSePositivo && $saldoResultante >= 0) {
+        // Se o desbloqueio for solicitado mesmo com quitação parcial (ou caso ainda esteja bloqueado)
+        if ($desbloquearSePositivo && $saldoResultante >= 0 && Responsavel::isBloqueadoMed($responsavelId)) {
             Responsavel::desbloquearMed(
                 $responsavelId,
                 $operadorId,
@@ -677,7 +686,7 @@ class TransacaoCarteira extends Model
             $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
             self::execute(
                 "INSERT INTO logs_auditoria (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
-                 VALUES (:operador_id, :acao, :tabela, :registro_id, :justificativa, :ip, NOW())",
+                 VALUES (:operador_id, :acao, :tabela_afetada, :registro_id, :justificativa, :ip, NOW())",
                 [
                     'operador_id'   => $operadorId,
                     'acao'          => 'ajuste_saldo',

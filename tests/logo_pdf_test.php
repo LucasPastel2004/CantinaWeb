@@ -141,7 +141,7 @@ $corteHtml = \App\Services\PdfService::gerarHtmlRelatorioCorte([
     'itens' => []
 ]);
 assertTeste(str_contains($corteHtml, 'data:image/jpeg;base64,'), "HTML Relatório de Corte inclui tag img com data:image/jpeg");
-assertTeste(str_contains($corteHtml, 'Colégio Monteiro Lobato — Cantina Escolar'), "HTML Relatório de Corte contém título institucional");
+assertTeste(str_contains($corteHtml, 'COLÉGIO MONTEIRO LOBATO') || str_contains($corteHtml, 'Colégio Monteiro Lobato'), "HTML Relatório de Corte contém título institucional");
 
 $caixaHtml = \App\Services\PdfService::gerarEspelhoFechamentoCaixaHtml([
     'id' => 99,

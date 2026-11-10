@@ -13,10 +13,8 @@ defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 use App\Core\Controller;
 use App\Core\Session;
 use App\Core\Auth;
-use App\Models\Usuario;
 use App\Models\Responsavel;
 use App\Services\EmailService;
-use App\Services\WhatsAppService;
 
 class AuthController extends Controller
 {
@@ -207,7 +205,6 @@ class AuthController extends Controller
         Session::set('_pa_cpf', $cleanCpf);
         Session::set('_pa_nome', $resp['nome']);
         // Limpa e-mails anteriores para que o campo venha sempre limpo para o responsável digitar
-        Session::remove('_pa_sugestao_email');
         Session::remove('_pa_email_digitado');
 
         // Se já tiver um código válido não expirado em sessão, permite ir direto ao código ou e-mail
@@ -561,7 +558,6 @@ class AuthController extends Controller
         Session::remove('_pa_cpf');
         Session::remove('_pa_nome');
         Session::remove('_pa_email');
-        Session::remove('_pa_sugestao_email');
         Session::remove('_pa_codigo');
         Session::remove('_pa_expira_em');
         Session::remove('_pa_verificado');
@@ -836,20 +832,5 @@ class AuthController extends Controller
         $this->render('auth/termos', [
             'pageTitle' => 'Termos e Políticas da Cantina — Colégio Monteiro Lobato'
         ], 'auth');
-    }
-
-    /**
-     * Auxiliar para mascarar número de WhatsApp
-     */
-    private static function maskPhone(string $phone): string
-    {
-        $digits = preg_replace('/\D/', '', $phone);
-        if (strlen($digits) === 11) {
-            return '(' . substr($digits, 0, 2) . ') ' . substr($digits, 2, 1) . '****-' . substr($digits, 7);
-        }
-        if (strlen($digits) === 10) {
-            return '(' . substr($digits, 0, 2) . ') ****-' . substr($digits, 6);
-        }
-        return '***-****';
     }
 }

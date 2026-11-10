@@ -64,6 +64,7 @@ class Categoria extends Model
      */
     public static function criar(array $dados, ?int $usuarioId = null): int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "INSERT INTO categorias (nome, ordem_exibicao, ativo, created_by, updated_by, created_at, updated_at) 
                 VALUES (:nome, :ordem_exibicao, :ativo, :created_by, :updated_by, :created_at, :updated_at)";
@@ -86,6 +87,7 @@ class Categoria extends Model
      */
     public static function atualizar(int $id, array $dados, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $sql = "UPDATE categorias 
                 SET nome = :nome, 
                     ordem_exibicao = :ordem_exibicao, 
@@ -109,6 +111,7 @@ class Categoria extends Model
      */
     public static function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $sql = "UPDATE categorias 
                 SET deleted_at = :deleted_at, 
                     updated_by = :updated_by, 

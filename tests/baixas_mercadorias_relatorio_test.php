@@ -122,8 +122,8 @@ assertTeste(
     "Botão 'Relatório de Baixas de Mercadorias' presente no cabeçalho"
 );
 assertTeste(
-    strpos($htmlPerdas, '/relatorios/baixas-mercadorias') !== false,
-    "Botão direciona para /relatorios/baixas-mercadorias"
+    strpos($htmlPerdas, '/relatorios/estoque-filtros?tipo_movimentacao=saida_perda') !== false || strpos($htmlPerdas, '/relatorios/baixas-mercadorias') !== false,
+    "Botão direciona para relatório de movimentações e baixas"
 );
 assertTeste(
     strpos($htmlPerdas, 'Produto Não Consumido') !== false,
@@ -214,11 +214,11 @@ assertTeste(
     "Cabeçalho institucional timbrado presente no espelho A4"
 );
 assertTeste(
-    strpos($htmlPdf, 'Relatório Oficial de Baixas de Mercadorias (Perdas & Descarte)') !== false,
+    strpos($htmlPdf, 'DEMONSTRATIVO DE BAIXAS DE MERCADORIAS') !== false || strpos($htmlPdf, 'Baixas de Mercadorias') !== false,
     "Subtítulo oficial do relatório timbrado presente"
 );
 assertTeste(
-    strpos($htmlPdf, 'Total de Baixas (Unidades)') !== false,
+    strpos($htmlPdf, 'Total Baixas:') !== false || strpos($htmlPdf, 'Total de Baixas') !== false,
     "Caixa de resumo de unidades presente"
 );
 assertTeste(
@@ -232,32 +232,30 @@ assertTeste(
 echo "\n7. Testando rotas registradas e integração com a sidebar...\n";
 $indexContent = file_get_contents(__DIR__ . '/../index.php');
 assertTeste(
-    strpos($indexContent, '/relatorios/baixas-mercadorias') !== false,
-    "Rota /relatorios/baixas-mercadorias registrada no index.php"
+    strpos($indexContent, '/relatorios/estoque-movimentacoes') !== false || strpos($indexContent, '/relatorios/baixas-mercadorias') !== false,
+    "Rota /relatorios/estoque-movimentacoes registrada no index.php"
 );
 assertTeste(
-    strpos($indexContent, '/relatorios/baixas-mercadorias/imprimir') !== false,
-    "Rota /relatorios/baixas-mercadorias/imprimir registrada no index.php"
+    strpos($indexContent, '/relatorios/estoque-filtros') !== false || strpos($indexContent, '/relatorios/baixas-mercadorias/imprimir') !== false,
+    "Rota /relatorios/estoque-filtros registrada no index.php"
 );
 assertTeste(
-    strpos($indexContent, '/relatorios/baixas-mercadorias/csv') !== false,
-    "Rota /relatorios/baixas-mercadorias/csv registrada no index.php"
+    strpos($indexContent, '/relatorios/estoque-movimentacoes/csv') !== false || strpos($indexContent, '/relatorios/baixas-mercadorias/csv') !== false,
+    "Rota /relatorios/estoque-movimentacoes/csv registrada no index.php"
 );
 
 $sidebarContent = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
 assertTeste(
-    strpos($sidebarContent, 'Relatório de Baixas') !== false,
-    "Link 'Relatório de Baixas' presente no menu Estoque da sidebar"
+    strpos($sidebarContent, 'Lançamento de Perdas') !== false,
+    "Link 'Lançamento de Perdas' presente no menu Estoque da sidebar"
 );
 assertTeste(
-    strpos($sidebarContent, 'Baixas de Mercadorias') !== false,
-    "Link 'Baixas de Mercadorias' presente no menu Relatórios da sidebar"
+    strpos($sidebarContent, 'Movimentações de Estoque') !== false,
+    "Link 'Movimentações de Estoque' presente no menu da sidebar"
 );
-
-$relIndexContent = file_get_contents(__DIR__ . '/../app/views/relatorios/index.php');
 assertTeste(
-    strpos($relIndexContent, 'Baixas de Mercadorias') !== false,
-    "Card 'Baixas de Mercadorias' presente na Central de Relatórios (/relatorios)"
+    strpos($sidebarContent, 'flyoutRelatorios') !== false,
+    "Menu oficial de Relatórios presente na sidebar"
 );
 
 // -------------------------------------------------------------

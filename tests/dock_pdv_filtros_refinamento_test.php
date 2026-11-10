@@ -27,7 +27,10 @@ $assertCustom = function(bool $condicao, string $msg) use (&$passou, &$total) {
 // 1. Validação da Ordem dos Ícones no Dock (sidebar.php)
 $sidebarContent = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
 $posRelatorios = strpos($sidebarContent, 'data-category="relatorios"');
-$posProdutos = strpos($sidebarContent, 'id="btnDirectProdutos"');
+$posProdutos = strpos($sidebarContent, 'data-category="cardapio"');
+if ($posProdutos === false) {
+    $posProdutos = strpos($sidebarContent, 'id="btnCategoryCardapio"');
+}
 
 $assertCustom($posRelatorios !== false && $posProdutos !== false, "Dock possui botão de Relatórios e botão de Cardápio");
 $assertCustom($posRelatorios < $posProdutos, "Ícone de Relatórios (posição 4) precede o de Cardápio & Preços (posição 6) para folga vertical");
@@ -60,7 +63,7 @@ $assertCustom(str_contains($pdvView, 'grid-template-columns: 1fr minmax(460px, 5
 $assertCustom(str_contains($pdvView, 'grid-template-columns: 1fr 520px;'), "PDV em telas >= 1440px amplia coluna do caixa para 520px");
 $assertCustom(str_contains($pdvView, 'font-size: 26px;') && str_contains($pdvView, '.pdv-total-val'), "Valor total da venda com fonte ampliada para 26px");
 $assertCustom(str_contains($pdvView, 'width: 28px;') && str_contains($pdvView, 'height: 28px;') && str_contains($pdvView, '.pdv-qty-btn'), "Botões de quantidade do carrinho ampliados para 28x28px");
-$assertCustom(str_contains($pdvView, 'font-15 font-tabular font-bold text-success" id="displayTroco"'), "Troco sugerido ampliado com destaque visual");
+$assertCustom(str_contains($pdvView, 'font-15 font-tabular font-bold') && str_contains($pdvView, 'id="displayTroco"'), "Troco sugerido ampliado com destaque visual corporativo");
 
 echo "\n=======================================================\n";
 echo " RESULTADO: {$passou} / {$total} testes passaram!\n";

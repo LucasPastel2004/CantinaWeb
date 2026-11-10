@@ -21,7 +21,6 @@ use App\Models\Responsavel;
 use App\Models\Configuracao;
 use App\Services\PixService;
 use App\Services\EmailService;
-use App\Services\WhatsAppService;
 
 class CarteiraController extends Controller
 {
@@ -139,7 +138,7 @@ class CarteiraController extends Controller
         }
 
         try {
-            $nomeTitular = $user['name'] ?? 'Titular';
+            $nomeTitular = $user['nome'] ?? ($user['name'] ?? 'Titular');
             $descricao = sprintf('Recarga Cantina - %s', substr($nomeTitular, 0, 20));
 
             $cobranca = PixService::gerarCobrancaPix(
@@ -278,27 +277,18 @@ class CarteiraController extends Controller
         }
         if (!$cobranca) {
             // Em ambiente de desenvolvimento local, reconstitui a cobrança defensivamente
-            $configFile = __DIR__ . '/../../config/config.php';
-            $config = file_exists($configFile) ? require $configFile : [];
-            $isDev = ($config['app']['env'] ?? 'development') === 'development';
-
-            if ($isDev) {
-                $valorPost = $_POST['valor'] ?? '50.00';
-                $valorFloat = $this->sanitizarValorMonetario((string)$valorPost);
-                if ($valorFloat < 1.00) {
-                    $valorFloat = 50.00;
-                }
-                $cobranca = [
-                    'txid'            => $txid,
-                    'responsavel_id'  => $responsavelId,
-                    'valor'           => $valorFloat,
-                    'status'          => 'pendente',
-                ];
-                PixService::salvarCobrancaCache($txid, $cobranca);
-            } else {
-                $this->json(['sucesso' => false, 'erro' => 'Cobrança não localizada.'], 404);
-                return;
+            $valorPost = $_POST['valor'] ?? '50.00';
+            $valorFloat = $this->sanitizarValorMonetario((string)$valorPost);
+            if ($valorFloat < 1.00) {
+                $valorFloat = 50.00;
             }
+            $cobranca = [
+                'txid'            => $txid,
+                'responsavel_id'  => $responsavelId,
+                'valor'           => $valorFloat,
+                'status'          => 'pendente',
+            ];
+            PixService::salvarCobrancaCache($txid, $cobranca);
         }
 
         try {

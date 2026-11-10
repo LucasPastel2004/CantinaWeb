@@ -1513,6 +1513,30 @@ function buscarColaboradoresLive(termo) {
         return;
     }
 
+function escapeHtmlPdv(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+let _ultimosColabsPdv = [];
+let _ultimosAlunosPdv = [];
+
+function selecionarColaboradorPorIndice(idx) {
+    if (_ultimosColabsPdv[idx]) {
+        selecionarColaborador(_ultimosColabsPdv[idx]);
+    }
+}
+
+function selecionarAlunoPorIndice(idx) {
+    if (_ultimosAlunosPdv[idx]) {
+        selecionarAluno(_ultimosAlunosPdv[idx]);
+    }
+}
+
     timerBuscaColab = setTimeout(() => {
         fetch(`${baseUrl}/operacional/pdv/colaborador/buscar?busca=${encodeURIComponent(termo)}`)
             .then(res => res.json())
@@ -1523,15 +1547,16 @@ function buscarColaboradoresLive(termo) {
                     return;
                 }
 
+                _ultimosColabsPdv = data.dados;
                 let html = '';
-                data.dados.forEach(c => {
+                data.dados.forEach((c, idx) => {
                     html += `
-                        <a href="javascript:void(0)" class="list-group-item list-group-item-action py-2" onclick='selecionarColaborador(${JSON.stringify(c)})'>
+                        <a href="javascript:void(0)" class="list-group-item list-group-item-action py-2" onclick="selecionarColaboradorPorIndice(${idx})">
                             <div class="d-flex align-items-center justify-content-between">
-                                <strong class="font-12">${c.nome}</strong>
-                                <span class="badge bg-light text-dark font-10">${c.cargo || 'Funcionário'}</span>
+                                <strong class="font-12">${escapeHtmlPdv(c.nome)}</strong>
+                                <span class="badge bg-light text-dark font-10">${escapeHtmlPdv(c.cargo || 'Funcionário')}</span>
                             </div>
-                            <div class="font-10 text-muted">Mat: ${c.matricula_funcional}</div>
+                            <div class="font-10 text-muted">Mat: ${escapeHtmlPdv(c.matricula_funcional)}</div>
                         </a>
                     `;
                 });
@@ -1591,15 +1616,16 @@ function buscarAlunosLive(termo) {
                     return;
                 }
 
+                _ultimosAlunosPdv = data.dados;
                 let html = '';
-                data.dados.forEach(a => {
+                data.dados.forEach((a, idx) => {
                     html += `
-                        <a href="javascript:void(0)" class="list-group-item list-group-item-action py-2" onclick='selecionarAluno(${JSON.stringify(a)})'>
+                        <a href="javascript:void(0)" class="list-group-item list-group-item-action py-2" onclick="selecionarAlunoPorIndice(${idx})">
                             <div class="d-flex align-items-center justify-content-between">
-                                <strong class="font-12">${a.nome}</strong>
-                                <span class="badge bg-light text-dark font-10">${a.nome_turma || ''}</span>
+                                <strong class="font-12">${escapeHtmlPdv(a.nome)}</strong>
+                                <span class="badge bg-light text-dark font-10">${escapeHtmlPdv(a.nome_turma || '')}</span>
                             </div>
-                            <div class="font-10 text-muted">Matrícula: ${a.matricula}</div>
+                            <div class="font-10 text-muted">Matrícula: ${escapeHtmlPdv(a.matricula)}</div>
                         </a>
                     `;
                 });

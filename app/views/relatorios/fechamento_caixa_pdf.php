@@ -818,7 +818,7 @@ $logoDataUri = \App\Services\PdfService::getLogoDataUri(false);
     <div class="footer-assinaturas-box">
         <div class="signature-line">
             <strong><?php echo htmlspecialchars($operadorNome); ?></strong><br>
-            Operador(a) de Caixa Responsável
+            Operador de Caixa Responsável
         </div>
         <div class="signature-line">
             <strong>Gerência / Supervisão da Cantina</strong><br>

@@ -15,6 +15,11 @@ require_once __DIR__ . '/Sanitizer.php';
 abstract class Controller
 {
     /**
+     * Versão unificada dos assets (Cache Busting)
+     */
+    public const ASSET_VERSION = '7.5.0';
+
+    /**
      * Erros acumulados de validação
      */
     protected array $validationErrors = [];
@@ -34,22 +39,18 @@ abstract class Controller
             throw new \RuntimeException("View [{$view}] não encontrada em [{$viewPath}].");
         }
 
-        // Determina o baseUrl para links da View
-        $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '');
-        $base = str_replace('\\', '/', $scriptDir);
-        $baseUrl = ($base === '/' || $base === '.') ? '' : rtrim($base, '/');
-
         // Helpers e variáveis automáticas para todas as views
-        $data['baseUrl'] = $baseUrl;
+        $data['baseUrl'] = $this->getBaseUrl();
         $data['csrf_token'] = Session::getCsrfToken();
         $data['csrf_field'] = Session::csrfField();
-        $data['assetVersion'] = '7.4.3';
+        $data['assetVersion'] = self::ASSET_VERSION;
         if (!isset($data['user']) && Auth::check()) {
             $data['user'] = Auth::user();
         }
 
-        // Indicadores operacionais globais (Turno e Status do Caixa)
-        if (!isset($data['statusCaixa']) || !isset($data['turnoAtivo'])) {
+        // Indicadores operacionais globais (Turno e Status do Caixa) — consulta banco apenas fora de layouts externos
+        $layoutClean = $layout !== null ? preg_replace('#^layouts[\\/]#', '', $layout) : null;
+        if ((!isset($data['statusCaixa']) || !isset($data['turnoAtivo'])) && !in_array($layoutClean, ['portal', 'auth'], true)) {
             try {
                 if (class_exists(\App\Models\SessaoCaixa::class)) {
                     $sessaoAbertaGlobal = \App\Models\SessaoCaixa::obterQualquerSessaoAberta();
@@ -62,29 +63,19 @@ abstract class Controller
                     }
                 }
             } catch (\Throwable $e) {
-                if (!isset($data['statusCaixa'])) {
-                    $data['statusCaixa'] = 'Fechado';
-                }
-                if (!isset($data['turnoAtivo'])) {
-                    $data['turnoAtivo'] = 'Matutino';
-                }
+                $data['statusCaixa'] = $data['statusCaixa'] ?? 'Fechado';
+                $data['turnoAtivo'] = $data['turnoAtivo'] ?? 'Matutino';
             }
         }
 
         // Sanitização universal preventiva contra mojibake em todas as views
         $data = Sanitizer::repararUtf8($data);
 
-        // Extrai variáveis com escopo isolado
-        extract($data, EXTR_SKIP);
-
         // Se houver um layout definido e o arquivo existir, renderiza a view dentro do layout
         if ($layout !== null) {
-            // Remove prefixo redundante 'layouts/' se fornecido
-            $layoutName = preg_replace('#^layouts[\\/]#', '', $layout);
-            $layoutPath = __DIR__ . '/../views/layouts/' . $layoutName . '.php';
+            $layoutPath = __DIR__ . '/../views/layouts/' . $layoutClean . '.php';
 
             if (!file_exists($layoutPath)) {
-                // Fallback caso o desenvolvedor aponte para outro caminho relativo em app/views/
                 $altPath = __DIR__ . '/../views/' . $layout . '.php';
                 if (file_exists($altPath)) {
                     $layoutPath = $altPath;
@@ -110,6 +101,7 @@ abstract class Controller
         }
 
         // Renderização direta da view
+        extract($data, EXTR_SKIP);
         require $viewPath;
     }
 
@@ -144,17 +136,16 @@ abstract class Controller
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             $target = $path;
         } else {
-            $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '');
-            $base = str_replace('\\', '/', $scriptDir);
-            $baseUrl = ($base === '/' || $base === '.') ? '' : rtrim($base, '/');
-
-            $target = $baseUrl . '/' . ltrim($path, '/');
+            $target = $this->getBaseUrl() . '/' . ltrim($path, '/');
         }
 
         if (!headers_sent()) {
             header("Location: {$target}", true, $statusCode);
+            if (defined('CANTINA_TEST_MODE') && CANTINA_TEST_MODE) {
+                echo "<script>window.location.href=" . json_encode($target, JSON_UNESCAPED_SLASHES) . ";</script>";
+            }
         } else {
-            echo "<script>window.location.href=" . json_encode($target) . ";</script>";
+            echo "<script>window.location.href=" . json_encode($target, JSON_UNESCAPED_SLASHES) . ";</script>";
         }
         if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
             exit;
@@ -175,10 +166,7 @@ abstract class Controller
         $token = $token ?? (string)($this->input('csrf_token') ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''));
 
         if (!Session::validateCsrfToken($token)) {
-            $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
-                      (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
-
-            if ($isAjax) {
+            if ($this->isAjax()) {
                 $this->json([
                     'sucesso'  => false,
                     'mensagem' => 'Sessão expirada ou token de segurança inválido. Recarregue a página.'
@@ -294,7 +282,7 @@ abstract class Controller
                         break;
 
                     case 'integer':
-                        if ($value !== null && $value !== '' && !filter_var($value, FILTER_VALIDATE_INT)) {
+                        if ($value !== null && $value !== '' && filter_var($value, FILTER_VALIDATE_INT) === false) {
                             $this->addValidationError($field, "O campo {$field} deve ser um número inteiro.");
                         }
                         break;
@@ -307,19 +295,21 @@ abstract class Controller
 
                     case 'min':
                         $min = (int)$ruleParam;
-                        if (is_string($value) && mb_strlen($value) < $min) {
-                            $this->addValidationError($field, "O campo {$field} deve ter no mínimo {$min} caracteres.");
-                        } elseif (is_numeric($value) && $value < $min) {
+                        $isNumRule = in_array('numeric', $ruleList, true) || in_array('integer', $ruleList, true);
+                        if ($isNumRule && is_numeric($value) && (float)$value < $min) {
                             $this->addValidationError($field, "O campo {$field} deve ser maior ou igual a {$min}.");
+                        } elseif (!$isNumRule && is_string($value) && mb_strlen($value) < $min) {
+                            $this->addValidationError($field, "O campo {$field} deve ter no mínimo {$min} caracteres.");
                         }
                         break;
 
                     case 'max':
                         $max = (int)$ruleParam;
-                        if (is_string($value) && mb_strlen($value) > $max) {
-                            $this->addValidationError($field, "O campo {$field} deve ter no máximo {$max} caracteres.");
-                        } elseif (is_numeric($value) && $value > $max) {
+                        $isNumRule = in_array('numeric', $ruleList, true) || in_array('integer', $ruleList, true);
+                        if ($isNumRule && is_numeric($value) && (float)$value > $max) {
                             $this->addValidationError($field, "O campo {$field} deve ser menor ou igual a {$max}.");
+                        } elseif (!$isNumRule && is_string($value) && mb_strlen($value) > $max) {
+                            $this->addValidationError($field, "O campo {$field} deve ter no máximo {$max} caracteres.");
                         }
                         break;
 
@@ -371,5 +361,34 @@ abstract class Controller
         $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '');
         $base = str_replace('\\', '/', $scriptDir);
         return ($base === '/' || $base === '.') ? '' : rtrim($base, '/');
+    }
+
+    /**
+     * Verifica se a requisição atual espera resposta assíncrona (AJAX / JSON)
+     */
+    protected function isAjax(): bool
+    {
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'))
+            || (isset($_SERVER['CONTENT_TYPE']) && str_contains($_SERVER['CONTENT_TYPE'], 'application/json'));
+    }
+
+    /**
+     * Converte valores monetários em formato brasileiro ("1.250,50" ou "R$ 10,00") ou decimal ("1250.50") para float seguro
+     */
+    protected function parseMoney(mixed $valor): float
+    {
+        if (is_int($valor) || is_float($valor)) {
+            return round((float)$valor, 2);
+        }
+        $limpo = preg_replace('/[^\d,.-]/', '', (string)$valor);
+        if ($limpo === '' || $limpo === null) {
+            return 0.0;
+        }
+        if (str_contains($limpo, ',')) {
+            $limpo = str_replace('.', '', $limpo);
+            $limpo = str_replace(',', '.', $limpo);
+        }
+        return round((float)$limpo, 2);
     }
 }

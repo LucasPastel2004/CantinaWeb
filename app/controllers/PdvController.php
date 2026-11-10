@@ -80,7 +80,7 @@ class PdvController extends Controller
         }
 
         $turno = trim($_POST['turno'] ?? SessaoCaixa::inferirTurnoAtual());
-        $fundoTroco = (float)str_replace(',', '.', preg_replace('/[^\d,.]/', '', $_POST['fundo_troco_inicial'] ?? '0'));
+        $fundoTroco = $this->parseMoney($_POST['fundo_troco_inicial'] ?? '0');
         $operadorId = (int)Auth::id();
 
         // Validação preventiva no Controller: verificar se há qualquer sessão de caixa aberta
@@ -110,8 +110,7 @@ class PdvController extends Controller
      */
     public function finalizarVenda(): void
     {
-        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-                  || (str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json'));
+        $isAjax = $this->isAjax();
 
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!Session::validateCsrfToken($csrfToken)) {
@@ -130,7 +129,6 @@ class PdvController extends Controller
         $tipoVenda = trim($_POST['tipo_venda'] ?? 'avulso_aluno');
         $colaboradorId = !empty($_POST['colaborador_id']) ? (int)$_POST['colaborador_id'] : null;
         $alunoId = !empty($_POST['aluno_id']) ? (int)$_POST['aluno_id'] : null;
-        $confirmacaoVisual = (int)($_POST['confirmacao_visual'] ?? 0);
         $operadorId = (int)Auth::id();
 
         // Tratamento de itens (podem vir via JSON string ou array POST)
@@ -192,8 +190,7 @@ class PdvController extends Controller
 
         $valorRecebido = 0.0;
         if ($formaPagamento === VendaBalcao::FORMA_DINHEIRO) {
-            $valRecRaw = $_POST['valor_dinheiro_recebido'] ?? '0';
-            $valorRecebido = (float)str_replace(',', '.', preg_replace('/[^\d,.]/', '', $valRecRaw));
+            $valorRecebido = $this->parseMoney($_POST['valor_dinheiro_recebido'] ?? '0');
         }
 
         try {
@@ -240,8 +237,7 @@ class PdvController extends Controller
             $this->validateCsrf();
         }
 
-        $valorRaw = $_POST['valor'] ?? '0';
-        $valor = (float)str_replace(',', '.', preg_replace('/[^\d,.]/', '', $valorRaw));
+        $valor = $this->parseMoney($_POST['valor'] ?? '0');
 
         if ($valor <= 0) {
             $this->json(['sucesso' => false, 'mensagem' => 'Valor da cobrança deve ser maior que zero.'], 400);

@@ -160,7 +160,7 @@ class Auth
         Session::set('_auth_logged', true);
         Session::set('_auth_type', 'usuario');
         Session::set('_auth_id', (int)$user['id']);
-        Session::set('_auth_username', $user['usuario']);
+        Session::set('_auth_username', $user['usuario'] ?? ($user['login'] ?? ($user['email'] ?? '')));
         Session::set('_auth_nome', $user['nome']);
         Session::set('_auth_email', $user['email'] ?? '');
         Session::set('_auth_role', $user['perfil'] ?? ($user['role'] ?? 'operador')); // 'operador' | 'administrador'
@@ -242,7 +242,7 @@ class Auth
         $parentesco = Session::get('_auth_parentesco');
 
         // Fallback defensivo para sessões de responsáveis iniciadas antes do refresh
-        if ($titularId === null && Session::get('_auth_type') === 'responsavel' && Session::get('_auth_id')) {
+        if ($parentesco === null && Session::get('_auth_type') === 'responsavel' && Session::get('_auth_id')) {
             $respDb = (new \App\Models\Responsavel())->find((int)Session::get('_auth_id'));
             if ($respDb) {
                 $titularId = !empty($respDb['titular_id']) ? (int)$respDb['titular_id'] : null;
@@ -395,26 +395,19 @@ class Auth
                     $ip,
                     $json
                 );
-                @file_put_contents($logPath, $entry, FILE_APPEND);
+                @file_put_contents($logPath, $entry, FILE_APPEND | LOCK_EX);
             }
         }
     }
 
     /**
-     * Retorna o endereço IP remoto da requisição
+     * Retorna o endereço IP remoto da requisição (prioriza REMOTE_ADDR contra IP spoofing)
      */
     public static function getClientIp(): string
     {
         $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
         if (!empty($remoteAddr) && filter_var($remoteAddr, FILTER_VALIDATE_IP)) {
             return $remoteAddr;
-        }
-        $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_CLIENT_IP'] ?? '';
-        if (!empty($forwarded)) {
-            $firstIp = trim(explode(',', $forwarded)[0]);
-            if (filter_var($firstIp, FILTER_VALIDATE_IP)) {
-                return $firstIp;
-            }
         }
         return '127.0.0.1';
     }

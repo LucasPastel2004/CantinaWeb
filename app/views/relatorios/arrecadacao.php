@@ -108,8 +108,8 @@ $canais = $dados['canais'] ?? [];
 function atualizarLinksExportacao() {
     var inputInicio = document.getElementById('dataInicio');
     var inputFim = document.getElementById('dataFim');
-    var ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo $dataInicio; ?>';
-    var fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo $dataFim; ?>';
+    var ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo htmlspecialchars((string)$dataInicio, ENT_QUOTES, "UTF-8"); ?>';
+    var fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo htmlspecialchars((string)$dataFim, ENT_QUOTES, "UTF-8"); ?>';
     
     var baseUrl = '<?php echo $baseUrl; ?>';
     var btnImp = document.getElementById('btnImprimirA4');
@@ -125,8 +125,8 @@ function atualizarLinksExportacao() {
 function executarAcaoExportacao(event, tipo) {
     var inputInicio = document.getElementById('dataInicio');
     var inputFim = document.getElementById('dataFim');
-    var ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo $dataInicio; ?>';
-    var fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo $dataFim; ?>';
+    var ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo htmlspecialchars((string)$dataInicio, ENT_QUOTES, "UTF-8"); ?>';
+    var fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo htmlspecialchars((string)$dataFim, ENT_QUOTES, "UTF-8"); ?>';
     
     var url = '<?php echo $baseUrl; ?>/relatorios/arrecadacao/' + tipo + '?data_inicio=' + encodeURIComponent(ini) + '&data_fim=' + encodeURIComponent(fim);
     

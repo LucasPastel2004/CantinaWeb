@@ -129,7 +129,7 @@ class NotaFiscal extends Model
             $params['data_fim'] = $filtros['data_fim'];
         }
 
-        $sql .= " GROUP BY nf.id ORDER BY nf.created_at DESC";
+        $sql .= " GROUP BY nf.id, u.nome ORDER BY nf.created_at DESC";
 
         $limiteEfetivo = $limit ?? (!empty($filtros['limite']) ? (int)$filtros['limite'] : null);
         if ($limiteEfetivo !== null && $limiteEfetivo > 0) {

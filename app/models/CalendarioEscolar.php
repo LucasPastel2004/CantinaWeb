@@ -297,6 +297,7 @@ class CalendarioEscolar extends Model
         }
 
         $pdo = self::getPdo();
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $diaSemana = (int)$dt->format('N');
 
         // Se for de segunda a sexta e o tipo for 'letivo', apenas remove da tabela de exceções
@@ -372,6 +373,8 @@ class CalendarioEscolar extends Model
         }
 
         $pdo = self::getPdo();
+        $calUserId = self::validarUsuarioId($usuarioId, false);
+        $auditOpId = self::validarUsuarioId($usuarioId, true);
         $iniciouTransacao = false;
         if (!$pdo->inTransaction()) {
             $pdo->beginTransaction();
@@ -391,9 +394,9 @@ class CalendarioEscolar extends Model
             $stmtCal->execute([
                 'data'           => $data,
                 'motivo'         => mb_substr($motivo, 0, 100),
-                'usuario_id'     => $usuarioId,
+                'usuario_id'     => $calUserId,
                 'motivo_up'      => mb_substr($motivo, 0, 100),
-                'usuario_id_up'  => $usuarioId
+                'usuario_id_up'  => $calUserId
             ]);
 
             // 2. Busca todos os pedidos ativos para esta data
@@ -460,7 +463,7 @@ class CalendarioEscolar extends Model
                     (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
                     VALUES (:op, 'cancelamento_letivo_lote', 'pedidos', :reg, :just, :ip, NOW())");
                 $stmtAudit->execute([
-                    'op'   => $usuarioId,
+                    'op'   => $auditOpId,
                     'reg'  => $pedidoId,
                     'just' => "Suspensão de aulas em " . date('d/m/Y', strtotime($data)) . ": {$motivo}",
                     'ip'   => $ipOrigem
@@ -474,7 +477,7 @@ class CalendarioEscolar extends Model
                 (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
                 VALUES (:op, 'cancelamento_letivo_lote', 'calendario_letivo', 0, :just, :ip, NOW())");
             $stmtAuditMaster->execute([
-                'op'   => $usuarioId,
+                'op'   => $auditOpId,
                 'just' => "Suspensão emergencial da data " . date('d/m/Y', strtotime($data)) . ": {$motivo}. Pedidos afetados: {$pedidosCancelados}, Total estornado: R$ " . number_format($totalEstornado, 2, ',', '.'),
                 'ip'   => $ipOrigem
             ]);

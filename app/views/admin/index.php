@@ -110,7 +110,7 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
         </div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Painel da Cantina &mdash; Visão Geral</h1>
         <p class="text-microcopy text-muted mb-0">
-            Olá, <strong><?php echo htmlspecialchars($usuario['nome'] ?? 'Operador', ENT_QUOTES, 'UTF-8'); ?></strong> &bull; <?php echo $dataExtenso; ?> &bull; Turno <strong><?php echo ucfirst($turnoAtivo); ?></strong>
+            Olá, <strong><?php echo htmlspecialchars($usuario['nome'] ?? 'Operador', ENT_QUOTES, 'UTF-8'); ?></strong> (<?php echo ucfirst($usuario['perfil'] ?? $usuario['role'] ?? 'Operador'); ?>) &bull; <?php echo $dataExtenso; ?> &bull; Turno <strong><?php echo ucfirst($turnoAtivo); ?></strong>
         </p>
     </div>
 

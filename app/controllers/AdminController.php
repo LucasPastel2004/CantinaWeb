@@ -20,7 +20,6 @@ use App\Models\RestricaoAlimentar;
 use App\Models\Colaborador;
 use App\Models\Fornecedor;
 use App\Models\Turma;
-use App\Models\Usuario;
 use App\Models\Aluno;
 use App\Models\Responsavel;
 use App\Models\TransacaoCarteira;
@@ -29,7 +28,6 @@ use App\Models\SessaoCaixa;
 use App\Models\Pedido;
 use App\Services\SpreadsheetService;
 use App\Services\PdfService;
-use App\Services\WhatsAppService;
 
 class AdminController extends Controller
 {
@@ -155,8 +153,8 @@ class AdminController extends Controller
         $nomeFantasia          = trim((string)$this->input('nome_fantasia', ''));
         $cnpj                  = trim((string)$this->input('cnpj', ''));
         $telefoneContato       = trim((string)$this->input('telefone_contato', ''));
-        $recargaMinimaPix      = (float)str_replace(',', '.', (string)$this->input('recarga_minima_pix', '0.01'));
-        $alertaSaldoBaixo      = (float)str_replace(',', '.', (string)$this->input('alerta_saldo_baixo', '5.00'));
+        $recargaMinimaPix      = $this->parseMoney($this->input('recarga_minima_pix', '0.01'));
+        $alertaSaldoBaixo      = $this->parseMoney($this->input('alerta_saldo_baixo', '5.00'));
         $timeoutSessaoMinutos  = (int)$this->input('timeout_sessao_minutos', 60);
         $limiteTentativasLogin = (int)$this->input('limite_tentativas_login', 5);
         $itensPorPagina        = (int)$this->input('itens_por_pagina', 25);
@@ -366,10 +364,8 @@ class AdminController extends Controller
         $fracionadoSalgadoGrande = !empty($this->input('fracionado_salgado_grande')) ? 1 : 0;
         $alergenosIds            = $_POST['alergenos'] ?? [];
 
-        // Converte formato monetário 'R$ 8,50' ou '8,50' para float 8.50
-        $precoLimpo = preg_replace('/[^\d,.]/', '', $precoVendaRaw);
-        $precoLimpo = str_replace(',', '.', $precoLimpo);
-        $precoVenda = (float)$precoLimpo;
+        // Converte formato monetário 'R$ 8,50', '1.250,00' ou '8,50' para float
+        $precoVenda = $this->parseMoney($precoVendaRaw);
 
         if (empty($codigoInterno) || empty($descricao) || $categoriaId <= 0) {
             Session::setFlash('danger', 'Código interno, descrição e categoria são campos obrigatórios.');
@@ -1438,16 +1434,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Verifica se a requisição atual é assíncrona / AJAX
-     */
-    private function isAjax(): bool
-    {
-        $requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
-        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
-        return strtolower($requestedWith) === 'xmlhttprequest' || str_contains($accept, 'application/json');
-    }
-
-    /**
      * Visualização e Gestão do Calendário Escolar
      */
     public function calendario(): void
@@ -1572,14 +1558,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Central de Relatórios Gerenciais (Descontinuada)
-     */
-    public function relatorios(): void
-    {
-        $this->redirect('/admin');
-    }
-
-    /**
      * Painel de Gestão de Contestações Bancárias e Negativados MED (FSD Módulo 7.3 & Tela 8.4)
      */
     public function contestacoes(): void
@@ -1683,13 +1661,7 @@ class AdminController extends Controller
         $notificar     = (bool)$this->input('notificar_email', (bool)$this->input('notificar_whatsapp', true));
 
         // Normalização de moeda
-        if (str_contains($valorRaw, ',')) {
-            $valorLimpo = str_replace('.', '', $valorRaw);
-            $valorLimpo = str_replace(',', '.', $valorLimpo);
-            $valor = (float)$valorLimpo;
-        } else {
-            $valor = (float)$valorRaw;
-        }
+        $valor = $this->parseMoney($valorRaw);
 
         if ($responsavelId <= 0 || $valor <= 0) {
             Session::setFlash('danger', 'Selecione um responsável válido e informe um valor maior que zero.');
@@ -1755,13 +1727,7 @@ class AdminController extends Controller
         $desbloquear    = (bool)$this->input('desbloquear_se_positivo', true);
 
         // Normalização de moeda
-        if (str_contains($valorRaw, ',')) {
-            $valorLimpo = str_replace('.', '', $valorRaw);
-            $valorLimpo = str_replace(',', '.', $valorLimpo);
-            $valor = (float)$valorLimpo;
-        } else {
-            $valor = (float)$valorRaw;
-        }
+        $valor = $this->parseMoney($valorRaw);
 
         if ($responsavelId <= 0 || $valor <= 0) {
             Session::setFlash('danger', 'Informe um valor de quitação válido maior que zero.');
@@ -1883,9 +1849,6 @@ class AdminController extends Controller
         }
     }
 
-    /**
-     * Emissão do Relatório A4 em PDF Timbrado de Negativados MED (FSD Tela 8.4)
-     */
     /**
      * Emissão do Relatório de Famílias Negativadas MED para Impressão e Print to PDF Nativo
      */

@@ -195,6 +195,8 @@ assertTest(!str_contains($htmlEntradas, 'Consumo Saldo</th>'), "Tabela da Seçã
 // -------------------------------------------------------------------------
 echo "\n>> 5. Testando Espelho de Impressão A4 e Rotas do Livro Caixa...\n";
 
+$_GET['data_inicio'] = '2026-10-01';
+$_GET['data_fim'] = '2026-10-27';
 ob_start();
 $relCtrl->livroCaixaImprimir();
 $htmlLivro = ob_get_clean();

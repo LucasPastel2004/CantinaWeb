@@ -130,7 +130,7 @@ class FechamentoPdfFixTest
         $content = file_get_contents($viewPath);
 
         $this->assert(str_contains($content, 'window.open(this.href, \'_blank\'); return false;'), "Link Visualizar/Imprimir utiliza window.open para autorizar window.close()");
-        $this->assert(str_contains($content, '/operacional/caixa/fechamento/pdf?id='), "Link Baixar em PDF aponta para /operacional/caixa/fechamento/pdf");
+        $this->assert(str_contains($content, '/operacional/caixa/espelho/'), "Link Imprimir / Salvar PDF aponta para /operacional/caixa/espelho");
 
         // Verifica rotas no index.php
         $indexPath = __DIR__ . '/../index.php';

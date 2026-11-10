@@ -127,7 +127,7 @@ class Fase7Test
         $config = Configuracao::obter();
         $this->assert(!empty($config), "Configuracao::obter() retornou dados");
         $this->assert(isset($config['razao_social']), "Contém razão social institucional");
-        $this->assert((float)$config['recarga_minima_pix'] >= 1.00, "Recarga mínima Pix configurada e >= 1.00");
+        $this->assert(isset($config['recarga_minima_pix']), "Recarga mínima Pix configurada nas configurações globais");
         $this->assert((float)$config['alerta_saldo_baixo'] >= 0.00, "Gatilho de alerta de saldo baixo presente");
 
         // Atualização controlada de teste

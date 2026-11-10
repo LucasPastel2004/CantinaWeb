@@ -277,21 +277,34 @@ class Fase19Test
         $prodId = (int)$this->pdo->query("SELECT id FROM produtos WHERE deleted_at IS NULL LIMIT 1")->fetchColumn();
         $this->pdo->prepare("UPDATE produtos SET estoque_atual = 50 WHERE id = ?")->execute([$prodId]);
 
-        $resFolha = VendaBalcao::criarVenda([
-            'tipo_venda'      => 'desconto_folha',
-            'forma_pagamento' => 'desconto_folha',
-            'colaborador_id'  => $colabId
-        ], [
-            [
-                'produto_id'     => $prodId,
-                'quantidade'     => 1,
-                'preco_unitario' => 6.00
-            ]
-        ], $opId, $sessaoId);
-        $vendaFolhaId = (int)$resFolha['id'];
+        $bloqueioFolha = false;
+        try {
+            VendaBalcao::criarVenda([
+                'tipo_venda'      => 'desconto_folha',
+                'forma_pagamento' => 'desconto_folha',
+                'colaborador_id'  => $colabId
+            ], [
+                [
+                    'produto_id'     => $prodId,
+                    'quantidade'     => 1,
+                    'preco_unitario' => 6.00
+                ]
+            ], $opId, $sessaoId);
+        } catch (\DomainException $e) {
+            $bloqueioFolha = str_contains($e->getMessage(), 'folha');
+        }
+        $this->assert($bloqueioFolha, "Criação de nova venda sob Desconto em Folha bloqueada categoricamente.");
+
+        // Para validar o estorno de vendas históricas de colaborador, insere registro legado diretamente
+        $stmtLegada = $this->pdo->prepare("
+            INSERT INTO vendas_balcao (sessao_caixa_id, operador_id, colaborador_id, tipo_venda, forma_pagamento, valor_total, status, created_at)
+            VALUES (?, ?, ?, 'desconto_folha', 'desconto_folha', 6.00, 'concluida', NOW())
+        ");
+        $stmtLegada->execute([$sessaoId, $opId, $colabId]);
+        $vendaFolhaId = (int)$this->pdo->lastInsertId();
 
         $res = VendaBalcao::estornarVenda($vendaFolhaId, $opId, "Erro de digitação de item pelo operador", '127.0.0.1');
-        $this->assert(!empty($res) && ($res['status'] ?? '') === 'estornada', "Venda em folha de pagamento estornada com sucesso.");
+        $this->assert(!empty($res) && ($res['status'] ?? '') === 'estornada', "Venda legada em folha de pagamento estornada com sucesso.");
 
         $venda = VendaBalcao::buscarPorId($vendaFolhaId);
         $this->assert($venda['status'] === 'estornada', "Venda em folha marcada como estornada.");

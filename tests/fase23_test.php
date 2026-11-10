@@ -4,7 +4,7 @@
  * Suíte de Testes da Fase 23: Relatório Gerencial de Movimentações de Estoque (Retrato e Paisagem)
  * 
  * Validação rigorosa dos parâmetros de filtros, opções de leiaute (Paisagem / Retrato),
- * agrupamentos dinâmicos, quebra de página, exportação CSV e compilação de PDF via Gotenberg.
+ * agrupamentos dinâmicos, quebra de página, exportação CSV e emissão nativa Print to PDF.
  */
 
 declare(strict_types=1);
@@ -289,27 +289,27 @@ assertTeste(!str_contains($htmlFiltros, 'id="btnEmitirPdf"'), "Botão redundante
 assertTeste(str_contains($htmlFiltros, 'id="btnEmitirCsv"'), "Botão oficial de emissão 'Exportar Planilha (CSV)' presente");
 
 // -------------------------------------------------------------------
-// 10. Teste de Compilação de PDF Real com Gotenberg (Chromium)
+// 10. Teste de Espelho A4 (Print to PDF Nativo — Hostnet Compatible)
 // -------------------------------------------------------------------
-echo "\n10. Testando compilação real de PDF via Gotenberg...\n";
+echo "\n10. Testando Espelho A4 (Print to PDF Nativo — Hostnet Compatible)...\n";
 
 // PDF Retrato
 $pdfRetrato = \App\Services\PdfService::htmlToPdf($htmlRetrato, [
     'landscape' => false,
     'preferCssPageSize' => 'true'
 ]);
-assertTeste($pdfRetrato !== null, "Gotenberg respondeu com sucesso para PDF Retrato");
-assertTeste(is_string($pdfRetrato) && str_starts_with($pdfRetrato, '%PDF'), "Arquivo gerado é um binário PDF válido (inicia com %PDF)");
-assertTeste(strlen($pdfRetrato ?? '') > 15000, "PDF Retrato possui tamanho consistente (" . strlen($pdfRetrato ?? '') . " bytes)");
+assertTeste($pdfRetrato === null, "PdfService::htmlToPdf retorna null garantindo emissão nativa Print to PDF para Retrato");
+assertTeste(str_contains($htmlRetrato, 'window.print()'), "Espelho HTML Retrato inclui acionador nativo window.print()");
+assertTeste(strlen($htmlRetrato) > 5000, "Espelho HTML Retrato possui tamanho consistente (" . strlen($htmlRetrato) . " bytes)");
 
 // PDF Paisagem
 $pdfPaisagem = \App\Services\PdfService::htmlToPdf($htmlPaisagem, [
     'landscape' => true,
     'preferCssPageSize' => 'true'
 ]);
-assertTeste($pdfPaisagem !== null, "Gotenberg respondeu com sucesso para PDF Paisagem");
-assertTeste(is_string($pdfPaisagem) && str_starts_with($pdfPaisagem, '%PDF'), "Arquivo gerado em Paisagem é um binário PDF válido (inicia com %PDF)");
-assertTeste(strlen($pdfPaisagem ?? '') > 15000, "PDF Paisagem possui tamanho consistente (" . strlen($pdfPaisagem ?? '') . " bytes)");
+assertTeste($pdfPaisagem === null, "PdfService::htmlToPdf retorna null garantindo emissão nativa Print to PDF para Paisagem");
+assertTeste(str_contains($htmlPaisagem, 'window.print()'), "Espelho HTML Paisagem inclui acionador nativo window.print()");
+assertTeste(strlen($htmlPaisagem) > 5000, "Espelho HTML Paisagem possui tamanho consistente (" . strlen($htmlPaisagem) . " bytes)");
 
 // -------------------------------------------------------------------
 // 11. Teste de Exportação CSV

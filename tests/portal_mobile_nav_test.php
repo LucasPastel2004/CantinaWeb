@@ -125,7 +125,7 @@ assertCondition(
 
 // 8. Validação da versão do asset para cache busting
 assertCondition(
-    (bool)preg_match('/custom\.css\?v=7\.4\.[3-9]/', $html),
+    (bool)preg_match('/custom\.css\?v=(?:7\.[4-9]\.\d+|[89]\.\d+\.\d+)/', $html),
     "Versão do custom.css incrementada para 7.4.3+ no layout master",
     $pass, $fail
 );

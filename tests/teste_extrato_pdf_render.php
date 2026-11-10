@@ -90,7 +90,7 @@ $verificar(strpos($html, 'SALDO INICIAL DO PERÍODO') !== false, "HTML contém a
 $verificar(strpos($html, 'TOTAIS DO PERÍODO:') !== false, "HTML contém rodapé 'TOTAIS DO PERÍODO:'");
 $verificar(strpos($html, 'Saldo Atual: R$') !== false, "HTML contém rodapé 'Saldo Atual: R$'");
 
-// 2. Geração do PDF via Gotenberg / Fallback
+// 2. Geração do PDF Canônico Estruturado
 $pdfBinario = PdfService::gerarExtratoConsumoAlunoPdf($dados);
 $verificar(!empty($pdfBinario), "gerarExtratoConsumoAlunoPdf retornou binário de PDF");
 $verificar(str_starts_with($pdfBinario, '%PDF-'), "Binário gerado é um arquivo PDF válido (cabeçalho %PDF-)");

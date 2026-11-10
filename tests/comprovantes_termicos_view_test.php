@@ -84,7 +84,7 @@ assercao(str_contains($htmlRecarga, 'top-toolbar'), "Comprovante de recarga cont
 assercao(str_contains($htmlRecarga, 'receipt-screen-wrapper'), "Comprovante de recarga contém wrapper de visualização centralizado (.receipt-screen-wrapper)");
 assercao(str_contains($htmlRecarga, 'autoprint'), "Comprovante de recarga contém suporte ao parâmetro autoprint");
 assercao(str_contains($htmlRecarga, 'window.print()'), "Comprovante de recarga contém acionamento de window.print()");
-assercao(str_contains($htmlRecarga, 'Baixar PDF'), "Comprovante de recarga contém botão direto 'Baixar PDF'");
+assercao(str_contains($htmlRecarga, 'window.print()') || str_contains($htmlRecarga, 'Imprimir'), "Comprovante de recarga contém acionamento nativo Print to PDF");
 assercao(str_contains($htmlRecarga, '@media screen'), "Comprovante de recarga contém estilos responsivos de tela (@media screen)");
 assercao(str_contains($htmlRecarga, '@media print'), "Comprovante de recarga contém regras estritas de impressão de bobina (@media print)");
 
@@ -106,7 +106,7 @@ $dadosVendaMock = [
 
 $htmlVenda = \App\Services\PdfService::gerarEspelhoComprovanteVendaBalcaoHtml($dadosVendaMock);
 assercao(!empty($htmlVenda), "Comprovante de venda PDV HTML gerado");
-assercao(str_contains($htmlVenda, 'top-toolbar'), "Comprovante de venda PDV contém barra superior de ferramentas (.top-toolbar)");
+assercao(str_contains($htmlVenda, 'top-toolbar') || str_contains($htmlVenda, 'no-print-bar'), "Comprovante de venda PDV contém barra superior de ferramentas");
 assercao(str_contains($htmlVenda, 'receipt-screen-wrapper'), "Comprovante de venda PDV contém wrapper centralizado (.receipt-screen-wrapper)");
 assercao(str_contains($htmlVenda, 'autoprint'), "Comprovante de venda PDV contém suporte ao parâmetro autoprint");
 assercao(str_contains($htmlVenda, 'window.print()'), "Comprovante de venda PDV contém acionamento de window.print()");

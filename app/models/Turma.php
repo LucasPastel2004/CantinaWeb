@@ -91,6 +91,7 @@ class Turma extends Model
      */
     public static function criar(array $dados, ?int $usuarioId = null): int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
 
         $sql = "INSERT INTO turmas (
@@ -120,6 +121,7 @@ class Turma extends Model
      */
     public static function atualizar(int $id, array $dados, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $sql = "UPDATE turmas 
                 SET serie = :serie,
                     nome_turma = :nome_turma,
@@ -145,6 +147,7 @@ class Turma extends Model
      */
     public static function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "UPDATE turmas 
                 SET deleted_at = :deleted_at, updated_by = :updated_by, updated_at = :updated_at 

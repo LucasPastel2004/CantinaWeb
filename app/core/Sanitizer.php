@@ -11,7 +11,7 @@
  * Conforme docs/FSD.md e docs/DESIGN.md
  */
 
-namespace App\Core;
+namespace App\Core {
 
 defined('CANTINA_SISTEMA') or die('Acesso direto não permitido.');
 
@@ -64,13 +64,13 @@ class Sanitizer
         'Ã¡' => 'á',
         'Âº' => 'º',
         'Âª' => 'ª',
-        'Ã ' => 'Á',
+        "\xC3\x83\xC2\x81" => 'Á',
         'Ã€' => 'À',
         'Ãƒ' => 'Ã',
         'Ã‚' => 'Â',
         'Ã‰' => 'É',
         'ÃŠ' => 'Ê',
-        'Ã ' => 'Í',
+        "\xC3\x83\xC2\x8D" => 'Í',
         'Ã“' => 'Ó',
         'Ã”' => 'Ô',
         'Ã•' => 'Õ',
@@ -122,12 +122,38 @@ class Sanitizer
 
         return $input;
     }
+
+    /**
+     * Remove acentos e caracteres diacríticos de uma string
+     */
+    public static function removerAcentos(string $str): string
+    {
+        $map = [
+            'á' => 'a', 'à' => 'a', 'ã' => 'a', 'â' => 'a', 'ä' => 'a',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+            'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+            'ç' => 'c', 'ñ' => 'n',
+            'Á' => 'A', 'À' => 'A', 'Ã' => 'A', 'Â' => 'A', 'Ä' => 'A',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+            'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I',
+            'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O',
+            'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+            'Ç' => 'C', 'Ñ' => 'N',
+            'º' => 'o', 'ª' => 'a',
+        ];
+        return strtr($str, $map);
+    }
 }
 
-// Registra a função helper global caso ainda não exista
-if (!function_exists('repararUtf8')) {
-    function repararUtf8(mixed $input): mixed
-    {
-        return \App\Core\Sanitizer::repararUtf8($input);
+}
+
+namespace {
+    if (!function_exists('repararUtf8')) {
+        function repararUtf8(mixed $input): mixed
+        {
+            return \App\Core\Sanitizer::repararUtf8($input);
+        }
     }
 }

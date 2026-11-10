@@ -68,7 +68,7 @@ class Produto extends Model
             $params['busca_desc'] = $termoBusca;
         }
 
-        $sql .= " GROUP BY p.id ORDER BY c.ordem_exibicao ASC, p.descricao ASC";
+        $sql .= " GROUP BY p.id, c.nome, c.ordem_exibicao ORDER BY c.ordem_exibicao ASC, p.descricao ASC";
 
         if ($limit !== null && $limit > 0) {
             $sql .= " LIMIT " . (int)$limit;
@@ -177,6 +177,7 @@ class Produto extends Model
      */
     public static function criar(array $dados, array $alergenosIds = [], ?int $usuarioId = null): int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
 
         $sql = "INSERT INTO produtos (
@@ -189,10 +190,16 @@ class Produto extends Model
                     :estoque_minimo, :status_pausa, :created_by, :updated_by, :created_at, :updated_at
                 )";
 
+        $codigoInterno = strtoupper(trim($dados['codigo_interno'] ?? ($dados['codigo_barras'] ?? '')));
+        if ($codigoInterno === '') {
+            $codigoInterno = 'PRD-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+        }
+        $descricao = trim($dados['descricao'] ?? ($dados['nome'] ?? ''));
+
         self::execute($sql, [
             'categoria_id'              => (int)$dados['categoria_id'],
-            'codigo_interno'            => strtoupper(trim($dados['codigo_interno'] ?? '')),
-            'descricao'                 => trim($dados['descricao'] ?? ''),
+            'codigo_interno'            => $codigoInterno,
+            'descricao'                 => $descricao,
             'preco_venda'               => (float)($dados['preco_venda'] ?? 0),
             'tipo'                      => $dados['tipo'] ?? 'salgado_diario',
             'fracionado_salgado_grande' => !empty($dados['fracionado_salgado_grande']) ? 1 : 0,
@@ -220,6 +227,7 @@ class Produto extends Model
      */
     public static function atualizar(int $id, array $dados, array $alergenosIds = [], ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $campos = [
             'categoria_id = :categoria_id',
             'codigo_interno = :codigo_interno',
@@ -307,6 +315,7 @@ class Produto extends Model
      */
     public static function togglePausa(int $id, ?int $usuarioId = null): ?string
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $produto = self::buscarPorId($id);
         if (!$produto) {
             return null;
@@ -333,6 +342,7 @@ class Produto extends Model
      */
     public static function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "UPDATE produtos 
                 SET deleted_at = :deleted_at, updated_by = :updated_by, updated_at = :updated_at 
@@ -354,9 +364,42 @@ class Produto extends Model
         $sql = "SELECT COUNT(*) FROM produtos 
                 WHERE deleted_at IS NULL 
                   AND tipo = 'industrializado_continuo' 
-                  AND estoque_atual <= estoque_minimo";
+                  AND (estoque_atual - estoque_reservado) <= estoque_minimo";
         $stmt = self::query($sql);
         return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Carrega em lote os alérgenos vinculados a uma lista de IDs de produtos (evita queries N+1)
+     */
+    private static function carregarAlergenosPorProdutos(array $produtoIds): array
+    {
+        $produtoIds = array_values(array_unique(array_filter(array_map('intval', $produtoIds))));
+        if (empty($produtoIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($produtoIds), '?'));
+        $sql = "SELECT pa.produto_id, ra.id, ra.nome
+                FROM produto_alergenos pa
+                INNER JOIN restricoes_alimentares ra ON ra.id = pa.restricao_id
+                WHERE pa.produto_id IN ({$placeholders})
+                ORDER BY ra.nome ASC";
+
+        $stmt = self::getConnection()->prepare($sql);
+        $stmt->execute($produtoIds);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $mapa = [];
+        foreach ($rows as $row) {
+            $pId = (int)$row['produto_id'];
+            $mapa[$pId][] = [
+                'id'   => (int)$row['id'],
+                'nome' => $row['nome']
+            ];
+        }
+
+        return $mapa;
     }
 
     /**
@@ -376,6 +419,7 @@ class Produto extends Model
                 ORDER BY c.ordem_exibicao ASC, c.nome ASC, p.descricao ASC";
 
         $produtos = self::fetchAll($sql, ['turno' => $turno]);
+        $mapaAlergenos = self::carregarAlergenosPorProdutos(array_column($produtos, 'id'));
 
         foreach ($produtos as &$prod) {
             $prodId = (int)$prod['id'];
@@ -389,13 +433,7 @@ class Produto extends Model
                 $prod['esgotado'] = false;
             }
 
-            // Alérgenos vinculados
-            $sqlAlerg = "SELECT ra.id, ra.nome 
-                         FROM produto_alergenos pa
-                         INNER JOIN restricoes_alimentares ra ON ra.id = pa.restricao_id
-                         WHERE pa.produto_id = :prod_id
-                         ORDER BY ra.nome ASC";
-            $prod['alergenos'] = self::fetchAll($sqlAlerg, ['prod_id' => $prodId]);
+            $prod['alergenos'] = $mapaAlergenos[$prodId] ?? [];
             $prod['alergenos_ids'] = array_map(fn($a) => (int)$a['id'], $prod['alergenos']);
         }
         unset($prod);
@@ -437,19 +475,14 @@ class Produto extends Model
         $sql .= " ORDER BY c.ordem_exibicao ASC, c.nome ASC, p.descricao ASC";
 
         $produtos = self::fetchAll($sql, $params);
+        $mapaAlergenos = self::carregarAlergenosPorProdutos(array_column($produtos, 'id'));
 
         foreach ($produtos as &$prod) {
             $prodId = (int)$prod['id'];
             $estoqueAtual = (int)$prod['estoque_atual'];
             $prod['esgotado'] = ($estoqueAtual <= 0) || ($prod['status_pausa'] === 'pausado');
 
-            // Alérgenos vinculados
-            $sqlAlerg = "SELECT ra.id, ra.nome 
-                         FROM produto_alergenos pa
-                         INNER JOIN restricoes_alimentares ra ON ra.id = pa.restricao_id
-                         WHERE pa.produto_id = :prod_id
-                         ORDER BY ra.nome ASC";
-            $prod['alergenos'] = self::fetchAll($sqlAlerg, ['prod_id' => $prodId]);
+            $prod['alergenos'] = $mapaAlergenos[$prodId] ?? [];
             $prod['alergenos_ids'] = array_map(fn($a) => (int)$a['id'], $prod['alergenos']);
             $prod['alergenos_nomes'] = implode(', ', array_map(fn($a) => $a['nome'], $prod['alergenos']));
         }

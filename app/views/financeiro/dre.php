@@ -212,8 +212,8 @@ function emitirDre(formato, event) {
 
     const inputInicio = document.getElementById('dataInicio');
     const inputFim    = document.getElementById('dataFim');
-    const ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo $dataInicio; ?>';
-    const fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo $dataFim; ?>';
+    const ini = (inputInicio && inputInicio.value) ? inputInicio.value : '<?php echo htmlspecialchars((string)$dataInicio, ENT_QUOTES, "UTF-8"); ?>';
+    const fim = (inputFim && inputFim.value) ? inputFim.value : '<?php echo htmlspecialchars((string)$dataFim, ENT_QUOTES, "UTF-8"); ?>';
 
     const menu = document.getElementById('menuOpcoesDre');
     if (menu) menu.style.display = 'none';

@@ -22,16 +22,16 @@ $method->setAccessible(true);
 
 $cenarios = [
     '1. Padrão: Vendas por alimento com agrupamento por dia' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'agrupar_periodo' => 'sim',
         'agrupar_alimento' => 'sim',
         'emitir_vendas_aluno' => 'nao'
     ],
     '2. Com Horário, Forma de Pagamento e Observação' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'agrupar_periodo' => 'sim',
         'emitir_horario' => 'sim',
@@ -40,53 +40,53 @@ $cenarios = [
         'emitir_vendas_aluno' => 'nao'
     ],
     '3. Com Agrupamento por Tipo de Pessoa' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'agrupar_tipo_pessoa' => 'sim',
         'emitir_vendas_aluno' => 'nao'
     ],
     '4. Sem Agrupar por Período (Consolidado Geral do Período)' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'agrupar_periodo' => 'nao',
         'agrupar_alimento' => 'sim',
         'emitir_vendas_aluno' => 'nao'
     ],
     '5. Sem Agrupar por Alimento (Vendas Individuais Detalhadas)' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'agrupar_alimento' => 'nao',
         'emitir_vendas_aluno' => 'nao'
     ],
     '6. Ordenação de Alimentos: Menos Vendidos' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'ordenar_alimentos' => 'menos_vendidos',
         'emitir_vendas_aluno' => 'nao'
     ],
     '7. Vendas por Aluno (Lista Geral Consolidada)' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'emitir_vendas_aluno' => 'sim',
         'agrupar_vendas_aluno' => 'sim',
         'agrupar_serie_turma' => 'nao'
     ],
     '8. Vendas por Aluno Agrupadas por Série/Turma' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'emitir_vendas_aluno' => 'sim',
         'agrupar_vendas_aluno' => 'sim',
         'agrupar_serie_turma' => 'sim'
     ],
     '9. Vendas por Aluno com Quebra de Página por Turma' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'emitir_vendas_aluno' => 'sim',
         'agrupar_vendas_aluno' => 'sim',
@@ -94,43 +94,43 @@ $cenarios = [
         'quebrar_pagina_turma' => 'sim'
     ],
     '10. Vendas por Aluno Detalhadas com Compras Linha a Linha' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'sim',
         'emitir_vendas_aluno' => 'sim',
         'agrupar_vendas_aluno' => 'nao',
         'agrupar_serie_turma' => 'sim'
     ],
     '11. Ordenar Alunos por Maior Consumo' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_aluno' => 'sim',
         'ordenar_consumo_aluno' => 'sim',
         'ordenar_por' => 'maior_consumo'
     ],
     '12. Ordenar Alunos por Menor Consumo' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_aluno' => 'sim',
         'ordenar_consumo_aluno' => 'sim',
         'ordenar_por' => 'menor_consumo'
     ],
     '13. Ordenar Alunos Alfabeticamente por Nome' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_aluno' => 'sim',
         'ordenar_consumo_aluno' => 'nao'
     ],
     '14. Apenas Vendas por Aluno (Sem Alimentos)' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'emitir_vendas_alimento' => 'nao',
         'emitir_vendas_aluno' => 'sim',
         'agrupar_serie_turma' => 'sim'
     ],
     '15. Com Estornos Incluídos' => [
-        'data_inicio' => '2026-09-01',
-        'data_fim' => '2026-09-30',
+        'data_inicio' => '2026-10-01',
+        'data_fim' => '2026-10-31',
         'incluir_estornos' => 'sim',
         'emitir_observacao' => 'sim'
     ]
@@ -199,7 +199,7 @@ foreach ($cenarios as $nome => $filtros) {
         $erros++;
         continue;
     }
-    echo "  [OK] PDF gerado com {$tamPdf} bytes (Gotenberg Engine).\n";
+    echo "  [OK] PDF gerado com {$tamPdf} bytes (Motor de Impressão A4).\n";
     $passou++;
 }
 

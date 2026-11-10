@@ -57,7 +57,7 @@ class EmailService
      */
     public function sendFirstAccessCode(string $email, string $code, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $assunto = "Código de Primeiro Acesso — Cantina Web";
 
         $conteudoHtml = <<<HTML
@@ -88,7 +88,7 @@ HTML;
      */
     public function sendPasswordResetCode(string $email, string $code, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $assunto = "Código para Redefinição de Senha — Cantina Web";
 
         $conteudoHtml = <<<HTML
@@ -119,7 +119,7 @@ HTML;
      */
     public function sendRecargaConfirmada(string $email, float $valor, float $novoSaldo, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $valorFmt = number_format($valor, 2, ',', '.');
         $saldoFmt = number_format($novoSaldo, 2, ',', '.');
         $assunto = "Recarga Pix Confirmada — Cantina Web";
@@ -156,7 +156,7 @@ HTML;
      */
     public function sendAlertaSaldoBaixo(string $email, float $saldoAtual, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $saldoFmt = number_format($saldoAtual, 2, ',', '.');
         $assunto = "Alerta: Saldo Baixo na Cantina Web";
 
@@ -180,7 +180,7 @@ HTML;
      */
     public function sendNotificacaoMed(string $email, float $valorEstornado, float $saldoNegativo, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $estornoFmt = number_format($valorEstornado, 2, ',', '.');
         $saldoFmt = number_format(abs($saldoNegativo), 2, ',', '.');
         $assunto = "Comunicado Importante: Suspensão Preventiva MED — Cantina Web";
@@ -210,7 +210,7 @@ HTML;
      */
     public function sendNotificacaoDesbloqueioMed(string $email, float $novoSaldo, string $nome = ''): bool
     {
-        $primeiroNome = !empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável';
+        $primeiroNome = htmlspecialchars(!empty($nome) ? explode(' ', trim($nome))[0] : 'Responsável', ENT_QUOTES, 'UTF-8');
         $saldoFmt = number_format($novoSaldo, 2, ',', '.');
         $assunto = "Conta Regularizada com Sucesso — Cantina Web";
 
@@ -577,7 +577,7 @@ HTML;
                 $code ?? 'N/A',
                 $assunto
             );
-            @file_put_contents($logPath, $logEntry, FILE_APPEND);
+            @file_put_contents($logPath, $logEntry, FILE_APPEND | LOCK_EX);
         }
     }
 

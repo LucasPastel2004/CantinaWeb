@@ -257,7 +257,8 @@ class Fase11Test
                 ['produto_id' => $prod1Id, 'quantidade' => 15],
                 ['produto_id' => $prod3Id, 'quantidade' => 5],
             ],
-            $momentoAberto
+            $momentoAberto,
+            true
         );
         $this->pedidosCriados[] = (int)$ped1['id'];
 
@@ -270,7 +271,8 @@ class Fase11Test
                 ['produto_id' => $prod1Id, 'quantidade' => 10],
                 ['produto_id' => $prod2Id, 'quantidade' => 20],
             ],
-            $momentoAberto
+            $momentoAberto,
+            true
         );
         $this->pedidosCriados[] = (int)$ped2['id'];
 
@@ -282,7 +284,8 @@ class Fase11Test
             [
                 ['produto_id' => $prod2Id, 'quantidade' => 12],
             ],
-            $momentoAberto
+            $momentoAberto,
+            true
         );
         $this->pedidosCriados[] = (int)$ped3['id'];
 
@@ -371,7 +374,7 @@ class Fase11Test
 
         $this->assert(str_contains($html, '<!DOCTYPE html>'), 'Espelho contém doctype HTML5');
         $this->assert(str_contains($html, 'size: A4 portrait;'), 'CSS contém definição de página A4 portrait');
-        $this->assert(str_contains($html, 'Colégio Monteiro Lobato'), 'HTML contém cabeçalho institucional');
+        $this->assert(str_contains($html, 'COLÉGIO MONTEIRO LOBATO'), 'HTML contém cabeçalho institucional');
         $this->assert(str_contains($html, 'window.print()'), 'HTML possui botão com acionamento nativo de impressão');
         $this->assert(str_contains($html, '50 PEÇAS'), 'HTML exibe o total consolidado de 50 peças');
     }
@@ -545,7 +548,7 @@ class Fase11Test
 
         $this->assert(str_contains($htmlCorte, 'Painel de Corte do Turno'), 'View operacional/corte renderizada com sucesso');
         $this->assert(str_contains($htmlCorte, 'Mensagem Estruturada para Fornecedor (WhatsApp)'), 'Card de WhatsApp presente no HTML');
-        $this->assert(str_contains($htmlCorte, 'Exportar PDF'), 'Link de exportação PDF presente');
+        $this->assert(str_contains($htmlCorte, 'Relatório Corte do Turno'), 'Link de relatório de corte presente');
         $this->assert(str_contains($htmlCorte, 'Conferir Recebimento'), 'Botão para conferência de recebimento presente');
         $this->assert(str_contains($htmlCorte, 'Demandas de Produção por Salgado'), 'Data-grid de demandas exibido');
 

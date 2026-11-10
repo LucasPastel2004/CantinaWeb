@@ -47,7 +47,10 @@ try {
     $pdo = require dirname(__DIR__) . '/config/database.php';
 } catch (\Throwable $e) {
     http_response_code(500);
-    die("Erro de conexão com o banco de dados: " . $e->getMessage() . "\n");
+    if ($isCli) {
+        die("Erro de conexão com o banco de dados: " . $e->getMessage() . "\n");
+    }
+    die("Erro interno de conexão com o banco de dados.\n");
 }
 
 $confirmado = false;

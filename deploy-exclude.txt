@@ -54,12 +54,17 @@ config/config.local.php
 backups/
 dumps/
 database/matriculas_reais.json
+database/parse_matriculas.py
+database/purgar_fakes_e_semear_reais.php
+database/reset_and_seed_matriculas.php
+database/seed_*.php
 
 # Logs do Sistema e Arquivos Temporários
 logs/
 *.log
 error_log
 storage/logs/*.log
+storage/cache/pix/*.json
 *.tmp
 *.temp
 *.cache

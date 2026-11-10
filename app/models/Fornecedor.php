@@ -107,40 +107,6 @@ class Fornecedor extends Model
     }
 
     /**
-     * Lista apenas os nomes para sugestões (autocompletes, datalists e dropdowns)
-     */
-    public static function listarNomesAtivos(): array
-    {
-        $sql = "SELECT DISTINCT nome_fantasia FROM fornecedores 
-                WHERE ativo = 1 AND deleted_at IS NULL 
-                ORDER BY nome_fantasia ASC";
-        $rows = self::fetchAll($sql);
-        return array_column($rows, 'nome_fantasia');
-    }
-
-    /**
-     * Valida defensivamente se o ID de usuário existe na tabela usuarios
-     * para evitar falhas de Foreign Key (fk_fornecedores_created_by / fk_fornecedores_updated_by)
-     */
-    private static function validarUsuarioId(?int $usuarioId): ?int
-    {
-        if ($usuarioId === null || $usuarioId <= 0) {
-            return null;
-        }
-
-        try {
-            $user = self::fetchOne("SELECT id FROM usuarios WHERE id = :id AND deleted_at IS NULL LIMIT 1", [':id' => $usuarioId]);
-            if (!empty($user['id'])) {
-                return (int)$user['id'];
-            }
-        } catch (\Throwable $e) {
-            // Fallback seguro em caso de exceção de leitura
-        }
-
-        return null;
-    }
-
-    /**
      * Salva ou atualiza um fornecedor
      */
     public static function salvar(array $dados, ?int $usuarioId = null): int

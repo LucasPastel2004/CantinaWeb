@@ -40,7 +40,7 @@ assertCustom(
 );
 
 assertCustom(
-    str_contains($adminLayout, 'btn-sidebar-toggle d-md-none'),
+    str_contains($adminLayout, 'btn-sidebar-toggle') && str_contains($adminLayout, 'd-md-none'),
     "Botão de alternância da navegação móvel (d-md-none) mantido para celulares",
     $testsPassed,
     $testsFailed

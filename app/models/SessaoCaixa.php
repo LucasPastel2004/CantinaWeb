@@ -102,6 +102,7 @@ class SessaoCaixa extends Model
         float $fundoTrocoInicial,
         ?string $observacoes = null
     ): int {
+        $operadorId = (int)self::validarUsuarioId($operadorId, true);
         if (!in_array($turno, [self::TURNO_MATUTINO, self::TURNO_VESPERTINO], true)) {
             throw new \InvalidArgumentException('Turno inválido para abertura de caixa.');
         }
@@ -726,9 +727,12 @@ class SessaoCaixa extends Model
         $sqlWhere = implode(' OR ', $whereClauses);
 
         $sql = "
-            SELECT DISTINCT r.id, r.cpf, r.nome, r.whatsapp, r.saldo_atual, r.bloqueado_med
+            SELECT DISTINCT r.id, r.titular_id, r.cpf, r.nome, r.whatsapp,
+                   COALESCE(rt.saldo_atual, r.saldo_atual) AS saldo_atual,
+                   GREATEST(COALESCE(r.bloqueado_med, 0), COALESCE(rt.bloqueado_med, 0)) AS bloqueado_med
             FROM responsaveis r
-            LEFT JOIN alunos a ON a.responsavel_id = r.id AND a.deleted_at IS NULL
+            LEFT JOIN responsaveis rt ON rt.id = r.titular_id
+            LEFT JOIN alunos a ON (a.responsavel_id = r.id OR a.responsavel_id = r.titular_id) AND a.deleted_at IS NULL
             WHERE {$sqlWhere}
             ORDER BY r.nome ASC
             LIMIT " . (int)$limite;
@@ -741,16 +745,17 @@ class SessaoCaixa extends Model
 
         $responsaveis = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        // Agrega dependentes para cada responsável localizado
+        // Agrega dependentes para cada responsável localizado (considerando Conta Familiar)
         foreach ($responsaveis as &$resp) {
+            $contaId = !empty($resp['titular_id']) ? (int)$resp['titular_id'] : (int)$resp['id'];
             $stmtAlunos = $pdo->prepare("
                 SELECT a.id, a.nome, a.matricula, t.nome_turma, a.turno
                 FROM alunos a
                 LEFT JOIN turmas t ON t.id = a.turma_id
-                WHERE a.responsavel_id = :resp_id AND a.deleted_at IS NULL
+                WHERE (a.responsavel_id = :resp_id OR a.responsavel_id = :conta_id) AND a.deleted_at IS NULL
                 ORDER BY a.nome ASC
             ");
-            $stmtAlunos->execute(['resp_id' => $resp['id']]);
+            $stmtAlunos->execute(['resp_id' => $resp['id'], 'conta_id' => $contaId]);
             $resp['dependentes'] = $stmtAlunos->fetchAll(\PDO::FETCH_ASSOC);
 
             // Gera string amigável de dependentes para exibição rápida

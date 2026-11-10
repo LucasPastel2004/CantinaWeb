@@ -78,16 +78,7 @@ class FornecedorRecibo extends Model
         }
 
         // Garante que se o usuário não for válido na tabela, seja null
-        if ($usuarioId !== null && $usuarioId > 0) {
-            $pdoCheck = self::getConnection();
-            $stmtUser = $pdoCheck->prepare("SELECT id FROM usuarios WHERE id = :uid LIMIT 1");
-            $stmtUser->execute([':uid' => $usuarioId]);
-            if (!$stmtUser->fetchColumn()) {
-                $usuarioId = null;
-            }
-        } else {
-            $usuarioId = null;
-        }
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
 
         $numeroRecibo = self::gerarNumeroRecibo();
 
@@ -210,9 +201,6 @@ class FornecedorRecibo extends Model
         if ($valor <= 0) {
             return 'zero reais';
         }
-
-        $singular = ['centavo', 'real', 'mil', 'milhão', 'bilhão'];
-        $plural   = ['centavos', 'reais', 'mil', 'milhões', 'bilhões'];
 
         $c = ['', 'cem', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
         $d = ['', 'dez', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];

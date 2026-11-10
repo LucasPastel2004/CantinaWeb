@@ -58,6 +58,8 @@ class Auditoria extends Model
             throw new \InvalidArgumentException('A justificativa é obrigatória para o registro de auditoria.');
         }
 
+        $operadorId = self::validarUsuarioId($operadorId, true) ?? $operadorId;
+
         $pdo = self::getPdo();
         $stmt = $pdo->prepare("
             INSERT INTO logs_auditoria (

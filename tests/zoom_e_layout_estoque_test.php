@@ -135,7 +135,7 @@ assertCheck(
 // -----------------------------------------------------------------------------
 // 3. TESTE DE GERAÇÃO EM HTML E PDF DE MOVIMENTAÇÕES DE ESTOQUE
 // -----------------------------------------------------------------------------
-echo "\n>> 3. Testando Renderização HTML e Compilação Gotenberg do Relatório com Zoom...\n";
+echo "\n>> 3. Testando Renderização HTML e Emissão Print to PDF Nativo do Relatório com Zoom...\n";
 
 $relCtrl = new RelatoriosController();
 $dadosEstoque = $relCtrl->obterDadosMovimentacoesEstoqueAvancadas([
@@ -171,8 +171,8 @@ $pdfBin = PdfService::htmlToPdf($htmlEstoque, [
 ]);
 
 assertCheck(
-    $pdfBin !== null && substr($pdfBin, 0, 4) === '%PDF',
-    'Gotenberg compilou o HTML com controles de zoom com sucesso em binário PDF válido (%PDF)',
+    $pdfBin === null && str_contains($htmlEstoque, 'window.print()'),
+    'PdfService::htmlToPdf retorna null garantindo emissão nativa Print to PDF no navegador',
     $passou,
     $total
 );

@@ -307,6 +307,12 @@ class ErrorHandler
      */
     private static function getAuthenticatedUser(): string
     {
+        if (!empty($_SESSION['_auth_username'])) {
+            $tipo = $_SESSION['_auth_type'] ?? '';
+            return $tipo === 'responsavel'
+                ? 'CPF:' . (string)$_SESSION['_auth_username']
+                : (string)$_SESSION['_auth_username'];
+        }
         if (isset($_SESSION['usuario_login'])) {
             return (string)$_SESSION['usuario_login'];
         }

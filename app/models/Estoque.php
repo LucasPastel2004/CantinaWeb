@@ -40,6 +40,7 @@ class Estoque extends Model
     public const TIPOS_MOVIMENTACAO = [
         'entrada_fornecedor'  => 'Entrada por Fornecedor',
         'entrada_xml'         => 'Entrada por XML de NF-e',
+        'entrada_estorno'     => 'Reintegração por Estorno',
         'aproveitamento_sobra'=> 'Aproveitamento de Sobra de Encomenda',
         'saida_venda_avulsa'  => 'Saída por Venda Avulsa (PDV)',
         'saida_encomenda'     => 'Saída por Liquidação de Encomenda',
@@ -331,19 +332,9 @@ class Estoque extends Model
         }
 
         // Garante que o operadorId seja válido referencialmente
-        if ($operadorId <= 0) {
-            $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-            $operadorId = (int)($userPadrao['id'] ?? 1);
-        } else {
-            $existeUser = self::fetchOne("SELECT id FROM usuarios WHERE id = :id", ['id' => $operadorId]);
-            if (!$existeUser) {
-                $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-                $operadorId = (int)($userPadrao['id'] ?? $operadorId);
-            }
-        }
+        $operadorId = self::validarUsuarioId($operadorId, true) ?? 1;
 
-        $pdo = self::getConnection();
-        $pdo->beginTransaction();
+        $iniciouTransacao = self::beginTransaction();
 
         try {
             // 1. Busca o produto com bloqueio pessimista
@@ -396,8 +387,6 @@ class Estoque extends Model
                 'created_at'    => $now
             ]);
 
-            $movId = (int)self::lastInsertId();
-
             // 4. Registra na trilha de auditoria técnica compulsória
             $motivoNome = self::MOTIVOS_PERDA[$motivo];
             Auditoria::registrar(
@@ -409,11 +398,13 @@ class Estoque extends Model
                 $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
             );
 
-            $pdo->commit();
+            if ($iniciouTransacao) {
+                self::commit();
+            }
             return true;
         } catch (\Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+            if ($iniciouTransacao) {
+                self::rollBack();
             }
             throw $e;
         }
@@ -500,70 +491,6 @@ class Estoque extends Model
     }
 
     /**
-     * Retorna o total de movimentações de estoque para os filtros aplicados
-     */
-    public static function contarMovimentacoes(array $filtros = []): int
-    {
-        $sql = "SELECT COUNT(*) AS total
-                FROM estoque_movimentacoes em
-                INNER JOIN produtos p ON p.id = em.produto_id
-                INNER JOIN categorias c ON c.id = p.categoria_id
-                INNER JOIN usuarios u ON u.id = em.operador_id
-                LEFT JOIN notas_fiscais_xml nf ON nf.id = em.nota_fiscal_id
-                WHERE 1=1";
-
-        $params = [];
-
-        if (!empty($filtros['produto_id'])) {
-            $sql .= " AND em.produto_id = :prod_id";
-            $params['prod_id'] = (int)$filtros['produto_id'];
-        }
-
-        if (!empty($filtros['categoria_id'])) {
-            $sql .= " AND p.categoria_id = :cat_id";
-            $params['cat_id'] = (int)$filtros['categoria_id'];
-        }
-
-        if (!empty($filtros['operador_id'])) {
-            $sql .= " AND em.operador_id = :op_id";
-            $params['op_id'] = (int)$filtros['operador_id'];
-        }
-
-        if (!empty($filtros['tipo_movimentacao'])) {
-            $sql .= " AND em.tipo_movimentacao = :tipo_mov";
-            $params['tipo_mov'] = $filtros['tipo_movimentacao'];
-        }
-
-        if (!empty($filtros['motivo_perda'])) {
-            $sql .= " AND em.motivo_perda = :motivo_perda";
-            $params['motivo_perda'] = $filtros['motivo_perda'];
-        }
-
-        if (!empty($filtros['data_inicio'])) {
-            $sql .= " AND DATE(em.created_at) >= :data_inicio";
-            $params['data_inicio'] = $filtros['data_inicio'];
-        }
-
-        if (!empty($filtros['data_fim'])) {
-            $sql .= " AND DATE(em.created_at) <= :data_fim";
-            $params['data_fim'] = $filtros['data_fim'];
-        }
-
-        if (!empty($filtros['busca'])) {
-            $termo = '%' . trim($filtros['busca']) . '%';
-            $sql .= " AND (p.codigo_interno LIKE :b1 OR p.descricao LIKE :b2 OR em.justificativa LIKE :b3 OR nf.numero_nota LIKE :b4 OR em.fornecedor LIKE :b5)";
-            $params['b1'] = $termo;
-            $params['b2'] = $termo;
-            $params['b3'] = $termo;
-            $params['b4'] = $termo;
-            $params['b5'] = $termo;
-        }
-
-        $res = self::fetchOne($sql, $params);
-        return (int)($res['total'] ?? 0);
-    }
-
-    /**
      * Retorna o histórico específico de perdas com paginação e filtros
      */
     public static function listarPerdas(array $filtros = []): array
@@ -623,19 +550,9 @@ class Estoque extends Model
         }
 
         // Garante que o operadorId seja válido referencialmente
-        if ($operadorId <= 0) {
-            $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-            $operadorId = (int)($userPadrao['id'] ?? 1);
-        } else {
-            $existeUser = self::fetchOne("SELECT id FROM usuarios WHERE id = :id", ['id' => $operadorId]);
-            if (!$existeUser) {
-                $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-                $operadorId = (int)($userPadrao['id'] ?? $operadorId);
-            }
-        }
+        $operadorId = self::validarUsuarioId($operadorId, true) ?? 1;
 
-        $pdo = self::getConnection();
-        $pdo->beginTransaction();
+        $iniciouTransacao = self::beginTransaction();
 
         try {
             $now = date('Y-m-d H:i:s');
@@ -744,7 +661,9 @@ class Estoque extends Model
                 throw new \DomainException("Nenhum item válido foi processado para entrada no estoque.");
             }
 
-            $pdo->commit();
+            if ($iniciouTransacao) {
+                self::commit();
+            }
 
             return [
                 'total_produtos' => count($produtosGravados),
@@ -753,8 +672,8 @@ class Estoque extends Model
                 'produtos'       => $produtosGravados
             ];
         } catch (\Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+            if ($iniciouTransacao) {
+                self::rollBack();
             }
             throw $e;
         }
@@ -794,19 +713,9 @@ class Estoque extends Model
         }
 
         // Garante que o operadorId seja válido referencialmente
-        if ($operadorId <= 0) {
-            $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-            $operadorId = (int)($userPadrao['id'] ?? 1);
-        } else {
-            $existeUser = self::fetchOne("SELECT id FROM usuarios WHERE id = :id", ['id' => $operadorId]);
-            if (!$existeUser) {
-                $userPadrao = self::fetchOne("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
-                $operadorId = (int)($userPadrao['id'] ?? $operadorId);
-            }
-        }
+        $operadorId = self::validarUsuarioId($operadorId, true) ?? 1;
 
-        $pdo = self::getConnection();
-        $pdo->beginTransaction();
+        $iniciouTransacao = self::beginTransaction();
 
         try {
             // 1. Localiza o produto com LOCK FOR UPDATE
@@ -872,8 +781,6 @@ class Estoque extends Model
                 'created_at'    => $now
             ]);
 
-            $movId = (int)self::lastInsertId();
-
             // 4. Trilha de auditoria técnica
             Auditoria::registrar(
                 $operadorId,
@@ -884,11 +791,13 @@ class Estoque extends Model
                 $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
             );
 
-            $pdo->commit();
+            if ($iniciouTransacao) {
+                self::commit();
+            }
             return true;
         } catch (\Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+            if ($iniciouTransacao) {
+                self::rollBack();
             }
             throw $e;
         }

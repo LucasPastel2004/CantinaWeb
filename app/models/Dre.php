@@ -740,71 +740,6 @@ class Dre extends Model
     }
 
     /**
-     * Calcula o CMV do período.
-     * 1. Tenta apurar a partir dos itens vendidos multiplicados pelo preco_custo dos produtos.
-     * 2. Se o total apurado de preco_custo for 0 ou insignificante, verifica as entradas de NF-e no período.
-     * 3. Como fallback para cantinas escolares, se não houver custos registrados nas mercadorias,
-     *    adota margem padrão de custo de 45% sobre a receita líquida (ou 0 se não houver vendas).
-     */
-    private function calcularCmvPeriodo(string $dataInicio, string $dataFim, float $receitaLiquida): float
-    {
-        $pdo = self::getConnection();
-
-        // 1. CMV dos Pedidos Online
-        $sqlCustoOnline = "SELECT 
-                            COALESCE(SUM(ip.quantidade * COALESCE(pr.preco_custo, 0.00)), 0.00) as custo_produtos
-                           FROM `itens_pedido` ip
-                           INNER JOIN `pedidos` p ON ip.pedido_id = p.id
-                           INNER JOIN `produtos` pr ON ip.produto_id = pr.id
-                           WHERE p.data_consumo BETWEEN :dt_inicio AND :dt_fim
-                             AND p.status NOT IN ('cancelado', 'estornado')";
-        $stmtCO = $pdo->prepare($sqlCustoOnline);
-        $stmtCO->execute([':dt_inicio' => $dataInicio, ':dt_fim' => $dataFim]);
-        $custoOnline = (float)$stmtCO->fetchColumn();
-
-        // 2. CMV das Vendas Balcão
-        $sqlCustoBalcao = "SELECT 
-                            COALESCE(SUM(ivb.quantidade * COALESCE(pr.preco_custo, 0.00)), 0.00) as custo_produtos
-                           FROM `itens_venda_balcao` ivb
-                           INNER JOIN `vendas_balcao` vb ON ivb.venda_balcao_id = vb.id
-                           INNER JOIN `produtos` pr ON ivb.produto_id = pr.id
-                           WHERE DATE(vb.created_at) BETWEEN :dt_inicio AND :dt_fim
-                             AND (vb.status != 'estornada' OR vb.status IS NULL)
-                             AND vb.estornado_em IS NULL";
-        $stmtCB = $pdo->prepare($sqlCustoBalcao);
-        $stmtCB->execute([':dt_inicio' => $dataInicio, ':dt_fim' => $dataFim]);
-        $custoBalcao = (float)$stmtCB->fetchColumn();
-
-        $custoApurado = $custoOnline + $custoBalcao;
-
-        // Se o custo direto apurado nos produtos for maior que zero, utiliza o custo real
-        if ($custoApurado > 0.00) {
-            return $custoApurado;
-        }
-
-        // 3. Fallback: Se não houver preco_custo cadastrado, busca pelas entradas de fornecedor no período
-        $sqlEntradas = "SELECT COALESCE(SUM(quantidade * 3.50), 0.00) 
-                        FROM `estoque_movimentacoes`
-                        WHERE DATE(created_at) BETWEEN :dt_inicio AND :dt_fim
-                          AND tipo_movimentacao IN ('entrada_fornecedor', 'entrada_xml')";
-        $stmtEnt = $pdo->prepare($sqlEntradas);
-        $stmtEnt->execute([':dt_inicio' => $dataInicio, ':dt_fim' => $dataFim]);
-        $custoEntradas = (float)$stmtEnt->fetchColumn();
-
-        if ($custoEntradas > 0.00) {
-            return $custoEntradas;
-        }
-
-        // 4. Se a receita líquida for positiva e ainda não houver nenhum custo registrado,
-        // aplica margem padrão de custo de insumo da cantina de 45% da receita líquida
-        if ($receitaLiquida > 0.00) {
-            return round($receitaLiquida * 0.45, 2);
-        }
-
-        return 0.00;
-    }
-
-    /**
      * Retorna os dados analíticos formatados para os gráficos interativos da tela de DRE.
      * Suporta agregação por ano ou por período personalizado (data_inicio a data_fim) no modelo unificado.
      */
@@ -948,7 +883,7 @@ class Dre extends Model
             'balcao'            => $balcao,
             'despesas_por_cat'  => $totaisDespesas,
             'produtos_rentaveis'=> $rankingFormatado,
-            'totais'            => $dreAno['totais'],
+            'totais'            => $totais,
         ];
     }
 }

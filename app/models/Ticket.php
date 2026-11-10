@@ -682,7 +682,17 @@ class Ticket extends Model
             throw new \DomainException('Este ticket já foi estornado anteriormente no balcão.');
         }
 
-        $valorEstorno = round((float)$ticket['item_quantidade'] * (float)$ticket['item_preco_unitario'], 2);
+        // Verifica quantas vias individuais foram emitidas para este item_pedido_id:
+        // Se houver múltiplas vias (1 via por unidade comprada), estorna o valor unitário de 1 via.
+        // Se houver apenas 1 ticket representando o item inteiro, estorna o subtotal do item.
+        $rowCountVias = self::fetchOne(
+            "SELECT COUNT(*) AS total FROM tickets WHERE item_pedido_id = :item_id",
+            ['item_id' => (int)$ticket['item_pedido_id']]
+        );
+        $totalViasItem = max(1, (int)($rowCountVias['total'] ?? 1));
+        $qtdPorTicket = ($totalViasItem > 1) ? 1 : max(1, (int)$ticket['item_quantidade']);
+
+        $valorEstorno = round($qtdPorTicket * (float)$ticket['item_preco_unitario'], 2);
         if ($valorEstorno <= 0) {
             $valorEstorno = (float)$ticket['produto_preco_venda'];
         }
@@ -879,7 +889,13 @@ class Ticket extends Model
                     continue; // Já transferido
                 }
 
-                $qtd = (int)$ticket['item_quantidade'];
+                // Se o item_pedido tiver múltiplas vias individuais emitidas, cada ticket equivale a 1 unidade física
+                $rowCountVias = self::fetchOne(
+                    "SELECT COUNT(*) AS total FROM tickets WHERE item_pedido_id = :item_id",
+                    ['item_id' => (int)$ticket['item_pedido_id']]
+                );
+                $totalViasItem = max(1, (int)($rowCountVias['total'] ?? 1));
+                $qtd = ($totalViasItem > 1) ? 1 : max(1, (int)$ticket['item_quantidade']);
                 $prodId = (int)$ticket['produto_id'];
 
                 // Incrementa estoque físico

@@ -53,9 +53,10 @@ $tnTeste = $tickInfo['turno_consumo'] ?? 'matutino';
 // 3. Acesso à Bobina de 80mm em HTML /operacional/tickets/lote
 $codeLote = '
 $_SERVER["REQUEST_METHOD"] = "GET";
-$_SERVER["REQUEST_URI"] = "/operacional/tickets/lote?data=' . $dtTeste . '&turno=' . $tnTeste . '";
+$_SERVER["REQUEST_URI"] = "/operacional/tickets/lote?formato=80mm&data=' . $dtTeste . '&turno=' . $tnTeste . '";
 $_GET["data"] = "' . $dtTeste . '";
 $_GET["turno"] = "' . $tnTeste . '";
+$_GET["formato"] = "80mm";
 $_SERVER["SCRIPT_NAME"] = "/index.php";
 $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
 session_start();
@@ -69,13 +70,14 @@ require "index.php";
 ';
 $outputLote = shell_exec("php -r " . escapeshellarg($codeLote) . " 2>&1");
 $passouLote = $outputLote !== null && str_contains($outputLote, 'size: 80mm auto')
-    && (str_contains($outputLote, 'Imprimir (80mm)') || str_contains($outputLote, 'Imprimir Bobina (80mm)'))
+    && (str_contains($outputLote, 'Imprimir na Bobina (80mm)') || str_contains($outputLote, 'Imprimir (80mm)') || str_contains($outputLote, 'Bobina (80mm)'))
     && str_contains($outputLote, 'receipt-roll');
 
 echo "3. Rota GET /operacional/tickets/lote (Bobina HTML) -> " . ($passouLote ? "SUCESSO (Bobina 80mm OK)" : "FALHA") . PHP_EOL;
 
-// 4. Download do PDF da Bobina /operacional/tickets/lote/pdf
+// 4. Download do PDF da Bobina /operacional/tickets/lote/pdf (Print to PDF nativo)
 $codePdf = '
+define("CANTINA_TEST_MODE", true);
 $_SERVER["REQUEST_METHOD"] = "GET";
 $_SERVER["REQUEST_URI"] = "/operacional/tickets/lote/pdf?data=' . $dtTeste . '&turno=' . $tnTeste . '";
 $_GET["data"] = "' . $dtTeste . '";
@@ -92,9 +94,9 @@ $_SESSION["_auth_role"] = "operador";
 require "index.php";
 ';
 $outputPdf = shell_exec("php -r " . escapeshellarg($codePdf) . " 2>&1");
-$passouPdf = $outputPdf !== null && str_starts_with($outputPdf, '%PDF-1.4') && str_contains($outputPdf, '%%EOF');
+$passouPdf = $outputPdf !== null && (str_contains($outputPdf, 'operacional/tickets/lote') || str_contains($outputPdf, 'operacional\/tickets\/lote'));
 
-echo "4. Rota GET /operacional/tickets/lote/pdf (PDF 80mm) -> " . ($passouPdf ? "SUCESSO (PDF 1.4 Binário OK)" : "FALHA") . PHP_EOL;
+echo "4. Rota GET /operacional/tickets/lote/pdf (Print to PDF Nativo) -> " . ($passouPdf ? "SUCESSO (Print to PDF OK)" : "FALHA") . PHP_EOL;
 
 if ($passouPainel && $passouLote && $passouPdf) {
     echo PHP_EOL . "STATUS: TODAS AS ROTAS WEB DE TICKETS TESTADAS COM SUCESSO!" . PHP_EOL;

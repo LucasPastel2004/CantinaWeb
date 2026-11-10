@@ -40,6 +40,13 @@ abstract class Model
     protected bool $softDelete = true;
 
     /**
+     * Cache em memória para validação defensiva de IDs de usuário (evita queries repetidas na mesma requisição)
+     * @var array<int, bool>
+     */
+    private static array $validUserIdsCache = [];
+    private static ?int $fallbackActiveUserId = null;
+
+    /**
      * Obtém ou inicializa a conexão com o banco de dados MySQL via PDO
      */
     public static function getConnection(): \PDO
@@ -48,7 +55,6 @@ abstract class Model
             return self::$pdo;
         }
 
-        // Se existir o arquivo central de conexão database.php, utiliza-o
         $databaseFactory = __DIR__ . '/../../config/database.php';
         if (file_exists($databaseFactory)) {
             $conn = require $databaseFactory;
@@ -58,38 +64,12 @@ abstract class Model
             }
         }
 
-        // Fallback: Constrói a conexão a partir do config.php
-        $configFile = __DIR__ . '/../../config/config.php';
-        if (!file_exists($configFile)) {
-            throw new \RuntimeException("Arquivo de configuração [config/config.php] não encontrado.");
-        }
-
-        $config = require $configFile;
-        $db = $config['database'] ?? $config['db'] ?? [];
-
-        $host     = $db['host'] ?? '127.0.0.1';
-        $port     = $db['port'] ?? 3306;
-        $database = $db['database'] ?? 'cantina_db';
-        $username = $db['username'] ?? 'root';
-        $password = $db['password'] ?? '';
-        $charset  = $db['charset'] ?? 'utf8mb4';
-
-        $dsn = "mysql:host={$host};port={$port};dbname={$database};charset={$charset}";
-
-        $options = [
-            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::ATTR_EMULATE_PREPARES   => false, // Prepared Statements nativos obrigatórios
-            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$charset} COLLATE " . ($db['collation'] ?? 'utf8mb4_unicode_ci')
-        ];
-
-        try {
-            self::$pdo = new \PDO($dsn, $username, $password, $options);
+        if (class_exists('Database')) {
+            self::$pdo = \Database::getInstance();
             return self::$pdo;
-        } catch (\PDOException $e) {
-            // Lança exceção para que o ErrorHandler capture e registre no log de contingência
-            throw new \RuntimeException("Falha ao estabelecer conexão com o banco de dados: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
+
+        throw new \RuntimeException("Fábrica de banco de dados [config/database.php] não encontrada.");
     }
 
     /**
@@ -106,6 +86,60 @@ abstract class Model
     public static function setConnection(?\PDO $pdo): void
     {
         self::$pdo = $pdo;
+        self::$validUserIdsCache = [];
+        self::$fallbackActiveUserId = null;
+        if (class_exists('Database') && $pdo !== null) {
+            \Database::setInstance($pdo);
+        }
+    }
+
+    /**
+     * Valida defensivamente se o ID de usuário existe na tabela usuarios para evitar violação de Foreign Key.
+     *
+     * @param int|null $usuarioId ID do usuário informado
+     * @param bool $obrigatorio Se true (ex: logs_auditoria / estoque_movimentacoes), retorna o 1º usuário ativo como fallback caso o ID seja inválido
+     * @return int|null ID válido na tabela usuarios ou null
+     */
+    public static function validarUsuarioId(?int $usuarioId, bool $obrigatorio = false): ?int
+    {
+        if ($usuarioId !== null && $usuarioId > 0) {
+            if (isset(self::$validUserIdsCache[$usuarioId])) {
+                if (self::$validUserIdsCache[$usuarioId]) {
+                    return $usuarioId;
+                }
+            } else {
+                try {
+                    $existe = self::fetchColumn("SELECT id FROM usuarios WHERE id = :id LIMIT 1", ['id' => $usuarioId]);
+                    $isValid = !empty($existe);
+                    self::$validUserIdsCache[$usuarioId] = $isValid;
+                    if ($isValid) {
+                        return (int)$existe;
+                    }
+                } catch (\Throwable $e) {
+                    // Prossegue para fallback
+                }
+            }
+        }
+
+        if (!$obrigatorio) {
+            return null;
+        }
+
+        if (self::$fallbackActiveUserId !== null) {
+            return self::$fallbackActiveUserId;
+        }
+
+        try {
+            $fallback = self::fetchColumn("SELECT id FROM usuarios WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 1");
+            if (!empty($fallback)) {
+                self::$fallbackActiveUserId = (int)$fallback;
+                return self::$fallbackActiveUserId;
+            }
+        } catch (\Throwable $e) {
+            // Ignora falha silenciosa
+        }
+
+        return $usuarioId;
     }
 
     /**
@@ -289,12 +323,20 @@ abstract class Model
             $data['updated_at'] = $data['updated_at'] ?? $now;
         }
 
-        $fields = array_keys($data);
+        $cleanData = [];
+        foreach ($data as $field => $val) {
+            $safeField = preg_replace('/[^a-zA-Z0-9_]/', '', (string)$field);
+            if ($safeField !== '') {
+                $cleanData[$safeField] = $val;
+            }
+        }
+
+        $fields = array_keys($cleanData);
         $columns = implode(', ', $fields);
         $placeholders = ':' . implode(', :', $fields);
 
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
-        self::execute($sql, $data);
+        self::execute($sql, $cleanData);
 
         return (int)self::lastInsertId();
     }
@@ -308,16 +350,25 @@ abstract class Model
             $data['updated_at'] = date('Y-m-d H:i:s');
         }
 
+        $cleanData = [];
         $setParts = [];
-        foreach (array_keys($data) as $field) {
-            $setParts[] = "{$field} = :{$field}";
+        foreach ($data as $field => $val) {
+            $safeField = preg_replace('/[^a-zA-Z0-9_]/', '', (string)$field);
+            if ($safeField !== '') {
+                $cleanData[$safeField] = $val;
+                $setParts[] = "{$safeField} = :{$safeField}";
+            }
         }
-        $setString = implode(', ', $setParts);
 
-        $data['id_param'] = $id;
+        if (empty($setParts)) {
+            return 0;
+        }
+
+        $setString = implode(', ', $setParts);
+        $cleanData['id_param'] = $id;
         $sql = "UPDATE {$this->table} SET {$setString} WHERE {$this->primaryKey} = :id_param";
 
-        return self::execute($sql, $data);
+        return self::execute($sql, $cleanData);
     }
 
     /**

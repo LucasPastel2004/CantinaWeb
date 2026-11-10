@@ -18,7 +18,7 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
     <!-- Bootstrap Compilado Localmente -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/bootstrap.min.css">
     <!-- Design System Institucional e Anti-Slop Guidelines -->
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.0.2'; ?>">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.5.0'; ?>">
 </head>
 <body class="bg-surface d-flex flex-column min-vh-100">
     <!-- Barra Superior Institucional Compacta (56px) -->
@@ -361,6 +361,6 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
 
     <!-- Bootstrap Bundle Local (Vanilla JS) -->
     <script src="<?php echo $baseUrl; ?>/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo $baseUrl; ?>/assets/js/app.js"></script>
+    <script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.5.0'; ?>"></script>
 </body>
 </html>

@@ -5,7 +5,21 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/core/Model.php';
 require_once __DIR__ . '/../app/services/PdfService.php';
 
-echo "Testando compilação no Gotenberg de todos os relatórios com novas margens e estética Excel:\n\n";
+echo "Testando renderização e espelhos A4 de todos os 10 relatórios (Print to PDF Nativo — Hostnet Compatible):\n\n";
+
+$passou = 0;
+$erros = 0;
+
+$verificarRelatorio = function(string $nome, string $html) use (&$passou, &$erros) {
+    $tam = strlen($html);
+    if ($tam > 1000 && (str_contains($html, 'window.print()') || str_contains($html, '@media print') || str_contains($html, 'sheet-a4') || str_contains($html, 'print-toolbar'))) {
+        echo "  [OK] {$nome}: Espelho HTML A4 gerado com sucesso ({$tam} bytes)\n";
+        $passou++;
+    } else {
+        echo "  [FALHA] {$nome}: HTML gerado inconsistente ({$tam} bytes)\n";
+        $erros++;
+    }
+};
 
 // 1. Extrato de Aluno
 $htmlExtrato = \App\Services\PdfService::renderView('relatorios/extrato_aluno_pdf', [
@@ -22,8 +36,7 @@ $htmlExtrato = \App\Services\PdfService::renderView('relatorios/extrato_aluno_pd
         ]
     ]
 ]);
-$pdfExtrato = \App\Services\PdfService::htmlToPdf($htmlExtrato);
-echo "1. Extrato Aluno: " . ($pdfExtrato && str_starts_with($pdfExtrato, '%PDF') ? "OK (" . strlen($pdfExtrato) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("1. Extrato Aluno", $htmlExtrato);
 
 // 2. Corte de Turno
 $htmlCorte = \App\Services\PdfService::renderView('relatorios/corte_pdf', [
@@ -38,10 +51,9 @@ $htmlCorte = \App\Services\PdfService::renderView('relatorios/corte_pdf', [
         'total_valor' => 245.0
     ]
 ]);
-$pdfCorte = \App\Services\PdfService::htmlToPdf($htmlCorte);
-echo "2. Corte de Turno: " . ($pdfCorte && str_starts_with($pdfCorte, '%PDF') ? "OK (" . strlen($pdfCorte) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("2. Corte de Turno", $htmlCorte);
 
-// 3. Desconto em Folha
+// 3. Desconto Folha Geral (Legado de consulta histórica)
 $htmlFolha = \App\Services\PdfService::renderView('relatorios/desconto_folha_pdf', [
     'dadosFolha' => [
         'competencia' => '10/2026',
@@ -51,10 +63,9 @@ $htmlFolha = \App\Services\PdfService::renderView('relatorios/desconto_folha_pdf
         'totais' => ['total_colaboradores' => 1, 'total_lanches' => 12, 'valor_total' => 108.0]
     ]
 ]);
-$pdfFolha = \App\Services\PdfService::htmlToPdf($htmlFolha);
-echo "3. Desconto Folha Geral: " . ($pdfFolha && str_starts_with($pdfFolha, '%PDF') ? "OK (" . strlen($pdfFolha) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("3. Desconto Folha Geral", $htmlFolha);
 
-// 4. Desconto Folha Individual
+// 4. Desconto Folha Individual (Legado de consulta histórica)
 $htmlFolhaIndiv = \App\Services\PdfService::renderView('relatorios/desconto_folha_individual_pdf', [
     'dados' => [
         'colaborador' => ['id' => 1, 'nome' => 'PROFESSOR SILVA', 'matricula' => 'PROF-001', 'cargo' => 'Docente', 'cpf' => '123.456.789-00'],
@@ -66,8 +77,7 @@ $htmlFolhaIndiv = \App\Services\PdfService::renderView('relatorios/desconto_folh
         'total_valor' => 4.5
     ]
 ]);
-$pdfFolhaIndiv = \App\Services\PdfService::htmlToPdf($htmlFolhaIndiv);
-echo "4. Desconto Folha Individual: " . ($pdfFolhaIndiv && str_starts_with($pdfFolhaIndiv, '%PDF') ? "OK (" . strlen($pdfFolhaIndiv) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("4. Desconto Folha Individual", $htmlFolhaIndiv);
 
 // 5. Fechamento de Caixa
 $htmlCaixa = \App\Services\PdfService::renderView('relatorios/fechamento_caixa_pdf', [
@@ -95,8 +105,7 @@ $htmlCaixa = \App\Services\PdfService::renderView('relatorios/fechamento_caixa_p
         ]
     ]
 ]);
-$pdfCaixa = \App\Services\PdfService::htmlToPdf($htmlCaixa);
-echo "5. Fechamento de Caixa: " . ($pdfCaixa && str_starts_with($pdfCaixa, '%PDF') ? "OK (" . strlen($pdfCaixa) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("5. Fechamento de Caixa", $htmlCaixa);
 
 // 6. MED Negativados
 $htmlMed = \App\Services\PdfService::renderView('relatorios/med_negativados_pdf', [
@@ -107,8 +116,7 @@ $htmlMed = \App\Services\PdfService::renderView('relatorios/med_negativados_pdf'
         'totais' => ['total_familias' => 1, 'valor_total_negativo' => -45.0]
     ]
 ]);
-$pdfMed = \App\Services\PdfService::htmlToPdf($htmlMed);
-echo "6. MED Negativados: " . ($pdfMed && str_starts_with($pdfMed, '%PDF') ? "OK (" . strlen($pdfMed) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("6. MED Negativados", $htmlMed);
 
 // 7. Estoque Movimentações
 $htmlEstoque = \App\Services\PdfService::renderView('relatorios/estoque_movimentacoes_pdf', [
@@ -120,8 +128,7 @@ $htmlEstoque = \App\Services\PdfService::renderView('relatorios/estoque_moviment
     'agruparGrupo' => false,
     'quebraPagina' => false
 ]);
-$pdfEstoque = \App\Services\PdfService::htmlToPdf($htmlEstoque);
-echo "7. Estoque Movimentações: " . ($pdfEstoque && str_starts_with($pdfEstoque, '%PDF') ? "OK (" . strlen($pdfEstoque) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("7. Estoque Movimentações", $htmlEstoque);
 
 // 8. Vendas Alimento
 $htmlVendas = \App\Services\PdfService::renderView('relatorios/vendas_alimento_pdf', [
@@ -131,8 +138,7 @@ $htmlVendas = \App\Services\PdfService::renderView('relatorios/vendas_alimento_p
     ],
     'totais' => ['quantidade_total' => 20, 'faturamento_total' => 140.0]
 ]);
-$pdfVendas = \App\Services\PdfService::htmlToPdf($htmlVendas);
-echo "8. Vendas por Alimento: " . ($pdfVendas && str_starts_with($pdfVendas, '%PDF') ? "OK (" . strlen($pdfVendas) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("8. Vendas por Alimento", $htmlVendas);
 
 // 9. Arrecadação Financeira
 $htmlArrecadacao = \App\Services\PdfService::renderView('relatorios/arrecadacao_pdf', [
@@ -158,8 +164,7 @@ $htmlArrecadacao = \App\Services\PdfService::renderView('relatorios/arrecadacao_
     'variacao_carteira' => 400.0,
     'isPdf' => true
 ]);
-$pdfArrecadacao = \App\Services\PdfService::htmlToPdf($htmlArrecadacao);
-echo "9. Arrecadação Financeira: " . ($pdfArrecadacao && str_starts_with($pdfArrecadacao, '%PDF') ? "OK (" . strlen($pdfArrecadacao) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("9. Arrecadação Financeira", $htmlArrecadacao);
 
 // 10. DRE Gerencial Anual (Landscape)
 $htmlDre = \App\Services\PdfService::renderView('financeiro/dre_pdf', [
@@ -175,7 +180,12 @@ $htmlDre = \App\Services\PdfService::renderView('financeiro/dre_pdf', [
     ],
     'isPdf' => true
 ]);
-$pdfDre = \App\Services\PdfService::htmlToPdf($htmlDre, ['landscape' => true]);
-echo "10. DRE Gerencial Anual: " . ($pdfDre && str_starts_with($pdfDre, '%PDF') ? "OK (" . strlen($pdfDre) . " bytes)" : "FALHA") . "\n";
+$verificarRelatorio("10. DRE Gerencial Anual", $htmlDre);
 
-echo "\nTodos os 10 relatórios A4 geraram PDFs binários com sucesso via Gotenberg!\n";
+echo "\n-------------------------------------------------------\n";
+echo "Total de relatórios testados: 10\n";
+echo "Aprovados: {$passou} | Reprovados: {$erros}\n";
+echo "=======================================================\n";
+
+if ($erros > 0) exit(1);
+exit(0);

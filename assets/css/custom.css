@@ -25,6 +25,7 @@
 
   /* Tipografia com Contraste Calibrado WCAG AA */
   --text-primary: #0f172a;
+  --text-main: var(--text-primary);
   --text-secondary: #475569;
   --text-muted: #64748b;
   --text-on-primary: #ffffff;
@@ -2974,24 +2975,24 @@ input[type=number].no-spinners {
 }
 
 /* ==========================================================================
-   PORT MOBILE COMPLETO ? EXPERI?NCIA NATIVA EM SMARTPHONES E TABLETS
-   (< 768px e < 576px) ? Preserva 100% do Design Desktop (>= 768px)
+   PORT MOBILE COMPLETO — EXPERIÊNCIA NATIVA EM SMARTPHONES E TABLETS
+   (< 768px e < 576px) — Preserva 100% do Design Desktop (>= 768px)
    ========================================================================== */
 
 @media (max-width: 767.98px) {
-  /* 1. Preven??o Global de Vazamento Horizontal (Anti-Corte) */
+  /* 1. Prevenção Global de Vazamento Horizontal (Anti-Corte) */
   html,
   body {
     max-width: 100vw !important;
     overflow-x: hidden !important;
   }
 
-  /* Espa?o inferior para a Barra de Navega??o Mobile no Portal da Fam?lia */
+  /* Espaço inferior para a Barra de Navegação Mobile no Portal da Família */
   body:has(.mobile-bottom-nav) {
     padding-bottom: 68px !important;
   }
 
-  /* 2. Topbar do Portal da Fam?lia Compacta e Completa no Celular */
+  /* 2. Topbar do Portal da Família Compacta e Completa no Celular */
   .portal-header {
     padding: 8px 0 !important;
     position: sticky;
@@ -3022,7 +3023,7 @@ input[type=number].no-spinners {
     font-size: 12px !important;
   }
 
-  /* Barra horizontal secund?ria do Portal com deslize suave sem scrollbar feia */
+  /* Barra horizontal secundária do Portal com deslize suave sem scrollbar feia */
   .portal-nav-bar {
     position: sticky;
     top: 49px;
@@ -3215,7 +3216,7 @@ input[type=number].no-spinners {
     color: #94a3b8;
   }
 
-  /* 5. Ajuste de Espa?amento da ?rea Principal no Admin/Operacional Mobile */
+  /* 5. Ajuste de Espaçamento da Área Principal no Admin/Operacional Mobile */
   .app-main-area {
     margin-left: 0 !important;
     width: 100% !important;
@@ -3246,7 +3247,7 @@ input[type=number].no-spinners {
     padding: 60px 10px 24px 10px !important;
   }
 
-  /* 6. Gaveta Mobile (Dock + Flyout de Altura Total) sem Cortar Rodap? */
+  /* 6. Gaveta Mobile (Dock + Flyout de Altura Total) sem Cortar Rodapé */
   .app-sidebar {
     top: 0 !important;
     bottom: 0 !important;
@@ -3279,7 +3280,7 @@ input[type=number].no-spinners {
     font-size: 13.5px !important;
   }
 
-  /* 7. Agendamento Semanal Mobile (Carrossel de Dias + Busca 100% + Bot?es Touch) */
+  /* 7. Agendamento Semanal Mobile (Carrossel de Dias + Busca 100% + Botões Touch) */
   .agendamento-days-row {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -3363,7 +3364,7 @@ input[type=number].no-spinners {
     font-size: 16px !important;
   }
 
-  /* 10. Cabe?alhos de Cards, T?tulos de P?gina, Tabelas e Modais */
+  /* 10. Cabeçalhos de Cards, Títulos de Página, Tabelas e Modais */
   .page-title,
   h1.h5 {
     font-size: 16px !important;

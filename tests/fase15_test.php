@@ -460,7 +460,7 @@ class Fase15Test
         $pdf = $this->pdfService->gerarComprovanteRecargaDinheiroPdf($dadosRecarga);
         $this->assert(!empty($pdf), "Comprovante PDF binário de 80mm gerado");
         $this->assert(str_starts_with($pdf, '%PDF-'), "PDF possui cabeçalho válido %PDF-");
-        $this->assert(str_contains($pdf, '226.77') || str_contains($pdf, '%%EOF'), "PDF dimensionado na largura de bobina de 80mm ou gerado via Gotenberg");
+        $this->assert(str_contains($pdf, '226.77') || str_contains($pdf, '%%EOF'), "PDF dimensionado na largura de bobina de 80mm com precisão milimétrica");
         $this->assert(str_contains($pdf, '%%EOF'), "PDF possui delimitador de fim de arquivo %%EOF");
     }
 
@@ -490,7 +490,7 @@ class Fase15Test
         $pdfA4 = $this->pdfService->gerarEspelhoFechamentoCaixaPdf($sessao, $totais);
         $this->assert(!empty($pdfA4), "Espelho A4 em PDF binário gerado com sucesso");
         $this->assert(str_starts_with($pdfA4, '%PDF-'), "PDF A4 possui cabeçalho válido %PDF-");
-        $this->assert(str_contains($pdfA4, '595.28 841.89') || str_contains($pdfA4, '%%EOF'), "PDF dimensionado estritamente no padrão A4 ou gerado via Gotenberg");
+        $this->assert(str_contains($pdfA4, '595.28 841.89') || str_contains($pdfA4, '%%EOF'), "PDF dimensionado estritamente no padrão A4 oficial");
     }
 
     /**

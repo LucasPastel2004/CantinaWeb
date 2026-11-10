@@ -198,17 +198,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
+                    const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                     data.alunos.forEach(aluno => {
                         const item = document.createElement('a');
                         item.href = '#';
                         item.className = 'list-group-item list-group-item-action py-2 px-3 d-flex justify-content-between align-items-center';
                         item.style.fontSize = '12px';
+                        const saldoVal = parseFloat(aluno.saldo ?? aluno.saldo_atual ?? 0);
                         item.innerHTML = `
                             <div>
-                                <strong class="text-dark">${aluno.nome}</strong>
-                                <span class="text-secondary text-microcopy d-block">Matrícula: ${aluno.matricula} &bull; ${aluno.turma || ''}</span>
+                                <strong class="text-dark">${esc(aluno.nome)}</strong>
+                                <span class="text-secondary text-microcopy d-block">Matrícula: ${esc(aluno.matricula)} &bull; ${esc(aluno.turma || '')}</span>
                             </div>
-                            <span class="badge bg-light text-primary border font-tabular">R$ ${parseFloat(aluno.saldo_atual || 0).toFixed(2).replace('.', ',')}</span>
+                            <span class="badge bg-light text-primary border font-tabular">R$ ${saldoVal.toFixed(2).replace('.', ',')}</span>
                         `;
 
                         item.addEventListener('click', function(e) {

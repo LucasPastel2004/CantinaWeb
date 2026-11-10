@@ -57,17 +57,6 @@ class Responsavel extends Model
     }
 
     /**
-     * Localiza um responsável pelo número de WhatsApp
-     */
-    public function findByWhatsapp(string $whatsapp): ?array
-    {
-        $cleanWhatsapp = preg_replace('/\D/', '', $whatsapp);
-        $sql = "SELECT * FROM {$this->table} WHERE REPLACE(REPLACE(REPLACE(REPLACE(whatsapp, '(', ''), ')', ''), '-', ''), ' ', '') LIKE :whatsapp LIMIT 1";
-
-        return self::fetchOne($sql, ['whatsapp' => '%' . $cleanWhatsapp]);
-    }
-
-    /**
      * Atualiza a senha do responsável com Bcrypt
      */
     public function updatePassword(int $id, string $plainPassword): bool
@@ -216,6 +205,7 @@ class Responsavel extends Model
      */
     public static function localizarOuCriarPorCpf(array $dados, ?int $usuarioId = null): array
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $cleanCpf = self::cleanCpf($dados['cpf'] ?? '');
         if (empty($cleanCpf)) {
             throw new \InvalidArgumentException('CPF do responsável não informado.');
@@ -328,11 +318,20 @@ class Responsavel extends Model
     }
 
     /**
-     * Busca um responsável por ID
+     * Busca um responsável por ID sincronizando saldo e bloqueio MED com o titular da Conta Familiar
      */
     public static function buscarPorId(int $id): ?array
     {
-        return self::fetchOne("SELECT * FROM responsaveis WHERE id = :id LIMIT 1", ['id' => $id]);
+        return self::fetchOne(
+            "SELECT r.*,
+                    COALESCE(rt.saldo_atual, r.saldo_atual) AS saldo_atual,
+                    GREATEST(COALESCE(r.bloqueado_med, 0), COALESCE(rt.bloqueado_med, 0)) AS bloqueado_med
+             FROM responsaveis r
+             LEFT JOIN responsaveis rt ON rt.id = r.titular_id
+             WHERE r.id = :id
+             LIMIT 1",
+            ['id' => $id]
+        );
     }
 
     /**
@@ -475,7 +474,7 @@ class Responsavel extends Model
      */
     public static function contarNegativadosMed(): int
     {
-        $sql = "SELECT COUNT(*) AS total FROM responsaveis WHERE bloqueado_med = 1 OR saldo_atual < 0";
+        $sql = "SELECT COUNT(*) AS total FROM responsaveis WHERE (titular_id IS NULL OR titular_id = 0) AND (bloqueado_med = 1 OR saldo_atual < 0)";
         $row = self::fetchOne($sql);
         return (int)($row['total'] ?? 0);
     }
@@ -485,7 +484,7 @@ class Responsavel extends Model
      */
     public static function somarSaldoDevedorMed(): float
     {
-        $sql = "SELECT COALESCE(SUM(ABS(saldo_atual)), 0) AS total FROM responsaveis WHERE saldo_atual < 0";
+        $sql = "SELECT COALESCE(SUM(ABS(saldo_atual)), 0) AS total FROM responsaveis WHERE (titular_id IS NULL OR titular_id = 0) AND saldo_atual < 0";
         $row = self::fetchOne($sql);
         return (float)($row['total'] ?? 0.0);
     }
@@ -501,7 +500,7 @@ class Responsavel extends Model
             $pagina = 1;
         }
 
-        $where = [];
+        $where = ["(r.titular_id IS NULL OR r.titular_id = 0)"];
         $params = [];
 
         // Filtro por status

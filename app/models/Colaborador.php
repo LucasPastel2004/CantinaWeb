@@ -106,6 +106,7 @@ class Colaborador extends Model
      */
     public static function criar(array $dados, ?int $usuarioId = null): int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
 
         $sql = "INSERT INTO colaboradores (
@@ -136,6 +137,7 @@ class Colaborador extends Model
      */
     public static function atualizar(int $id, array $dados, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $campos = [
             'matricula_funcional = :matricula_funcional',
             'nome = :nome',
@@ -170,6 +172,7 @@ class Colaborador extends Model
      */
     public static function toggleAtivo(int $id, ?int $usuarioId = null): ?int
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $colaborador = self::buscarPorId($id);
         if (!$colaborador) {
             return null;
@@ -196,6 +199,7 @@ class Colaborador extends Model
      */
     public static function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $now = date('Y-m-d H:i:s');
         $sql = "UPDATE colaboradores 
                 SET deleted_at = :deleted_at, updated_by = :updated_by, updated_at = :updated_at 

@@ -538,6 +538,9 @@ class PixService
             }
         }
 
+        // Normaliza chaves de cabeçalho para minúsculas
+        $headers = array_change_key_case($headers, CASE_LOWER);
+
         // 1. Checagem via Header X-Webhook-Secret ou X-Webhook-Token
         $receivedHeader = $headers['x-webhook-secret'] ?? $headers['x-webhook-token'] ?? $headers['authorization'] ?? null;
         if (!empty($receivedHeader)) {
@@ -782,8 +785,8 @@ class PixService
         string $descricao = ''
     ): string {
         // Normalização de textos para o padrão EMV (sem acentos e caracteres especiais)
-        $nomeLimpo = self::removerAcentos(strtoupper(substr($nomeRecebedor, 0, 25)));
-        $cidadeLimpa = self::removerAcentos(strtoupper(substr($cidadeRecebedor, 0, 15)));
+        $nomeLimpo = substr(strtoupper(self::removerAcentos($nomeRecebedor)), 0, 25);
+        $cidadeLimpa = substr(strtoupper(self::removerAcentos($cidadeRecebedor)), 0, 15);
         $valorFmt = number_format($valor, 2, '.', '');
 
         // 1. Merchant Account Information (Tag 26)
@@ -855,12 +858,6 @@ class PixService
      */
     public static function removerAcentos(string $str): string
     {
-        $map = [
-            'á'=>'a','à'=>'a','ã'=>'a','â'=>'a','é'=>'e','ê'=>'e','í'=>'i',
-            'ó'=>'o','ô'=>'o','õ'=>'o','ú'=>'u','ü'=>'u','ç'=>'c',
-            'Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A','É'=>'E','Ê'=>'E','Í'=>'I',
-            'Ó'=>'O','Ô'=>'O','Õ'=>'O','Ú'=>'U','Ü'=>'U','Ç'=>'C'
-        ];
-        return strtr($str, $map);
+        return \App\Core\Sanitizer::removerAcentos($str);
     }
 }

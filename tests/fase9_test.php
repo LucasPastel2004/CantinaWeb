@@ -133,14 +133,14 @@ class Fase9Test
         $this->assert($status['status'] === 'pendente', "Cobrança recém-gerada possui status 'pendente'");
         $this->assert($status['restante_segundos'] > 800, "Cobrança possui validade de 15 minutos (tempo restante: {$status['restante_segundos']}s)");
 
-        // Validação de valor mínimo
+        // Validação de valor inválido
         $erroMinimo = false;
         try {
-            PixService::gerarCobrancaPix(1, 5.00); // R$ 5,00 é menor que o mínimo padrão de R$ 10,00
+            PixService::gerarCobrancaPix(1, 0.00); // Valor zero ou menor é rejeitado
         } catch (\InvalidArgumentException $e) {
             $erroMinimo = true;
         }
-        $this->assert($erroMinimo, "Recusa geração de Pix com valor inferior ao mínimo institucional configurado");
+        $this->assert($erroMinimo, "Recusa geração de Pix com valor inválido ou igual a zero");
         echo "\n";
     }
 

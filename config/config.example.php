@@ -37,7 +37,7 @@ return [
 
     // Parâmetros Operacionais da Cantina
     'cantina' => [
-        'recarga_minima_padrao'      => 10.00,
+        'recarga_minima_padrao'      => 0.00,
         'alerta_saldo_baixo_padrao'  => 5.00,
         'timeout_sessao_minutos'     => 60,
         'limite_tentativas_login'    => 5,

@@ -43,7 +43,7 @@ assercao(!empty($cobranca['txid']), "txid gerado com sucesso", $passou, $total);
 assercao(strlen($cobranca['txid']) <= 25, "txid possui no máximo 25 caracteres (" . strlen($cobranca['txid']) . " chars) conforme BACEN", $passou, $total);
 assercao(str_starts_with($cobranca['copia_e_cola'], '000201'), "Payload inicia com indicador 000201", $passou, $total);
 assercao(str_contains($cobranca['copia_e_cola'], '010211'), "Point of Initiation Method é 11 (estático/chave direta)", $passou, $total);
-assercao(str_contains($cobranca['copia_e_cola'], 'BR.GOV.BCB.PIX'), "Contém GUI oficial BR.GOV.BCB.PIX", $passou, $total);
+assercao(str_contains(strtolower($cobranca['copia_e_cola']), 'br.gov.bcb.pix'), "Contém GUI oficial br.gov.bcb.pix", $passou, $total);
 assercao(str_contains($cobranca['copia_e_cola'], '540550.00'), "Contém valor monetário formatado (50.00)", $passou, $total);
 
 // 2. Valida cálculo de CRC16

@@ -284,7 +284,7 @@ function copiarPedidoWhatsApp() {
             document.execCommand('copy');
             feedbackSucesso();
         } catch (err) {
-            alert('Não foi possível copiar automaticamente. Selecione e copie o texto manualmente.');
+            window.alertaAcao({ titulo: 'Aviso de Cópia', mensagem: 'Não foi possível copiar automaticamente. Selecione e copie o texto manualmente.', tipo: 'warning' });
         }
     }
 }

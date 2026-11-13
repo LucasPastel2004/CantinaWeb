@@ -37,7 +37,7 @@ $fimAno            = date('Y-12-31');
                 <span class="text-secondary text-microcopy text-uppercase font-weight-bold">Controladoria & Finanças</span>
                 <span class="code-tag font-tabular">DRE Unificado (Vendas, Custódia de Carteira & Caixa Real)</span>
             </div>
-            <h1 class="h4 font-weight-bold mb-0 text-dark">Painel Financeiro & DRE Gerencial Unificado</h1>
+            <h1 class="h5 font-weight-bold mb-0 text-dark">Painel Financeiro & DRE Gerencial Unificado</h1>
         </div>
     </div>
 

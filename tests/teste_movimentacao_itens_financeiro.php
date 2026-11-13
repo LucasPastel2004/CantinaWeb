@@ -93,8 +93,8 @@ assertCustom(str_contains($finCorpoCompleto, '/financeiro/dre') && str_contains(
 
 // 2. Validação da view web de Entradas (arrecadacao.php)
 $viewArrecadacao = file_get_contents(__DIR__ . '/../app/views/relatorios/arrecadacao.php');
-assertCustom(str_contains($viewArrecadacao, '<h1 class="h4 font-weight-bold mb-0 text-dark">Entradas</h1>'), "View arrecadacao.php possui título H1 'Entradas'");
-assertCustom(!str_contains($viewArrecadacao, '<h1 class="h4 font-weight-bold mb-0 text-dark">Arrecadação Financeira'), "View arrecadacao.php removeu título antigo 'Arrecadação Financeira'");
+assertCustom(str_contains($viewArrecadacao, '<h1 class="h5 font-weight-bold mb-0 text-dark">Entradas</h1>'), "View arrecadacao.php possui título H1 'Entradas'");
+assertCustom(!preg_match('/<h1[^>]*>Arrecadação Financeira/', $viewArrecadacao), "View arrecadacao.php removeu título antigo 'Arrecadação Financeira'");
 
 // 3. Validação do espelho de impressão / PDF (arrecadacao_pdf.php)
 $viewPdf = file_get_contents(__DIR__ . '/../app/views/relatorios/arrecadacao_pdf.php');

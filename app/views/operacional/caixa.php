@@ -146,7 +146,7 @@ if ($resumoOficial) {
                 <strong>Atenção:</strong> A sessão de caixa do turno <strong><?php echo $outroTurnoNome; ?> (Sessão #<?php echo $sessaoOutroTurno['id']; ?>)</strong> ainda está aberta. O sistema não permite dois caixas abertos simultaneamente.
             </span>
         </div>
-        <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-warning btn-sm font-semibold" style="font-size: 11px;">
+        <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-primary btn-sm font-semibold" style="font-size: 11px;">
             Ir para Fechamento do Turno <?php echo $outroTurnoNome; ?> →
         </a>
     </div>
@@ -329,7 +329,7 @@ if ($resumoOficial) {
                     <button type="button" class="btn btn-enterprise btn-secondary btn-sm" data-bs-dismiss="modal">
                         Cancelar
                     </button>
-                    <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-warning btn-sm font-semibold">
+                    <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-primary btn-sm font-semibold">
                         Ir para Fechamento do Turno <?php echo $outroTurnoNome; ?> →
                     </a>
                 </div>

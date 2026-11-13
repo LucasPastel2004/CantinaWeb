@@ -663,7 +663,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink: 0;"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
                 <span><strong>Atenção:</strong> A sessão de caixa do turno <strong><?php echo $outroTurnoNome; ?> (Sessão #<?php echo (int)$sessaoOutroTurno['id']; ?>)</strong> ainda está aberta. O sistema não permite abrir dois caixas simultaneamente. É obrigatório fechar a sessão do turno anterior antes de iniciar o novo turno.</span>
             </div>
-            <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-warning btn-sm font-semibold" style="font-size: 11px;">
+            <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-primary btn-sm font-semibold" style="font-size: 11px;">
                 Fechar Caixa <?php echo $outroTurnoNome; ?> →
             </a>
         </div>
@@ -677,7 +677,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <span><strong>Atenção:</strong> A sessão de caixa do turno <strong><?php echo ucfirst($turnoAtual); ?></strong> está fechada. Vendas em dinheiro físico exigem a abertura prévia da sessão de caixa.</span>
             </div>
             <?php if ($sessaoOutroTurno): ?>
-                <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-warning btn-sm font-semibold">
+                <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-primary btn-sm font-semibold">
                     Fechar Caixa <?php echo $outroTurnoNome; ?> Primeiro
                 </a>
             <?php else: ?>
@@ -805,7 +805,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <div id="boxClienteAluno" class="d-none mt-1">
                     <div class="input-group input-group-sm" id="wrapBuscaAluno">
                         <input type="text" id="buscaAlunoPdv" class="form-control py-1 font-12" aria-label="Buscar aluno por nome ou matrícula" oninput="buscarAlunosLive(this.value)">
-                        <button type="button" class="btn btn-outline-secondary py-1" onclick="limparSelecaoAluno()">✕</button>
+                        <button type="button" class="btn btn-enterprise btn-secondary py-1" onclick="limparSelecaoAluno()">✕</button>
                     </div>
                     <div id="listaSugestoesAluno" class="list-group position-absolute shadow-sm d-none" style="z-index: 1050; max-width: 380px;"></div>
                     
@@ -829,7 +829,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                 <div id="boxClienteColaborador" class="d-none mt-1">
                     <div class="input-group input-group-sm" id="wrapBuscaColab">
                         <input type="text" id="buscaColabPdv" class="form-control py-1 font-12" aria-label="Buscar professor ou funcionário" oninput="buscarColaboradoresLive(this.value)">
-                        <button type="button" class="btn btn-outline-secondary py-1" onclick="limparSelecaoColaborador()">✕</button>
+                        <button type="button" class="btn btn-enterprise btn-secondary py-1" onclick="limparSelecaoColaborador()">✕</button>
                     </div>
                     <div id="listaSugestoesColab" class="list-group position-absolute shadow-sm d-none" style="z-index: 1050; max-width: 380px;"></div>
                     
@@ -892,10 +892,10 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                         <label class="font-11 text-secondary text-uppercase font-bold mb-0" style="min-width: 68px; flex-shrink: 0;">Recebido:</label>
                         <input type="text" id="inputValorRecebido" class="form-control form-control-sm font-tabular text-end input-money py-1.5 font-13 font-bold" oninput="calcularTroco()" style="max-width: 125px;">
                         <div class="btn-group btn-group-sm flex-grow-1" role="group">
-                            <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-semibold" onclick="definirRecebidoExato()" title="Valor Exato">Exato</button>
-                            <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(10)">+10</button>
-                            <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(20)">+20</button>
-                            <button type="button" class="btn btn-outline-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(50)">+50</button>
+                            <button type="button" class="btn btn-enterprise btn-secondary py-1.5 px-2 font-12 font-semibold" onclick="definirRecebidoExato()" title="Valor Exato">Exato</button>
+                            <button type="button" class="btn btn-enterprise btn-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(10)">+10</button>
+                            <button type="button" class="btn btn-enterprise btn-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(20)">+20</button>
+                            <button type="button" class="btn btn-enterprise btn-secondary py-1.5 px-2 font-12 font-tabular font-semibold" onclick="somarRecebido(50)">+50</button>
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between px-2.5 py-1.5 rounded bg-light border">
@@ -915,7 +915,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                     <!-- Manter elemento de saldo disponível para compatibilidade com JS -->
                     <span id="displaySaldoDisponivel" class="d-none"></span>
                     <div id="alertaSaldoInsuficiente" class="alert alert-danger py-1 px-2 font-11 mt-1 mb-0 d-none">
-                        ⚠️ Saldo insuficiente na carteira para realizar esta compra.
+                        Saldo insuficiente na carteira para realizar esta compra.
                     </div>
                 </div>
 
@@ -967,7 +967,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
             </div>
             <div class="modal-footer-custom">
                 <button type="button" class="btn btn-enterprise btn-secondary btn-sm" onclick="fecharModal('modalAbrirCaixa')">Cancelar</button>
-                <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-warning btn-sm font-semibold">
+                <a href="<?php echo $baseUrl; ?>/operacional/caixa?turno=<?php echo strtolower($outroTurnoNome); ?>" class="btn btn-enterprise btn-primary btn-sm font-semibold">
                     Ir para Fechamento do Caixa <?php echo $outroTurnoNome; ?> →
                 </a>
             </div>
@@ -1015,7 +1015,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
             <div class="font-18 font-bold text-dark font-tabular mb-2" id="pixValorDisplay">R$ 0,00</div>
             <div class="input-group input-group-sm mb-2">
                 <input type="text" id="pixBrcodeInput" class="form-control font-monospace font-11" readonly>
-                <button type="button" class="btn btn-outline-secondary" onclick="copiarPixBrcode()">Copiar</button>
+                <button type="button" class="btn btn-enterprise btn-secondary" onclick="copiarPixBrcode()">Copiar</button>
             </div>
             <div class="font-11 text-muted" id="pixStatusMsg">Aguardando liquidação bancária...</div>
         </div>
@@ -1255,13 +1255,13 @@ function adicionarAoCarrinho(prodId) {
     const index = carrinho.findIndex(it => it.produto_id === prodId);
     if (index >= 0) {
         if (carrinho[index].quantidade + 1 > estoque) {
-            alert(`Apenas ${estoque} unidades disponíveis em estoque.`);
+            window.alertaAcao({ titulo: 'Estoque Insuficiente', mensagem: `Apenas ${estoque} unidades disponíveis em estoque.`, tipo: 'warning' });
             return;
         }
         carrinho[index].quantidade += 1;
     } else {
         if (estoque < 1) {
-            alert('Item sem saldo disponível no momento.');
+            window.alertaAcao({ titulo: 'Produto Esgotado', mensagem: 'Item sem saldo disponível no momento.', tipo: 'warning' });
             return;
         }
         carrinho.push({
@@ -1286,7 +1286,7 @@ function alterarQuantidadeItem(prodId, delta) {
     if (novaQtd <= 0) {
         carrinho.splice(index, 1);
     } else if (novaQtd > carrinho[index].estoque_max) {
-        alert(`Apenas ${carrinho[index].estoque_max} unidades disponíveis em estoque.`);
+        window.alertaAcao({ titulo: 'Estoque Insuficiente', mensagem: `Apenas ${carrinho[index].estoque_max} unidades disponíveis em estoque.`, tipo: 'warning' });
         return;
     } else {
         carrinho[index].quantidade = novaQtd;
@@ -1698,20 +1698,20 @@ function verificarAlergenosComAluno() {
     });
 
     if (conflito.length > 0) {
-        alert(`[ALERTA DE ALERGIA]\nO aluno ${alunoSelecionado.nome} possui restrições alimentares registradas!\nItens no pedido com possíveis alérgenos:\n- ${conflito.join('\n- ')}`);
+        window.alertaAcao({ titulo: 'Alerta de Alergia', mensagem: `O aluno ${alunoSelecionado.nome} possui restrições alimentares registradas! Itens no pedido com possíveis alérgenos: ${conflito.join(', ')}`, tipo: 'warning' });
     }
 }
 
 // Finalização da Venda
 function processarFinalizacaoVenda() {
     if (!caixaAberto) {
-        alert('O caixa do turno está fechado. Abra a sessão de caixa antes de realizar vendas.');
+        window.alertaAcao({ titulo: 'Caixa Fechado', mensagem: 'O caixa do turno está fechado. Abra a sessão de caixa antes de realizar vendas.', tipo: 'warning' });
         abrirModal('modalAbrirCaixa');
         return;
     }
 
     if (carrinho.length === 0) {
-        alert('Adicione itens à cesta de compras antes de finalizar.');
+        window.alertaAcao({ titulo: 'Cesta Vazia', mensagem: 'Adicione itens à cesta de compras antes de finalizar.', tipo: 'warning' });
         return;
     }
 
@@ -1721,7 +1721,7 @@ function processarFinalizacaoVenda() {
         const recInput = document.getElementById('inputValorRecebido');
         const recValor = parseFloat(recInput ? recInput.value.replace(/\./g, '').replace(',', '.') : '0') || 0;
         if (recValor < total) {
-            alert(`O valor recebido em dinheiro (R$ ${recValor.toFixed(2).replace('.', ',')}) é menor que o total da venda (R$ ${total.toFixed(2).replace('.', ',')}).`);
+            window.alertaAcao({ titulo: 'Valor Insuficiente', mensagem: `O valor recebido em dinheiro (R$ ${recValor.toFixed(2).replace('.', ',')}) é menor que o total da venda (R$ ${total.toFixed(2).replace('.', ',')}).`, tipo: 'warning' });
             return;
         }
         submeterVendaServidor(recValor);
@@ -1729,12 +1729,12 @@ function processarFinalizacaoVenda() {
         abrirModalPixBalcao(total);
     } else if (formaPagamentoAtual === 'saldo') {
         if (!alunoSelecionado) {
-            alert('Para pagar com saldo da carteira, selecione um aluno na aba Aluno.');
+            window.alertaAcao({ titulo: 'Aluno não Selecionado', mensagem: 'Para pagar com saldo da carteira, selecione um aluno na aba Aluno.', tipo: 'warning' });
             return;
         }
         const saldoDisponivel = parseFloat(alunoSelecionado.saldo_atual) || 0;
         if (saldoDisponivel < total) {
-            alert(`Saldo insuficiente na carteira (Saldo atual: R$ ${saldoDisponivel.toFixed(2).replace('.', ',')}, Total da compra: R$ ${total.toFixed(2).replace('.', ',')}).`);
+            window.alertaAcao({ titulo: 'Saldo Insuficiente', mensagem: `Saldo insuficiente na carteira (Saldo atual: R$ ${saldoDisponivel.toFixed(2).replace('.', ',')}, Total da compra: R$ ${total.toFixed(2).replace('.', ',')}).`, tipo: 'warning' });
             return;
         }
         submeterVendaServidor(0.0);
@@ -1772,7 +1772,7 @@ function submeterVendaServidor(valorRecebido) {
         btn.innerText = 'Concluir Venda (F4)';
 
         if (!data.sucesso) {
-            alert('Erro ao finalizar venda: ' + (data.mensagem || 'Falha desconhecida.'));
+            window.alertaAcao({ titulo: 'Erro na Venda', mensagem: 'Erro ao finalizar venda: ' + (data.mensagem || 'Falha desconhecida.'), tipo: 'danger' });
             return;
         }
 
@@ -1836,7 +1836,7 @@ function submeterVendaServidor(valorRecebido) {
         btn.disabled = false;
         btn.innerText = 'Concluir Venda (F4)';
         console.error('Falha na venda:', err);
-        alert('Falha na comunicação com o servidor: ' + err.message);
+        window.alertaAcao({ titulo: 'Falha na Comunicação', mensagem: 'Falha na comunicação com o servidor: ' + err.message, tipo: 'danger' });
     });
 }
 
@@ -1853,7 +1853,7 @@ function abrirModalPixBalcao(valor) {
     .then(res => res.json())
     .then(data => {
         if (!data.sucesso) {
-            alert('Erro ao gerar Pix balcão: ' + data.mensagem);
+            window.alertaAcao({ titulo: 'Erro ao Gerar Pix', mensagem: 'Erro ao gerar Pix balcão: ' + data.mensagem, tipo: 'danger' });
             return;
         }
 
@@ -1868,7 +1868,7 @@ function copiarPixBrcode() {
     const input = document.getElementById('pixBrcodeInput');
     input.select();
     navigator.clipboard.writeText(input.value);
-    alert('Código Pix Copia e Cola copiado para a área de transferência!');
+    window.alertaAcao({ titulo: 'Código Copiado', mensagem: 'Código Pix Copia e Cola copiado para a área de transferência!', tipo: 'success' });
 }
 
 function confirmarVendaPixAposPagamento() {

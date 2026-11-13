@@ -74,7 +74,7 @@ $filtros      = $filtros ?? ['busca' => '', 'turma_id' => 0, 'turno' => '', 'sta
                     Filtrar
                 </button>
                 <?php if (!empty($jaFiltrado)): ?>
-                    <a href="<?php echo $baseUrl; ?>/admin/alunos" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">
+                    <a href="<?php echo $baseUrl; ?>/admin/alunos" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros">
                         Limpar
                     </a>
                 <?php endif; ?>

@@ -403,15 +403,15 @@ require __DIR__ . '/../partials/stat_strip.php';
 <div class="modal fade" id="modalEmergencial" tabindex="-1" aria-labelledby="modalEmergencialTitulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content card-enterprise border-0 shadow">
-            <div class="modal-header card-enterprise-header bg-danger text-white">
-                <h5 class="modal-title font-weight-bold fs-6 text-white d-flex align-items-center gap-2" id="modalEmergencialTitulo">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+            <div class="modal-header card-enterprise-header">
+                <h5 class="modal-title font-weight-bold fs-6 d-flex align-items-center gap-2" id="modalEmergencialTitulo" style="color: #b91c1c;">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                         <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
                         <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
                     </svg>
                     Suspensão Emergencial &amp; Estorno Automático
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <form action="<?php echo $baseUrl; ?>/admin/calendario/emergencial" method="POST" class="m-0"
                   data-confirm="Confirma a suspensão de aulas e o estorno imediato dos pedidos para todos os responsáveis?"
@@ -420,8 +420,11 @@ require __DIR__ . '/../partials/stat_strip.php';
                   data-confirm-btn="Sim, Suspender e Estornar">
                 <?php echo $csrfField; ?>
                 <div class="modal-body p-3">
-                    <div class="alert alert-warning border border-warning-subtle d-flex align-items-start gap-2 mb-3" style="font-size: 12px; line-height: 1.4;">
-                        <span class="text-warning fs-5">⚠️</span>
+                    <div class="alert border-left-danger bg-danger-soft text-dark d-flex align-items-start gap-2 mb-3" style="font-size: 12px; line-height: 1.4;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="#b91c1c" class="flex-shrink-0 mt-1" aria-hidden="true">
+                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                        </svg>
                         <div>
                             <strong>Atenção operacional e contábil:</strong> Esta ação cancela todos os pedidos agendados para a data selecionada, anula os tickets térmicos e <strong>estorna 100% dos valores na carteira dos responsáveis</strong> no mesmo instante.
                         </div>

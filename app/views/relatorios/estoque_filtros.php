@@ -47,77 +47,7 @@ $quebraPagina   = $filtros['quebra_pagina'] ?? 'ocultar';
 ?>
 
 <style>
-/* Estilos corporativos específicos do painel de emissão Escolar Manager */
-.nav-tabs-enterprise {
-    border-bottom: 2px solid #e2e8f0;
-    gap: 4px;
-}
-.nav-tabs-enterprise .nav-link {
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: #475569;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 18px;
-    background: transparent;
-    border-radius: 4px 4px 0 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.15s ease-in-out;
-}
-.nav-tabs-enterprise .nav-link:hover {
-    color: #1d4ed8;
-    background: #f8fafc;
-}
-.nav-tabs-enterprise .nav-link.active {
-    color: #ffffff;
-    background: #1d4ed8;
-    border-color: #1d4ed8;
-    border-radius: 6px 6px 0 0;
-    box-shadow: 0 1px 3px rgba(29, 78, 216, 0.25);
-}
-
-/* Grupo de botões segmentados com destaque ativo azul corporativo */
-.btn-toggle-group-escolar {
-    display: inline-flex;
-    border-radius: 6px;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    overflow: hidden;
-}
-.btn-toggle-group-escolar .btn-check:checked + .btn-escolar-segment {
-    background-color: #1d4ed8 !important;
-    border-color: #1d4ed8 !important;
-    color: #ffffff !important;
-    font-weight: 600;
-}
-.btn-toggle-group-escolar .btn-escolar-segment {
-    background-color: #ffffff;
-    border: none;
-    border-right: 1px solid #e2e8f0;
-    color: #475569;
-    font-size: 12px;
-    padding: 6px 16px;
-    cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    border-radius: 0;
-}
-.btn-toggle-group-escolar .btn-escolar-segment:last-child {
-    border-right: none;
-}
-.btn-toggle-group-escolar .btn-escolar-segment:hover:not(.disabled) {
-    background-color: #f1f5f9;
-    color: #0f172a;
-}
-.btn-toggle-group-escolar .btn-escolar-segment.disabled,
-.btn-toggle-group-escolar .btn-escolar-segment:disabled {
-    background-color: #f1f5f9;
-    color: #94a3b8;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
+/* Estilos complementares específicos do painel de emissão */
 .card-filtro-container {
     background: #ffffff;
     border: 1px solid #e2e8f0;

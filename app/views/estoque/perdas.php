@@ -143,7 +143,7 @@ function validarEnvioPerda(event) {
     const selectEl = document.getElementById('selectProduto');
     const opt = selectEl.options[selectEl.selectedIndex];
     if (!opt || !opt.value) {
-        alert('Selecione o produto.');
+        window.alertaAcao({ titulo: 'Campo Obrigatório', mensagem: 'Selecione o produto.', tipo: 'warning' });
         return false;
     }
 
@@ -152,20 +152,20 @@ function validarEnvioPerda(event) {
     const qtd = parseInt(inputQtd.value, 10) || 0;
 
     if (qtd <= 0) {
-        alert('A quantidade a baixar deve ser maior que zero.');
+        window.alertaAcao({ titulo: 'Quantidade Inválida', mensagem: 'A quantidade a baixar deve ser maior que zero.', tipo: 'warning' });
         inputQtd.focus();
         return false;
     }
 
     if (qtd > estoque) {
-        alert('A quantidade informada (' + qtd + ' un) excede o saldo físico atual em estoque (' + estoque + ' un).');
+        window.alertaAcao({ titulo: 'Saldo Insuficiente em Estoque', mensagem: 'A quantidade informada (' + qtd + ' un) excede o saldo físico atual em estoque (' + estoque + ' un).', tipo: 'warning' });
         inputQtd.focus();
         return false;
     }
 
     const justif = document.getElementById('textareaJustificativa').value.trim();
     if (justif.length < 5) {
-        alert('A justificativa deve conter no mínimo 5 caracteres.');
+        window.alertaAcao({ titulo: 'Justificativa Obrigatória', mensagem: 'A justificativa deve conter no mínimo 5 caracteres.', tipo: 'warning' });
         document.getElementById('textareaJustificativa').focus();
         return false;
     }

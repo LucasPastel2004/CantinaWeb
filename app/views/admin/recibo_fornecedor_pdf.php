@@ -270,6 +270,11 @@ $formaPagamentoNome = ($recibo['forma_pagamento'] === 'pix') ? 'Transferência I
             letter-spacing: 0.05em;
         }
 
+        @page {
+            size: A4 portrait;
+            margin: 14mm;
+        }
+
         @media print {
             body {
                 background: #ffffff !important;
@@ -289,7 +294,7 @@ $formaPagamentoNome = ($recibo['forma_pagamento'] === 'pix') ? 'Transferência I
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
-                padding: 10mm 12mm !important;
+                padding: 0 !important;
                 max-width: 100% !important;
                 width: 100% !important;
             }

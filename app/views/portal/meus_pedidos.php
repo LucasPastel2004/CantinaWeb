@@ -70,7 +70,7 @@ $csrfToken = \App\Core\Session::generateCsrfToken();
                     Filtrar
                 </button>
                 <?php if (!empty($jaFiltrado)): ?>
-                    <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">
+                    <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros">
                         Limpar
                     </a>
                 <?php endif; ?>

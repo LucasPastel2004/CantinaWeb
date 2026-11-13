@@ -15,7 +15,7 @@ $baseUrl = $baseUrl ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 — Recurso Não Encontrado | Cantina Web</title>
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=7.5.0">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=7.6.1">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-surface">
     <header class="app-header">

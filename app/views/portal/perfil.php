@@ -23,7 +23,7 @@ $cpfFormatado = (strlen($cpfLimpo) === 11)
         <h1 class="h5 font-weight-bold text-dark mb-1">Meus Dados Cadastrais</h1>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-primary">
+        <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-secondary btn-sm">
             &larr; Voltar ao Início
         </a>
     </div>

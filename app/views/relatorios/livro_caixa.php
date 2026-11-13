@@ -27,7 +27,7 @@ $fimMesAnterior = date('Y-m-d', strtotime('last day of previous month'));
             <div class="d-flex align-items-center gap-2 mb-1">
                 <span class="text-secondary text-microcopy text-uppercase font-weight-bold">Módulo Financeiro & Escrituração Contábil</span>
             </div>
-            <h1 class="h4 font-weight-bold mb-0 text-dark">Livro Caixa Diário</h1>
+            <h1 class="h5 font-weight-bold mb-0 text-dark">Livro Caixa Diário</h1>
         </div>
     </div>
 

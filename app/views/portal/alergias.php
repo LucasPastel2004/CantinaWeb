@@ -26,7 +26,7 @@ $alergenosDoAluno  = $alergenosDoAluno ?? [];
         <h1 class="h5 font-weight-bold text-dark mb-0">Restrições Alimentares e Alergias</h1>
     </div>
     <div>
-        <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-primary">
+        <a href="<?php echo $baseUrl; ?>/portal" class="btn btn-enterprise btn-secondary btn-sm">
             &larr; Voltar ao Início
         </a>
     </div>

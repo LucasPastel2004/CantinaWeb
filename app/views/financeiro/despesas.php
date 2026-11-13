@@ -20,7 +20,7 @@ $baseUrl = $baseUrl ?? '';
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Módulo Financeiro</span>
                 <span class="badge bg-light text-secondary border">Fase 24</span>
             </div>
-            <h1 class="h4 font-weight-bold text-dark mb-1" style="font-size: 18px; font-weight: 700; color: #0f172a;">
+            <h1 class="h5 font-weight-bold text-dark mb-1">
                 Despesas Operacionais da Cantina
             </h1>
         </div>
@@ -122,7 +122,7 @@ $baseUrl = $baseUrl ?? '';
                 </div>
 
                 <div class="col-12 col-md-1 d-flex gap-1">
-                    <button type="submit" class="btn btn-enterprise btn-secondary btn-sm flex-fill" title="Filtrar">
+                    <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-fill" title="Filtrar">
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
                     </button>
                     <?php if (!empty($jaFiltrado)): ?>
@@ -498,7 +498,7 @@ function editarDespesa(id) {
         })
         .catch(err => {
             console.error(err);
-            alert('Falha na comunicação ao buscar despesa.');
+            window.alertaAcao({ titulo: 'Erro de Comunicação', mensagem: 'Falha na comunicação ao buscar despesa.', tipo: 'danger' });
         });
 }
 

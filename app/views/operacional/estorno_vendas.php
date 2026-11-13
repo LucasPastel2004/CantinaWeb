@@ -130,7 +130,7 @@ $carregado = $carregado ?? false;
 
                 <!-- Botão Carregar (Padrão Nutre: alinhado à direita com ícone de recarga) -->
                 <div class="col-12 col-md-6 text-md-end text-end">
-                    <button type="submit" id="btnCarregar" class="btn btn-enterprise btn-outline-secondary btn-sm px-3 d-inline-flex align-items-center gap-1.5 shadow-sm" title="Carregar vendas com estes filtros">
+                    <button type="submit" id="btnCarregar" class="btn btn-enterprise btn-secondary btn-sm px-3 d-inline-flex align-items-center gap-1.5 shadow-sm" title="Carregar vendas com estes filtros">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                             <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -165,7 +165,7 @@ $carregado = $carregado ?? false;
 
         <!-- Botões Cancelar e Gravar (Alinhados à direita junto com o Motivo, padrão Nutre) -->
         <div class="d-flex align-items-center gap-2 ms-auto">
-            <a href="<?php echo $baseUrl; ?>/operacional/estornos" class="btn btn-enterprise btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" id="btnCancelarEstorno" title="Cancelar seleção e limpar tela">
+            <a href="<?php echo $baseUrl; ?>/operacional/estornos" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1" id="btnCancelarEstorno" title="Cancelar seleção e limpar tela">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -199,7 +199,7 @@ $carregado = $carregado ?? false;
     <!-- Tabela de Vendas (Colunas do Nutre com botão Info Venda por linha) -->
     <div class="card-enterprise mb-3">
         <div class="table-responsive">
-            <table class="table table-hover table-striped table-sm mb-0 align-middle" id="tabelaVendasEstorno">
+            <table class="table table-enterprise table-hover table-sm mb-0 align-middle" id="tabelaVendasEstorno">
                 <thead style="background-color: #f1f5f9; color: #1e293b; border-bottom: 2px solid #cbd5e1;">
                     <tr style="height: 38px;">
                         <th style="width: 44px; text-align: center;">
@@ -273,7 +273,7 @@ $carregado = $carregado ?? false;
                                     <?php endif; ?>
                                 </td>
                                 <td style="text-align: center;" onclick="event.stopPropagation();">
-                                    <button type="button" class="btn btn-enterprise btn-outline-secondary btn-sm py-1 px-2 d-inline-flex align-items-center gap-1 btn-ver-detalhes-linha" 
+                                    <button type="button" class="btn btn-enterprise btn-secondary btn-sm py-1 px-2 d-inline-flex align-items-center gap-1 btn-ver-detalhes-linha" 
                                             data-id="<?php echo $vId; ?>" 
                                             data-tipo="<?php echo $tipoOrigem; ?>" 
                                             title="Ver Informações VENDAS desta venda específica">
@@ -340,7 +340,7 @@ $carregado = $carregado ?? false;
                 </div>
             </div>
             <div class="modal-footer py-2 bg-light">
-                <button type="button" class="btn btn-enterprise btn-outline-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-enterprise btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
@@ -395,7 +395,7 @@ $carregado = $carregado ?? false;
                 </div>
             </div>
             <div class="modal-footer py-2 bg-light">
-                <button type="button" class="btn btn-enterprise btn-outline-secondary btn-sm" data-bs-dismiss="modal">Voltar</button>
+                <button type="button" class="btn btn-enterprise btn-secondary btn-sm" data-bs-dismiss="modal">Voltar</button>
                 <button type="button" id="btnConfirmarEstornoFinal" class="btn btn-enterprise btn-primary btn-sm">
                     Confirmar e Gravar Estorno
                 </button>
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (selecionadas.length === 0) {
-                alert('Selecione ao menos uma venda na tabela para estornar.');
+                window.alertaAcao({ titulo: 'Seleção Necessária', mensagem: 'Selecione ao menos uma venda na tabela para estornar.', tipo: 'warning' });
                 return;
             }
 
@@ -792,7 +792,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (motivo === '6-OUTRO' && inputMotivoOutro) {
                 const espec = inputMotivoOutro.value.trim();
                 if (espec.length < 3) {
-                    alert('Por favor, especifique o motivo do estorno.');
+                    window.alertaAcao({ titulo: 'Motivo Obrigatório', mensagem: 'Por favor, especifique o motivo do estorno.', tipo: 'warning' });
                     inputMotivoOutro.focus();
                     return;
                 }
@@ -937,7 +937,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     '</div>' +
                     '<h6 class="small font-weight-bold text-secondary mb-2">Itens da Venda:</h6>' +
                     '<div class="table-responsive border rounded">' +
-                        '<table class="table table-sm table-striped mb-0">' +
+                        '<table class="table table-enterprise table-sm mb-0">' +
                             '<thead class="table-light">' +
                                 '<tr>' +
                                     '<th class="small font-weight-bold">Produto</th>' +

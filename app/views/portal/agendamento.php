@@ -27,21 +27,6 @@ if (empty($categorias) && !empty($produtos)) {
 }
 ?>
 
-<style>
-/* Remove terminantemente qualquer seta ou spinner nativo do navegador */
-.input-qtd::-webkit-outer-spin-button,
-.input-qtd::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0 !important;
-    display: none !important;
-}
-.input-qtd {
-    -moz-appearance: textfield !important;
-    appearance: textfield !important;
-    text-align: center !important;
-}
-</style>
-
 <div class="agendamento-container">
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
@@ -116,7 +101,7 @@ if (empty($categorias) && !empty($produtos)) {
                             Próxima Semana
                         </a>
                     <?php else: ?>
-                        <button type="button" class="btn btn-enterprise btn-outline-primary disabled" title="Abre sexta-feira às 18:00" style="opacity: 0.5; cursor: not-allowed;">
+                        <button type="button" class="btn btn-enterprise btn-secondary disabled" title="Abre sexta-feira às 18:00" style="opacity: 0.5; cursor: not-allowed;">
                             Próxima Semana <span class="text-muted" style="font-size: 10px;">(Sex 18h)</span>
                         </button>
                     <?php endif; ?>
@@ -559,7 +544,7 @@ if (empty($categorias) && !empty($produtos)) {
                 <button type="button" class="btn btn-enterprise btn-secondary btn-sm" data-bs-dismiss="modal" id="btn-alergia-cancelar">
                     Cancelar
                 </button>
-                <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btn-alergia-confirmar" style="background: #d97706; border-color: #b45309;">
+                <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btn-alergia-confirmar">
                     Confirmar Inclusão Consciente
                 </button>
             </div>

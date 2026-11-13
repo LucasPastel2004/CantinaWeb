@@ -147,7 +147,7 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     <input type="text" class="form-control form-control-sm" id="busca" name="busca" 
                            value="<?php echo htmlspecialchars($filtroBusca, ENT_QUOTES, 'UTF-8'); ?>"
                            autocomplete="off">
-                    <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btnLimparBuscaInput" 
+                    <button type="button" class="btn btn-enterprise btn-secondary btn-sm" id="btnLimparBuscaInput" 
                             style="<?php echo empty($filtroBusca) ? 'display: none;' : ''; ?>" title="Limpar busca rápida">
                         &times;
                     </button>
@@ -175,7 +175,7 @@ $queryStringMed = !empty($paramsMed) ? '?' . http_build_query($paramsMed) : '';
                     Filtrar Registros
                 </button>
                 <?php if ($jaFiltrado): ?>
-                    <a href="<?php echo $baseUrl; ?>/admin/contestacoes" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">
+                    <a href="<?php echo $baseUrl; ?>/admin/contestacoes" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros">
                         Limpar
                     </a>
                 <?php endif; ?>

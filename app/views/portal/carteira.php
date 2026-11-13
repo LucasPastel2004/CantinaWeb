@@ -263,8 +263,8 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                             </button>
                             <!-- Botão de Simulação em Ambiente Local Dev -->
                             <div id="bloco-simular-dev" class="<?php echo ($temPixAtivo && !empty($pixAtivo['is_dev'])) ? '' : 'd-none'; ?>">
-                                <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size: 10px;" onclick="simularPagamentoDev()">
-                                    ⚡ Simular Pagamento
+                                <button type="button" class="btn btn-enterprise btn-secondary btn-xs" onclick="simularPagamentoDev()">
+                                    Simular Pagamento
                                 </button>
                             </div>
                         </div>
@@ -367,7 +367,7 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                     Filtrar
                 </button>
                 <?php if (!empty($jaFiltrado)): ?>
-                    <a href="<?php echo $baseUrl; ?>/portal/carteira#secao-extrato" class="btn btn-enterprise btn-primary btn-sm" title="Limpar filtros">
+                    <a href="<?php echo $baseUrl; ?>/portal/carteira#secao-extrato" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar filtros">
                         Limpar
                     </a>
                 <?php endif; ?>
@@ -687,17 +687,17 @@ $temPixAtivo = !empty($pixAtivo) && ($pixAtivo['segundos_restantes'] ?? 0) > 0;
                     novo_saldo_fmt: data.saldo_fmt
                 });
             } else {
-                alert(data.erro || 'Falha ao simular pagamento.');
+                window.alertaAcao({ titulo: 'Simulação de Pagamento', mensagem: data.erro || 'Falha ao simular pagamento.', tipo: 'danger' });
                 if (btn) {
                     btn.disabled = false;
-                    btn.textContent = '⚡ Simular Pagamento';
+                    btn.textContent = 'Simular Pagamento';
                 }
             }
         } catch (e) {
-            alert('Erro de conexão ao simular.');
+            window.alertaAcao({ titulo: 'Erro de Conexão', mensagem: 'Erro de conexão ao simular.', tipo: 'danger' });
             if (btn) {
                 btn.disabled = false;
-                btn.textContent = '⚡ Simular Pagamento';
+                btn.textContent = 'Simular Pagamento';
             }
         }
     }

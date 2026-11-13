@@ -82,7 +82,7 @@ $isAdmin = ($user['role'] ?? $user['perfil'] ?? '') === 'administrador';
                     Filtrar
                 </button>
                 <?php if (!empty($jaFiltrado)): ?>
-                    <a href="<?php echo $baseUrl; ?>/estoque" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">✕</a>
+                    <a href="<?php echo $baseUrl; ?>/estoque" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros">✕</a>
                 <?php endif; ?>
             </div>
         </form>
@@ -269,12 +269,12 @@ function togglePausaProduto(produtoId, btnElement) {
                 btnElement.querySelector('.status-text').textContent = 'Pausado';
             }
         } else {
-            alert(data.mensagem || 'Falha ao alternar pausa do produto.');
+            window.alertaAcao({ titulo: 'Atualização de Status', mensagem: data.mensagem || 'Falha ao alternar pausa do produto.', tipo: 'warning' });
         }
     })
     .catch(() => {
         btnElement.disabled = false;
-        alert('Erro de comunicação ao alternar pausa do produto.');
+        window.alertaAcao({ titulo: 'Erro de Comunicação', mensagem: 'Erro de comunicação ao alternar pausa do produto.', tipo: 'danger' });
     });
 }
 

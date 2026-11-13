@@ -15,21 +15,6 @@ $totalAntigo = (float)$pedido['valor_total'];
 $corte = $pedido['status_corte'];
 ?>
 
-<style>
-/* Remove terminantemente qualquer seta ou spinner nativo do navegador */
-.input-qtd::-webkit-outer-spin-button,
-.input-qtd::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0 !important;
-    display: none !important;
-}
-.input-qtd {
-    -moz-appearance: textfield !important;
-    appearance: textfield !important;
-    text-align: center !important;
-}
-</style>
-
 <div class="pedido-editar-container">
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
@@ -282,7 +267,7 @@ $corte = $pedido['status_corte'];
                 <button type="button" class="btn btn-enterprise btn-secondary btn-sm" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btn-edicao-confirmar" style="background: #d97706; border-color: #b45309;">
+                <button type="button" class="btn btn-enterprise btn-primary btn-sm" id="btn-edicao-confirmar">
                     Confirmar Inclusão
                 </button>
             </div>
@@ -432,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let current = parseInt(input.value) || 0;
 
             if (current >= max) {
-                alert('Limite máximo disponível em estoque atingido para este item (' + max + ' un).');
+                window.alertaAcao({ titulo: 'Limite de Estoque', mensagem: 'Limite máximo disponível em estoque atingido para este item (' + max + ' un).', tipo: 'warning' });
                 return;
             }
 
@@ -475,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     atualizarEstadoBotoes(produtoPendente.dataset.id);
                     recalcularEdicao();
                 } else {
-                    alert('Item esgotado no estoque.');
+                    window.alertaAcao({ titulo: 'Item Esgotado', mensagem: 'Item esgotado no estoque.', tipo: 'warning' });
                 }
                 produtoPendente = null;
             }

@@ -52,7 +52,7 @@ $csrfField = $csrf_field ?? '';
                     Filtrar
                 </button>
                 <?php if (!empty($jaFiltrado)): ?>
-                    <a href="<?php echo $baseUrl; ?>/admin/turmas" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros">
+                    <a href="<?php echo $baseUrl; ?>/admin/turmas" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros">
                         Limpar
                     </a>
                 <?php endif; ?>

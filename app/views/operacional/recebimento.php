@@ -40,23 +40,23 @@ $podeConferir = (!$jaRecebido && $isHoje);
                     <span class="bullet">●</span> Recebimento Confirmado
                 </span>
             <?php elseif ($isHoje): ?>
-                <span class="badge bg-amber text-dark" style="background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600;">
-                    Aguardando Conferência (Hoje)
+                <span class="status-indicator" style="color: #92400e; background-color: #fef3c7; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                    <span class="bullet">●</span> Aguardando Conferência (Hoje)
                 </span>
             <?php elseif ($isDataPassada): ?>
-                <span class="badge bg-secondary text-dark border" style="font-size: 11px; font-weight: 600; background-color: #f1f5f9;">
-                    Não Conferido na Data (Bloqueado)
+                <span class="status-indicator status-inactive" style="background-color: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                    <span class="bullet">●</span> Não Conferido na Data (Bloqueado)
                 </span>
             <?php else: ?>
-                <span class="badge bg-info text-dark" style="font-size: 11px; font-weight: 600; background-color: #e0f2fe; color: #0369a1;">
-                    Data Futura (Aguardando Entrega)
+                <span class="status-indicator" style="color: #0369a1; background-color: #e0f2fe; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                    <span class="bullet">●</span> Data Futura (Aguardando Entrega)
                 </span>
             <?php endif; ?>
         </div>
     </div>
     <div class="d-flex align-items-center gap-2 flex-wrap">
         <a href="<?php echo $baseUrl; ?>/operacional/corte?data=<?php echo urlencode($dataConsumo); ?>&turno=<?php echo urlencode($turnoConsumo); ?>" 
-           class="btn btn-enterprise btn-primary">
+           class="btn btn-enterprise btn-secondary btn-sm">
             &larr; Painel de Corte
         </a>
     </div>

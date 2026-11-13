@@ -75,7 +75,7 @@ $csrfToken = $csrf_token ?? '';
                 <button type="submit" class="btn btn-enterprise btn-primary btn-sm flex-grow-1" style="height: 31px;">
                     Filtrar
                 </button>
-                <a href="<?php echo $baseUrl; ?>/admin/produtos" class="btn btn-enterprise btn-primary btn-sm" title="Limpar Filtros" style="height: 31px; padding: 0 10px;">
+                <a href="<?php echo $baseUrl; ?>/admin/produtos" class="btn btn-enterprise btn-secondary btn-sm" title="Limpar Filtros" style="height: 31px; padding: 0 10px;">
                     Limpar
                 </a>
             </div>

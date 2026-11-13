@@ -18,7 +18,7 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
     <!-- Bootstrap Compilado Localmente -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/bootstrap.min.css">
     <!-- Design System Institucional e Anti-Slop Guidelines -->
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.6.0'; ?>">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.6.1'; ?>">
 </head>
 <body class="bg-surface d-flex flex-column min-vh-100">
     <!-- Barra Superior Institucional Compacta (56px) -->
@@ -201,52 +201,52 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
                 <div class="row g-2">
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <a href="<?php echo $baseUrl; ?>/portal/carteira" class="btn btn-enterprise btn-primary btn-sm w-100 text-truncate" title="Carteira Familiar & Pix">
-                            💳 Carteira Familiar & Pix
+                            Carteira Familiar &amp; Pix
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <a href="<?php echo $baseUrl; ?>/portal/alergias" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Alergias & Restrições">
-                            🥗 Alergias & Restrições
+                            Alergias &amp; Restrições
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <a href="<?php echo $baseUrl; ?>/admin/importacao-escolar" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Importação Escolar">
-                            📥 Importação Escolar
+                            Importação Escolar
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <a href="<?php echo $baseUrl; ?>/admin/alunos" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Alunos & Matrículas">
-                            🎓 Alunos & Matrículas
+                            Alunos &amp; Matrículas
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/admin/configuracoes" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Configurações Globais">
-                            ⚙️ Configurações
+                            Configurações
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/admin/produtos" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Cardápio & Preços">
-                            🍽️ Cardápio & Preços
+                            Cardápio &amp; Preços
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/admin/categorias" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Categorias">
-                            🏷️ Categorias
+                            Categorias
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/admin/colaboradores" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Colaboradores">
-                            👥 Colaboradores
+                            Colaboradores
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/admin/turmas" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Turmas">
-                            🏫 Turmas
+                            Turmas
                         </a>
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-2">
                         <a href="<?php echo $baseUrl; ?>/login" class="btn btn-enterprise btn-secondary btn-sm w-100 text-truncate" title="Login">
-                            🔐 Acesso / Login
+                            Acesso / Login
                         </a>
                     </div>
                 </div>
@@ -274,6 +274,6 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
 
     <!-- Bootstrap Bundle Local (Vanilla JS) -->
     <script src="<?php echo $baseUrl; ?>/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.6.0'; ?>"></script>
+    <script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.6.1'; ?>"></script>
 </body>
 </html>

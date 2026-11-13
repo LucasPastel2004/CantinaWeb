@@ -83,14 +83,12 @@ class EstoqueWebTest
         $this->assert(!method_exists($controller, 'movimentacoes'), "EstoqueController NÃO possui action 'movimentacoes' (removida conforme solicitação)");
         $this->assert(method_exists($controller, 'perdas'), "EstoqueController possui action 'perdas'");
         $this->assert(method_exists($controller, 'perdasSalvar'), "EstoqueController possui action 'perdasSalvar'");
+        $this->assert(method_exists($controller, 'entrada'), "EstoqueController possui action 'entrada'");
+        $this->assert(method_exists($controller, 'entradaSalvar'), "EstoqueController possui action 'entradaSalvar'");
         $this->assert(method_exists($controller, 'atualizarEstoqueMinimo'), "EstoqueController possui action 'atualizarEstoqueMinimo'");
-        $this->assert(method_exists($controller, 'importarXml'), "EstoqueController possui action 'importarXml'");
-        $this->assert(method_exists($controller, 'importarXmlAnalisar'), "EstoqueController possui action 'importarXmlAnalisar'");
-        $this->assert(method_exists($controller, 'importarXmlProcessar'), "EstoqueController possui action 'importarXmlProcessar'");
-        $this->assert(method_exists($controller, 'importarXmlCancelar'), "EstoqueController possui action 'importarXmlCancelar'");
-        $this->assert(method_exists($controller, 'notasFiscais'), "EstoqueController possui action 'notasFiscais'");
-        $this->assert(method_exists($controller, 'notaFiscalDetalhes'), "EstoqueController possui action 'notaFiscalDetalhes'");
-        $this->assert(method_exists($controller, 'downloadXml'), "EstoqueController possui action 'downloadXml'");
+        $this->assert(!method_exists($controller, 'importarXml'), "EstoqueController NÃO possui action legada 'importarXml'");
+        $this->assert(!method_exists($controller, 'notasFiscais'), "EstoqueController NÃO possui action legada 'notasFiscais'");
+        $this->assert(!method_exists($controller, 'downloadXml'), "EstoqueController NÃO possui action legada 'downloadXml'");
     }
 
     private function testarPermissoesRbac(): void
@@ -110,7 +108,7 @@ class EstoqueWebTest
         $this->assert(RBAC::can('lancamento_perdas') === true, "Perfil 'operador' tem permissão 'lancamento_perdas'");
         $this->assert(RBAC::can('pausa_rapida_produtos') === true, "Perfil 'operador' tem permissão 'pausa_rapida_produtos'");
         $this->assert(RBAC::can('login_painel_cantina') === true, "Perfil 'operador' tem permissão 'login_painel_cantina'");
-        $this->assert(RBAC::can('entrada_xml_nfe') === false, "Perfil 'operador' NÃO tem permissão 'entrada_xml_nfe'");
+        $this->assert(RBAC::can('cadastro_produtos_precos') === false, "Perfil 'operador' NÃO tem permissão administrativa 'cadastro_produtos_precos'");
 
         // 2. Administrador tem acesso pleno
         Auth::loginUsuario([
@@ -122,7 +120,7 @@ class EstoqueWebTest
         ]);
         $this->assert(RBAC::can('lancamento_perdas') === true, "Perfil 'administrador' tem permissão 'lancamento_perdas'");
         $this->assert(RBAC::can('pausa_rapida_produtos') === true, "Perfil 'administrador' tem permissão 'pausa_rapida_produtos'");
-        $this->assert(RBAC::can('entrada_xml_nfe') === true, "Perfil 'administrador' tem permissão 'entrada_xml_nfe'");
+        $this->assert(RBAC::can('entrada_xml_nfe') === false, "Permissão legada 'entrada_xml_nfe' removida do RBAC");
         $this->assert(RBAC::can('cadastro_produtos_precos') === true, "Perfil 'administrador' tem permissão 'cadastro_produtos_precos'");
 
         // 3. Responsável é bloqueado em todas as ações de estoque
@@ -137,7 +135,7 @@ class EstoqueWebTest
         ]);
         $this->assert(RBAC::can('lancamento_perdas') === false, "Perfil 'responsavel' é bloqueado para 'lancamento_perdas'");
         $this->assert(RBAC::can('pausa_rapida_produtos') === false, "Perfil 'responsavel' é bloqueado para 'pausa_rapida_produtos'");
-        $this->assert(RBAC::can('entrada_xml_nfe') === false, "Perfil 'responsavel' é bloqueado para 'entrada_xml_nfe'");
+        $this->assert(RBAC::can('cadastro_produtos_precos') === false, "Perfil 'responsavel' é bloqueado para 'cadastro_produtos_precos'");
 
         Auth::logout();
     }
@@ -172,11 +170,17 @@ class EstoqueWebTest
         $views = [
             'app/views/estoque/index.php' => ['Controle de Estoque & Saldos Físicos', 'Grade de Produtos & Inventário Físico', 'Total de Itens'],
             'app/views/estoque/perdas.php' => ['Registro Operacional de Perdas & Descarte', 'Nova Baixa de Mercadoria', 'formPerda'],
-            'app/views/estoque/entrada.php' => ['Entrada de Estoque', 'fornecedor', 'btnGravarLote'],
-            'app/views/estoque/conferir_xml.php' => ['Conferência de Entrada', 'fator_conversao', 'btnConfirmarEntrada'],
-            'app/views/estoque/notas_fiscais.php' => ['Notas Fiscais de Entrada (NF-e)', 'Total de Notas'],
-            'app/views/estoque/nota_fiscal_detalhes.php' => ['Detalhamento da NF-e', 'Baixar XML Original', 'Voltar às Notas Fiscais']
+            'app/views/estoque/entrada.php' => ['Entrada de Estoque', 'fornecedor', 'btnGravarLote']
         ];
+
+        $viewsXmlRemovidas = [
+            'app/views/estoque/conferir_xml.php',
+            'app/views/estoque/notas_fiscais.php',
+            'app/views/estoque/nota_fiscal_detalhes.php',
+        ];
+        foreach ($viewsXmlRemovidas as $relXml) {
+            $this->assert(!file_exists(__DIR__ . '/../' . $relXml), "Visão legada de XML {$relXml} foi removida");
+        }
 
         $movimentacoesView = __DIR__ . '/../app/views/estoque/movimentacoes.php';
         $this->assert(!file_exists($movimentacoesView), "Visão app/views/estoque/movimentacoes.php foi excluída com sucesso");

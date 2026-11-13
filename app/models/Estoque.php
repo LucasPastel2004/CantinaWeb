@@ -193,114 +193,6 @@ class Estoque extends Model
     }
 
     /**
-     * Processa atomicamente a entrada física de mercadorias a partir de uma NF-e importada
-     * 
-     * @param int $notaFiscalId ID do cabeçalho da NF-e
-     * @param array $itensMapeados Array com [codigo_fornecedor, descricao_fornecedor, unidade_fornecedor, quantidade_fornecedor, valor_unitario_fornecedor, produto_id, fator_conversao]
-     * @param int $operadorId ID do usuário que processou a importação
-     * @return bool
-     * @throws \DomainException Se houver inconsistências nos dados
-     */
-    public static function darEntradaXml(int $notaFiscalId, array $itensMapeados, int $operadorId): bool
-    {
-        $pdo = self::getConnection();
-        $pdo->beginTransaction();
-
-        try {
-            $nota = NotaFiscal::buscarPorId($notaFiscalId);
-            if (!$nota) {
-                throw new \DomainException("Nota fiscal #{$notaFiscalId} não encontrada.");
-            }
-
-            $totalUnidadesAdicionadas = 0;
-            $now = date('Y-m-d H:i:s');
-
-            foreach ($itensMapeados as $item) {
-                $produtoId = (int)($item['produto_id'] ?? 0);
-                if ($produtoId <= 0) {
-                    throw new \DomainException("Produto interno obrigatório não informado para o item '{$item['descricao_fornecedor']}'.");
-                }
-
-                $produto = Produto::buscarPorId($produtoId);
-                if (!$produto) {
-                    throw new \DomainException("Produto interno #{$produtoId} não localizado no cadastro.");
-                }
-
-                $qtdFornecedor = (float)($item['quantidade_fornecedor'] ?? 0);
-                $fatorConversao = max(1, (int)($item['fator_conversao'] ?? 1));
-                $qtdConvertida = (int)ceil($qtdFornecedor * $fatorConversao);
-
-                if ($qtdConvertida <= 0) {
-                    throw new \DomainException("A quantidade convertida para o produto '{$produto['descricao']}' deve ser maior que zero.");
-                }
-
-                // 1. Grava o item mapeado em itens_nota_fiscal_xml
-                ItemNotaFiscal::criar([
-                    'nota_fiscal_id'            => $notaFiscalId,
-                    'codigo_produto_fornecedor' => $item['codigo_produto_fornecedor'],
-                    'descricao_fornecedor'      => $item['descricao_fornecedor'],
-                    'unidade_fornecedor'        => $item['unidade_fornecedor'],
-                    'quantidade_fornecedor'     => $qtdFornecedor,
-                    'valor_unitario_fornecedor' => (float)$item['valor_unitario_fornecedor'],
-                    'produto_id'                => $produtoId,
-                    'fator_conversao'           => $fatorConversao,
-                    'quantidade_convertida'     => $qtdConvertida
-                ]);
-
-                // 2. Incrementa o saldo físico em produtos.estoque_atual
-                $sqlUpd = "UPDATE produtos 
-                           SET estoque_atual = estoque_atual + :qtd, 
-                               updated_at = :upd,
-                               updated_by = :user
-                           WHERE id = :prod_id";
-                self::execute($sqlUpd, [
-                    'qtd'     => $qtdConvertida,
-                    'upd'     => $now,
-                    'user'    => $operadorId,
-                    'prod_id' => $produtoId
-                ]);
-
-                // 3. Registra a movimentação física em estoque_movimentacoes
-                $sqlMov = "INSERT INTO estoque_movimentacoes (
-                               produto_id, tipo_movimentacao, quantidade, nota_fiscal_id,
-                               operador_id, justificativa, created_at
-                           ) VALUES (
-                               :produto_id, 'entrada_xml', :quantidade, :nota_fiscal_id,
-                               :operador_id, :justificativa, :created_at
-                           )";
-                self::execute($sqlMov, [
-                    'produto_id'     => $produtoId,
-                    'quantidade'     => $qtdConvertida,
-                    'nota_fiscal_id' => $notaFiscalId,
-                    'operador_id'    => $operadorId,
-                    'justificativa'  => "Entrada via NF-e nº {$nota['numero_nota']} (Fator {$fatorConversao}x)",
-                    'created_at'     => $now
-                ]);
-
-                $totalUnidadesAdicionadas += $qtdConvertida;
-            }
-
-            // 4. Trilha de Auditoria
-            Auditoria::registrar(
-                $operadorId,
-                'entrada_xml_nfe',
-                'notas_fiscais_xml',
-                $notaFiscalId,
-                "Importação de NF-e nº {$nota['numero_nota']} do emitente {$nota['razao_social_emitente']} — {$totalUnidadesAdicionadas} unidades adicionadas ao estoque.",
-                $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
-            );
-
-            $pdo->commit();
-            return true;
-        } catch (\Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            throw $e;
-        }
-    }
-
-    /**
      * Registra atomicamente a baixa de perda de estoque com motivo obrigatório e auditoria (RN-15)
      * 
      * @param int $produtoId
@@ -395,7 +287,7 @@ class Estoque extends Model
                 'produtos',
                 $produtoId,
                 "Baixa de {$quantidade} un de '{$produto['descricao']}' por motivo: {$motivoNome}. Justificativa: {$justificativaLimpa}",
-                $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                self::getClientIp()
             );
 
             if ($iniciouTransacao) {
@@ -481,9 +373,11 @@ class Estoque extends Model
 
         $limiteEfetivo = $limit ?? (!empty($filtros['limite']) ? (int)$filtros['limite'] : null);
         if ($limiteEfetivo !== null && $limiteEfetivo > 0) {
-            $sql .= " LIMIT " . (int)$limiteEfetivo;
+            $limiteClamp = max(1, min(10000, $limiteEfetivo));
+            $sql .= " LIMIT " . $limiteClamp;
             if ($offset !== null && $offset >= 0) {
-                $sql .= " OFFSET " . (int)$offset;
+                $offsetClamp = max(0, min(1000000, (int)$offset));
+                $sql .= " OFFSET " . $offsetClamp;
             }
         }
 
@@ -653,7 +547,7 @@ class Estoque extends Model
                     'produtos',
                     $produtoId,
                     "Entrada manual em lote de {$quantidade} un de '{$produto['descricao']}' (Fornecedor: {$fornecedorLimpo}). Justificativa: {$justificativaBase}",
-                    $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                    self::getClientIp()
                 );
             }
 
@@ -788,7 +682,7 @@ class Estoque extends Model
                 'produtos',
                 $produtoId,
                 "Entrada manual de {$quantidade} un de '{$produto['descricao']}' (Fornecedor: {$fornecedorLimpo}). Justificativa: {$justificativa}",
-                $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                self::getClientIp()
             );
 
             if ($iniciouTransacao) {
@@ -808,6 +702,7 @@ class Estoque extends Model
      */
     public static function listarEntradasRecentes(int $limite = 20): array
     {
+        $limiteClamp = max(1, min(1000, $limite));
         $sql = "SELECT em.*,
                        p.codigo_interno AS produto_codigo,
                        p.descricao AS produto_descricao,
@@ -819,7 +714,7 @@ class Estoque extends Model
                 INNER JOIN usuarios u ON u.id = em.operador_id
                 WHERE em.tipo_movimentacao IN ('entrada_fornecedor', 'entrada_xml', 'aproveitamento_sobra')
                 ORDER BY em.created_at DESC
-                LIMIT " . (int)$limite;
+                LIMIT " . $limiteClamp;
 
         return self::fetchAll($sql);
     }

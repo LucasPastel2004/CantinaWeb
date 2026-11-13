@@ -296,7 +296,7 @@ class TicketsController extends Controller
 
         $user = Auth::user();
         $operadorId = (int)($user['id'] ?? 1);
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ip = Auth::getClientIp();
 
         try {
             $ticketAtualizado = Ticket::reimprimirSegundaVia($ticketId, $operadorId, $justificativa, $ip);

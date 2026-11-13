@@ -157,7 +157,7 @@ foreach ($testFiles as $tf) {
     exec("php " . escapeshellarg($tf) . " 2>&1", $tOut, $tRet);
     $outStr = implode("\n", $tOut);
     // Verificar se houve falha ou retorno != 0
-    if ($tRet !== 0 || str_contains($outStr, '[FAIL]') || str_contains($outStr, 'Falhas Encontradas   : [1-9]') || str_contains($outStr, 'Fatal error') || str_contains($outStr, 'Parse error')) {
+    if ($tRet !== 0 || str_contains($outStr, '[FAIL]') || preg_match('/Falhas Encontradas\s*:\s*[1-9]/i', $outStr) || str_contains($outStr, 'Fatal error') || str_contains($outStr, 'Parse error')) {
         echo "  [FALHA] $tName (ret: $tRet)\n";
         // Mostrar últimas 5 linhas do output
         $lastLines = array_slice($tOut, -6);
@@ -181,4 +181,9 @@ if (!empty($failedList)) {
 echo "\n=======================================================\n";
 echo "   AUDITORIA CONCLUÍDA EM " . round(microtime(true) - $start, 2) . "s\n";
 echo "=======================================================\n";
+
+if ($failedSuites > 0 || $syntaxErrors > 0 || !empty($routeIssues)) {
+    exit(1);
+}
+
 

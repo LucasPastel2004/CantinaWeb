@@ -37,7 +37,7 @@ class WebhookController extends Controller
         // 1. Validação de autenticidade e assinatura do webhook
         if (!PixService::validarWebhook($headers, $rawBody, $queryToken)) {
             $this->registrarLogSeguranca('webhook_pix_invalido', [
-                'ip'      => $_SERVER['REMOTE_ADDR'] ?? 'desconhecido',
+                'ip'      => Auth::getClientIp(),
                 'headers' => $headers,
                 'motivo'  => 'Assinatura ou token de webhook inválido.'
             ]);
@@ -230,7 +230,7 @@ class WebhookController extends Controller
         // 1. Validação de autenticidade da notificação bancária
         if (!PixService::validarWebhook($headers, $rawBody, $queryToken)) {
             $this->registrarLogSeguranca('webhook_med_invalido', [
-                'ip'      => $_SERVER['REMOTE_ADDR'] ?? 'desconhecido',
+                'ip'      => Auth::getClientIp(),
                 'headers' => $headers,
                 'motivo'  => 'Assinatura ou token de webhook inválido para devolução MED.'
             ]);

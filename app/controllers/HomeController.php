@@ -68,7 +68,7 @@ class HomeController extends Controller
                 if (!is_dir(dirname($lockFile))) {
                     @mkdir(dirname($lockFile), 0755, true);
                 }
-                @file_put_contents($lockFile, (string)$now);
+                @file_put_contents($lockFile, (string)$now, LOCK_EX);
             }
         }
 
@@ -97,77 +97,5 @@ class HomeController extends Controller
             ],
             'timestamp'   => date('Y-m-d H:i:s')
         ]);
-    }
-
-    /**
-     * Rota de teste para verificação de parâmetros dinâmicos na URL
-     */
-    public function testeParametro(array $params): void
-    {
-        $configFile = __DIR__ . '/../../config/config.php';
-        $config = file_exists($configFile) ? require $configFile : [];
-        if (($config['app']['env'] ?? 'development') === 'production') {
-            $this->json(['sucesso' => false, 'erro' => 'Não encontrado.'], 404);
-            return;
-        }
-
-        $id = $params['id'] ?? 'indefinido';
-        $this->json([
-            'sucesso'   => true,
-            'mensagem'  => "Parâmetro dinâmico capturado com sucesso pelo Router.",
-            'parametro' => $id,
-            'timestamp' => date('Y-m-d H:i:s')
-        ]);
-    }
-
-    /**
-     * Rota de teste para submissão POST e validação de token CSRF
-     */
-    public function testeCsrf(): void
-    {
-        $configFile = __DIR__ . '/../../config/config.php';
-        $config = file_exists($configFile) ? require $configFile : [];
-        if (($config['app']['env'] ?? 'development') === 'production') {
-            $this->json(['sucesso' => false, 'erro' => 'Não encontrado.'], 404);
-            return;
-        }
-
-        $dados = $this->all();
-
-        $valido = $this->validate($dados, [
-            'csrf_token' => 'required|csrf',
-            'nome'       => 'required|min:3'
-        ]);
-
-        if (!$valido) {
-            $this->json([
-                'sucesso' => false,
-                'erros'   => $this->getValidationErrors()
-            ], 422);
-            return;
-        }
-
-        $this->json([
-            'sucesso'  => true,
-            'mensagem' => 'Validação CSRF executada com sucesso absoluto!',
-            'dados_recebidos' => [
-                'nome' => $dados['nome']
-            ]
-        ]);
-    }
-
-    /**
-     * Rota de teste para simulação de erro não tratado e validação de contingência
-     */
-    public function testeErro(): void
-    {
-        $configFile = __DIR__ . '/../../config/config.php';
-        $config = file_exists($configFile) ? require $configFile : [];
-        if (($config['app']['env'] ?? 'development') === 'production') {
-            $this->redirect('/login');
-            return;
-        }
-
-        throw new \RuntimeException("Erro de simulação intencional para validação da contingência do ErrorHandler.");
     }
 }

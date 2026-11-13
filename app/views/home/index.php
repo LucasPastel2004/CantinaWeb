@@ -18,7 +18,7 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
     <!-- Bootstrap Compilado Localmente -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/bootstrap.min.css">
     <!-- Design System Institucional e Anti-Slop Guidelines -->
-    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.5.0'; ?>">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/custom.css?v=<?php echo $assetVersion ?? '7.6.0'; ?>">
 </head>
 <body class="bg-surface d-flex flex-column min-vh-100">
     <!-- Barra Superior Institucional Compacta (56px) -->
@@ -119,37 +119,53 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
             </div>
         </div>
 
-        <!-- Seção Bento Grid: Testes e Validação Interativa -->
+        <!-- Seção Bento Grid: Acessos Operacionais e Diagnóstico -->
         <div class="card-enterprise mb-4">
             <div class="card-enterprise-header">
                 <div>
-                    <span class="fw-semibold" style="font-size: 13px; color: var(--text-main);">Validação Interativa do Núcleo Arquitetural</span>
-                    <span class="text-microcopy d-block">Aferição de integridade em tempo real dos serviços fundamentais</span>
+                    <span class="fw-semibold" style="font-size: 13px; color: var(--text-main);">Acessos Rápidos do Sistema</span>
+                    <span class="text-microcopy d-block">Portais autenticados e endpoint oficial de status da aplicação</span>
                 </div>
             </div>
 
             <div class="row g-3">
-                <!-- Bento Item 1: Rota Dinâmica -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-4">
                     <div class="bento-card">
                         <div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="stat-strip-label">Roteamento</span>
-                                <code class="code-tag">GET</code>
+                                <span class="stat-strip-label">Portal da Família</span>
+                                <code class="code-tag">WEB</code>
                             </div>
-                            <h3 class="h2-title mb-1" style="font-size: 13px;">Parâmetro Dinâmico</h3>
+                            <h3 class="h2-title mb-1" style="font-size: 13px;">Acesso de Responsáveis</h3>
                             <p class="text-secondary-label mb-3" style="font-size: 12px; line-height: 1.4;">
-                                Captura de parâmetros dinâmicos na URL com tipagem e injeção no controlador.
+                                Portal autenticado para recarga Pix, consulta de saldo e agendamento de lanches.
                             </p>
                         </div>
-                        <a href="<?php echo $baseUrl; ?>/teste/1542" target="_blank" class="btn-enterprise btn-secondary btn-sm w-100">
-                            Testar Rota (/teste/1542) ↗
+                        <a href="<?php echo $baseUrl; ?>/portal" class="btn-enterprise btn-primary btn-sm w-100">
+                            Abrir Portal da Família ↗
                         </a>
                     </div>
                 </div>
 
-                <!-- Bento Item 2: Resposta JSON -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-4">
+                    <div class="bento-card">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="stat-strip-label">Painel Interno</span>
+                                <code class="code-tag">ADMIN</code>
+                            </div>
+                            <h3 class="h2-title mb-1" style="font-size: 13px;">Painel Operacional da Cantina</h3>
+                            <p class="text-secondary-label mb-3" style="font-size: 12px; line-height: 1.4;">
+                                Área operacional de atendimento, PDV, estoque, caixa e relatórios gerenciais.
+                            </p>
+                        </div>
+                        <a href="<?php echo $baseUrl; ?>/admin" class="btn-enterprise btn-secondary btn-sm w-100">
+                            Abrir Painel da Cantina ↗
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
                     <div class="bento-card">
                         <div>
                             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -163,109 +179,6 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
                         </div>
                         <a href="<?php echo $baseUrl; ?>/api/status" target="_blank" class="btn-enterprise btn-secondary btn-sm w-100">
                             Abrir Endpoint (/api/status) ↗
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Bento Item 3: Formulário POST e CSRF -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="bento-card">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="stat-strip-label">Segurança</span>
-                                <code class="code-tag">POST</code>
-                            </div>
-                            <h3 class="h2-title mb-1" style="font-size: 13px;">Validação CSRF</h3>
-                            <p class="text-secondary-label mb-2" style="font-size: 12px; line-height: 1.4;">
-                                Submissão segura com verificação criptográfica estrita contra falsificação.
-                            </p>
-                            <form action="<?php echo $baseUrl; ?>/teste-csrf" method="POST" target="_blank" id="form-csrf-teste">
-                                <?php echo $csrf_field; ?>
-                                <input type="hidden" name="nome" value="Operador Homologado">
-                                <button type="submit" class="btn-enterprise btn-primary btn-sm w-100 mt-2">
-                                    Submeter POST Seguro ↗
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bento Item 4: Simulação de Contingência -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="bento-card">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="stat-strip-label">Auditoria</span>
-                                <code class="code-tag">500</code>
-                            </div>
-                            <h3 class="h2-title mb-1" style="font-size: 13px;">Contingência de Erro</h3>
-                            <p class="text-secondary-label mb-3" style="font-size: 12px; line-height: 1.4;">
-                                Simulação de exceção não tratada com interceptação e gravação em disco.
-                            </p>
-                        </div>
-                        <a href="<?php echo $baseUrl; ?>/teste-erro" target="_blank" class="btn-enterprise btn-danger btn-sm w-100">
-                            Disparar Erro de Teste ↗
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção de Demonstração da Fase 5: Identidade Visual e Layouts Base -->
-        <div class="card-enterprise mb-4">
-            <div class="card-enterprise-header">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="fw-semibold" style="font-size: 13px; color: var(--text-main);">Fase 5 — Identidade Visual Institucional e Layouts Base</span>
-                    <span class="status-indicator status-success"><span class="bullet" aria-hidden="true">●</span> Concluída</span>
-                </div>
-                <span class="text-microcopy">docs/DESIGN.md</span>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="border rounded p-3 bg-white h-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <strong style="font-size: 13px;">Portal da Família</strong>
-                                <code class="code-tag" style="font-size: 10px;">Responsáveis</code>
-                            </div>
-                            <p class="text-muted" style="font-size: 12px; line-height: 1.4;">
-                                Layout completo para pais e responsáveis com saldo familiar em destaque, dependentes vinculados e agendamentos.
-                            </p>
-                        </div>
-                        <a href="<?php echo $baseUrl; ?>/design/portal" class="btn btn-enterprise btn-primary btn-sm w-100">
-                            Ver Portal da Família ↗
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="border rounded p-3 bg-white h-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <strong style="font-size: 13px;">Painel da Cantina</strong>
-                                <code class="code-tag" style="font-size: 10px;">Sidebar 240px</code>
-                            </div>
-                            <p class="text-muted" style="font-size: 12px; line-height: 1.4;">
-                                Layout operacional com barra lateral de alta densidade, topbar com badge de turno e consolidação de salgados.
-                            </p>
-                        </div>
-                        <a href="<?php echo $baseUrl; ?>/design/admin" class="btn btn-enterprise btn-primary btn-sm w-100">
-                            Ver Painel da Cantina ↗
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="border rounded p-3 bg-white h-100 d-flex flex-column justify-content-between">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <strong style="font-size: 13px;">Galeria de Componentes</strong>
-                                <span class="status-indicator status-neutral"><span class="bullet" aria-hidden="true">●</span> Anti-Slop</span>
-                            </div>
-                            <p class="text-muted" style="font-size: 12px; line-height: 1.4;">
-                                Demonstração de alertas acessíveis, modais corporativos, empty states, loading states e botões táteis.
-                            </p>
-                        </div>
-                        <a href="<?php echo $baseUrl; ?>/design/components" class="btn btn-enterprise btn-secondary btn-sm w-100">
-                            Ver Componentes ↗
                         </a>
                     </div>
                 </div>
@@ -361,6 +274,6 @@ $shortCsrf = substr($csrfToken ?? '', 0, 16) . '...';
 
     <!-- Bootstrap Bundle Local (Vanilla JS) -->
     <script src="<?php echo $baseUrl; ?>/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.5.0'; ?>"></script>
+    <script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.6.0'; ?>"></script>
 </body>
 </html>

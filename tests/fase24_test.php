@@ -435,9 +435,10 @@ class Fase24Test
         $this->assert(str_contains($sidebarHtml, '/financeiro/despesas'), "Link para 'Despesas da Cantina' presente na sidebar.");
         $this->assert(str_contains($sidebarHtml, '/financeiro/dre'), "Link para 'DRE Gerencial' presente na sidebar.");
 
-        $hubHtml = file_get_contents(__DIR__ . '/../app/views/relatorios/index.php');
-        $this->assert(str_contains($hubHtml, 'DRE Gerencial & Despesas'), "Card oficial 'DRE Gerencial & Despesas' presente na Central de Relatórios.");
-        $this->assert(str_contains($hubHtml, '/financeiro/dre'), "Link para /financeiro/dre presente no card do Hub.");
+        $sidebarHtml = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
+        $this->assert(!file_exists(__DIR__ . '/../app/views/relatorios/index.php'), "View órfã relatorios/index.php foi removida.");
+        $this->assert(str_contains($sidebarHtml, 'DRE Gerencial'), "Item oficial 'DRE Gerencial' presente na Sidebar.");
+        $this->assert(str_contains($sidebarHtml, '/financeiro/dre'), "Link para /financeiro/dre presente na Sidebar.");
     }
 }
 

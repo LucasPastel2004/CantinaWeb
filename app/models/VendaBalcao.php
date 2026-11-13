@@ -375,9 +375,10 @@ class VendaBalcao extends Model
             $params['sessao_id'] = $sessaoCaixaId;
         }
 
+        $limiteSeguro = max(1, min(500, $limite));
         $sql .= "
             ORDER BY vb.id DESC
-            LIMIT {$limite}
+            LIMIT {$limiteSeguro}
         ";
 
         return self::fetchAll($sql, $params);

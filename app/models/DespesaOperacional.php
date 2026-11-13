@@ -81,6 +81,7 @@ class DespesaOperacional extends Model
     public function criar(array $dados, ?int $usuarioId = null): int
     {
         $this->validarDados($dados);
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
 
         $pdo = self::getConnection();
         $sql = "INSERT INTO `despesas_operacionais` (
@@ -118,6 +119,7 @@ class DespesaOperacional extends Model
     public function atualizar(int $id, array $dados, ?int $usuarioId = null): bool
     {
         $this->validarDados($dados, true);
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
 
         $pdo = self::getConnection();
         $sql = "UPDATE `despesas_operacionais` SET
@@ -158,6 +160,7 @@ class DespesaOperacional extends Model
      */
     public function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $pdo = self::getConnection();
         $stmt = $pdo->prepare("UPDATE `despesas_operacionais` SET `deleted_at` = NOW(), `updated_by` = :uid WHERE `id` = :id AND `deleted_at` IS NULL");
         return $stmt->execute([
@@ -188,6 +191,7 @@ class DespesaOperacional extends Model
      */
     public function marcarComoPaga(int $id, ?string $dataPagamento = null, ?string $formaPagamento = null, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $pdo = self::getConnection();
         $dataPagamento = $dataPagamento ?: date('Y-m-d');
         
@@ -245,12 +249,14 @@ class DespesaOperacional extends Model
             $params[':busca_sub']  = $buscaTerm;
         }
 
+        $limiteSeguro = max(1, min(1000, $limite));
+        $offsetSeguro = max(0, $offset);
         $sql = "SELECT d.*, u.nome AS criado_por_nome
                 FROM `despesas_operacionais` d
                 LEFT JOIN `usuarios` u ON d.created_by = u.id
                 WHERE " . implode(' AND ', $where) . "
                 ORDER BY d.competencia_mes_ano DESC, d.data_vencimento ASC, d.id DESC
-                LIMIT {$limite} OFFSET {$offset}";
+                LIMIT {$limiteSeguro} OFFSET {$offsetSeguro}";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);

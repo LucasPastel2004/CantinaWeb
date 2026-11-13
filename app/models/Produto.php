@@ -267,7 +267,8 @@ class Produto extends Model
 
         $sql = "UPDATE produtos SET " . implode(', ', $campos) . " WHERE id = :id AND deleted_at IS NULL";
 
-        $sucesso = self::execute($sql, $params) >= 0;
+        $afetadas = self::execute($sql, $params);
+        $sucesso = ($afetadas > 0) || (self::buscarPorId($id) !== null);
 
         if ($sucesso) {
             self::syncAlergenos($id, $alergenosIds);

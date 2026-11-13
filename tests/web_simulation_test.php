@@ -64,18 +64,17 @@ $jsonApi = json_decode($outputApi, true);
 $passouApi = isset($jsonApi['status']) && $jsonApi['status'] === 'online' && isset($jsonApi['mvc_core']);
 echo "2. Rota GET /api/status -> " . ($passouApi ? "SUCESSO (JSON Válido retornado)" : "FALHA") . PHP_EOL;
 
-// 3. Teste de Rota Dinâmica /teste/555
-$codeDinamica = '
+// 3. Teste das Rotas de Debug Removidas (/teste/555 e /teste-erro devem retornar 404)
+$codeRotaRemovida = '
 $_SERVER["REQUEST_METHOD"] = "GET";
 $_SERVER["REQUEST_URI"] = "/teste/555";
 $_SERVER["SCRIPT_NAME"] = "/index.php";
 $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
 require "index.php";
 ';
-$outputDinamica = shell_exec("php -r " . escapeshellarg($codeDinamica));
-$jsonDinamica = json_decode($outputDinamica, true);
-$passouDinamica = isset($jsonDinamica['parametro']) && $jsonDinamica['parametro'] === '555';
-echo "3. Rota GET /teste/555 -> " . ($passouDinamica ? "SUCESSO (Parâmetro 555 recebido)" : "FALHA") . PHP_EOL;
+$outputRotaRemovida = shell_exec("php -r " . escapeshellarg($codeRotaRemovida));
+$passouRemovida = str_contains($outputRotaRemovida, '404 — Página Não Encontrada');
+echo "3. Rota Debug Removida /teste/555 -> " . ($passouRemovida ? "SUCESSO (Bloqueada com 404)" : "FALHA") . PHP_EOL;
 
 // 4. Teste de Rota 404 /pagina-inexistente
 $code404 = '
@@ -89,19 +88,27 @@ $output404 = shell_exec("php -r " . escapeshellarg($code404));
 $passou404 = str_contains($output404, '404 — Página Não Encontrada');
 echo "4. Rota Inexistente /pagina-inexistente -> " . ($passou404 ? "SUCESSO (Tela 404 apresentada)" : "FALHA") . PHP_EOL;
 
-// 5. Teste de Simulação de Erro /teste-erro
-$codeErro = '
+// 5. Teste da Rota Pública /login com Token CSRF e Handler 500 Seguro
+$codeLogin = '
 $_SERVER["REQUEST_METHOD"] = "GET";
-$_SERVER["REQUEST_URI"] = "/teste-erro";
+$_SERVER["REQUEST_URI"] = "/login";
 $_SERVER["SCRIPT_NAME"] = "/index.php";
 $_SERVER["REMOTE_ADDR"] = "127.0.0.1";
 require "index.php";
 ';
-$outputErro = shell_exec("php -r " . escapeshellarg($codeErro));
-$passouErro = str_contains($outputErro, 'Ocorreu uma falha no processamento') && str_contains($outputErro, 'Identificador do Incidente:');
-echo "5. Rota GET /teste-erro -> " . ($passouErro ? "SUCESSO (Tela segura 500 apresentada com código UUID)" : "FALHA") . PHP_EOL;
+$outputLogin = shell_exec("php -r " . escapeshellarg($codeLogin));
+$passouLogin = str_contains($outputLogin, 'csrf_token') && str_contains($outputLogin, 'Portal da Família');
 
-if ($passouHome && $passouApi && $passouDinamica && $passou404 && $passouErro) {
+$codeHandler500 = '
+define("CANTINA_SISTEMA", true);
+require "app/core/ErrorHandler.php";
+\App\Core\ErrorHandler::handleException(new \RuntimeException("Erro simulado controlado em teste"));
+';
+$outputHandler500 = shell_exec("php -r " . escapeshellarg($codeHandler500));
+$passouErro = str_contains($outputHandler500, 'Ocorreu uma falha no processamento') && str_contains($outputHandler500, 'Identificador do Incidente:');
+echo "5. Rota GET /login (CSRF) e ErrorHandler 500 -> " . (($passouLogin && $passouErro) ? "SUCESSO (Login CSRF + Tela 500 segura com UUID)" : "FALHA") . PHP_EOL;
+
+if ($passouHome && $passouApi && $passouRemovida && $passou404 && $passouLogin && $passouErro) {
     echo PHP_EOL . "STATUS: TODAS AS 5 SIMULAÇÕES WEB PASSARAM COM SUCESSO!" . PHP_EOL;
     exit(0);
 } else {

@@ -67,14 +67,17 @@ foreach ($arquivosAdmin as $arq => $tag) {
     assertCustom(str_contains($conteudo, $tag), "$arq utiliza interceptador corporativo declarativo $tag");
 }
 
-// 5. Verificar módulos de Estoque (perdas, conferir_xml)
+// 5. Verificar módulos de Estoque (perdas, entrada) e blindagem XSS em app.js
 $perdasPhp = file_get_contents(__DIR__ . '/../app/views/estoque/perdas.php');
 assertCustom(!str_contains($perdasPhp, "return confirm("), 'estoque/perdas.php não possui chamada nativa confirm()');
 assertCustom(str_contains($perdasPhp, "window.confirmarAcao({"), 'estoque/perdas.php invoca window.confirmarAcao');
 
-$conferirXmlPhp = file_get_contents(__DIR__ . '/../app/views/estoque/conferir_xml.php');
-assertCustom(!str_contains($conferirXmlPhp, "onclick=\"return confirm("), 'estoque/conferir_xml.php não possui onclick com confirm()');
-assertCustom(str_contains($conferirXmlPhp, "data-confirm="), 'estoque/conferir_xml.php utiliza data-confirm nos botões de cancelar');
+$entradaPhp = file_get_contents(__DIR__ . '/../app/views/estoque/entrada.php');
+assertCustom(!str_contains($entradaPhp, "return confirm("), 'estoque/entrada.php não possui chamada nativa confirm()');
+assertCustom(str_contains($entradaPhp, "window.confirmarAcao({"), 'estoque/entrada.php invoca window.confirmarAcao');
+assertCustom(str_contains($entradaPhp, "html: true"), 'estoque/entrada.php declara html: true explicitamente com escapeHtml');
+assertCustom(!file_exists(__DIR__ . '/../app/views/estoque/conferir_xml.php'), 'View obsoleta estoque/conferir_xml.php foi removida');
+assertCustom(str_contains($appJs, 'window.escapeHtml') && str_contains($appJs, 'options.html === true'), 'assets/js/app.js usa textContent por padrão e exige options.html === true para HTML');
 
 // 6. Varredura recursiva de segurança: NENHUM arquivo PHP ou JS além de app.js pode chamar confirm()
 $viewFiles = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__ . '/../app/views'));

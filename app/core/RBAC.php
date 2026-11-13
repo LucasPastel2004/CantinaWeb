@@ -45,7 +45,6 @@ class RBAC
         'lancamento_perdas'           => [self::ROLE_OPERADOR, self::ROLE_ADMINISTRADOR],
         'pausa_rapida_produtos'       => [self::ROLE_OPERADOR, self::ROLE_ADMINISTRADOR],
         'cadastro_produtos_precos'    => [self::ROLE_ADMINISTRADOR],
-        'entrada_xml_nfe'             => [self::ROLE_ADMINISTRADOR],
         'importacao_planilha_escolar' => [self::ROLE_ADMINISTRADOR],
         'gestao_calendario_letivo'    => [self::ROLE_ADMINISTRADOR],
         'ajuste_manual_saldo'         => [self::ROLE_ADMINISTRADOR],

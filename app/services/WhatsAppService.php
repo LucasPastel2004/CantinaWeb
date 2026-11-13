@@ -134,7 +134,7 @@ class WhatsAppService
                     $code ?? 'N/A',
                     $mensagem
                 );
-                @file_put_contents($logPath, $logEntry, FILE_APPEND);
+                @file_put_contents($logPath, $logEntry, FILE_APPEND | LOCK_EX);
             }
             return true;
         }

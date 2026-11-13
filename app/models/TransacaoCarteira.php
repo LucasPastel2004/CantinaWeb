@@ -569,7 +569,7 @@ class TransacaoCarteira extends Model
 
         // 4. Registro compulsório em logs_auditoria
         try {
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = self::getClientIp();
             self::execute(
                 "INSERT INTO logs_auditoria (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
                  VALUES (:operador_id, :acao, :tabela_afetada, :registro_id, :justificativa, :ip, NOW())",
@@ -587,7 +587,7 @@ class TransacaoCarteira extends Model
         // 5. Trilha em logs_seguranca
         try {
             $resp = Responsavel::buscarPorId($responsavelId);
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = self::getClientIp();
             self::execute(
                 "INSERT INTO logs_seguranca (evento, cpf_ou_usuario, detalhes_json, ip_origem, created_at)
                  VALUES (:evento, :cpf, :detalhes, :ip, NOW())",
@@ -683,7 +683,7 @@ class TransacaoCarteira extends Model
 
         // Registro em auditoria
         try {
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = self::getClientIp();
             self::execute(
                 "INSERT INTO logs_auditoria (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
                  VALUES (:operador_id, :acao, :tabela_afetada, :registro_id, :justificativa, :ip, NOW())",

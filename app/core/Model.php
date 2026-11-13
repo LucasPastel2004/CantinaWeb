@@ -307,7 +307,8 @@ abstract class Model
         if ($this->softDelete) {
             $sql .= " WHERE deleted_at IS NULL";
         }
-        $sql .= " ORDER BY {$orderBy} LIMIT {$limit}";
+        $limiteSeguro = max(1, min(10000, $limit));
+        $sql .= " ORDER BY {$orderBy} LIMIT {$limiteSeguro}";
 
         return self::fetchAll($sql);
     }
@@ -386,5 +387,16 @@ abstract class Model
 
         $sql = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
         return self::execute($sql, ['id' => $id]);
+    }
+
+    /**
+     * Obtém o IP real de origem delegando ao helper seguro Auth::getClientIp()
+     */
+    protected static function getClientIp(): string
+    {
+        if (class_exists(\App\Core\Auth::class)) {
+            return \App\Core\Auth::getClientIp();
+        }
+        return $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
     }
 }

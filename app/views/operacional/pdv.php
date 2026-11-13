@@ -1800,10 +1800,6 @@ function submeterVendaServidor(valorRecebido) {
         if (elBtnAba) {
             elBtnAba.href = `${baseUrl}/operacional/pdv/comprovante/${data.venda_id}`;
         }
-        const elBtnPdf = document.getElementById('btnComprovantePdf');
-        if (elBtnPdf) {
-            elBtnPdf.href = `${baseUrl}/operacional/pdv/comprovante/${data.venda_id}/pdf`;
-        }
         
         // Atualiza o estoque em tempo real nos cards do catálogo sem necessidade de F5
         carrinho.forEach(it => {

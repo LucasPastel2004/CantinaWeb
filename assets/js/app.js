@@ -805,6 +805,13 @@ function getOrCreateConfirmModal() {
  * @param {Object|string} options
  * @returns {Promise<boolean>}
  */
+window.escapeHtml = function (str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+  });
+};
+
 window.confirmarAcao = function (options) {
   return new Promise(function (resolve) {
     if (typeof options === 'string') {
@@ -826,7 +833,11 @@ window.confirmarAcao = function (options) {
     const btnCancelar = modalEl.querySelector('#btnModalConfirmacaoCancelar');
 
     tituloEl.textContent = titulo;
-    mensagemEl.innerHTML = mensagem;
+    if (options.html === true) {
+      mensagemEl.innerHTML = mensagem;
+    } else {
+      mensagemEl.textContent = mensagem;
+    }
     btnConfirmar.textContent = textoConfirmar;
     btnCancelar.textContent = textoCancelar;
 
@@ -982,7 +993,11 @@ window.alertaAcao = function (options) {
     const btnEntendido = modalEl.querySelector('#btnModalAlertaEntendido');
 
     tituloEl.textContent = titulo;
-    mensagemEl.innerHTML = mensagem;
+    if (options.html === true) {
+      mensagemEl.innerHTML = mensagem;
+    } else {
+      mensagemEl.textContent = mensagem;
+    }
     btnEntendido.textContent = textoBotao;
 
     // Configurar cor do botão e ícone corporativo sóbrio

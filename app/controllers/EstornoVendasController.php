@@ -214,7 +214,7 @@ class EstornoVendasController extends Controller
 
         $operador = Auth::user();
         $operadorId = (int)($operador['id'] ?? 1);
-        $ipOrigem = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ipOrigem = Auth::getClientIp();
 
         $tipoVenda = trim($_POST['tipo_venda'] ?? 'nao'); // 'sim' = avulsa, 'nao' = pedido
         $selecionados = $_POST['selecionadas'] ?? ($_POST['selecionados'] ?? []);

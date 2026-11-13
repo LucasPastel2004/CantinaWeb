@@ -467,7 +467,11 @@ function editarDespesa(id) {
         .then(data => {
             if (!data.sucesso || !data.despesa) {
                 if (typeof window.alertaAcao === 'function') {
-                    window.alertaAcao('Erro ao carregar dados da despesa.', 'Erro', 'danger');
+                    window.alertaAcao({
+                        titulo: 'Erro',
+                        mensagem: 'Erro ao carregar dados da despesa.',
+                        tipo: 'danger'
+                    });
                 }
                 return;
             }
@@ -500,14 +504,18 @@ function editarDespesa(id) {
 
 function abrirModalPagar(id, descricao, valor) {
     document.getElementById('pagarId').value = id;
-    document.getElementById('pagarDescricaoTexto').innerHTML = 'Confirmar quitação de <strong>' + descricao + '</strong> no valor de <strong>R$ ' + valor + '</strong>?';
+    const pagarTextoEl = document.getElementById('pagarDescricaoTexto');
+    const esc = window.escapeHtml || function (s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); };
+    pagarTextoEl.innerHTML = 'Confirmar quitação de <strong>' + esc(descricao) + '</strong> no valor de <strong>R$ ' + esc(valor) + '</strong>?';
     const modal = new bootstrap.Modal(document.getElementById('modalPagar'));
     modal.show();
 }
 
 function confirmarExclusao(id, descricao) {
     document.getElementById('excluirId').value = id;
-    document.getElementById('excluirDescricaoTexto').innerHTML = 'Tem certeza que deseja remover a despesa <strong>' + descricao + '</strong>? O registro será arquivado com segurança.';
+    const excluirTextoEl = document.getElementById('excluirDescricaoTexto');
+    const esc = window.escapeHtml || function (s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); };
+    excluirTextoEl.innerHTML = 'Tem certeza que deseja remover a despesa <strong>' + esc(descricao) + '</strong>? O registro será arquivado com segurança.';
     const modal = new bootstrap.Modal(document.getElementById('modalExcluir'));
     modal.show();
 }

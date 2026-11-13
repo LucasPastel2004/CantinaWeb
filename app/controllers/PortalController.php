@@ -173,9 +173,9 @@ class PortalController extends Controller
         $respId  = (int)$usuario['id'];
         $alunoId = (int)$this->input('aluno_id', 0);
 
-        // Validação estrita de titularidade do dependente (LGPD escolar)
+        // Validação estrita de titularidade familiar do dependente (LGPD escolar — suporta co-responsáveis)
         $aluno = Aluno::buscarPorId($alunoId);
-        if (!$aluno || (int)$aluno['responsavel_id'] !== $respId) {
+        if (!$aluno || !$this->alunoPertence($respId, $alunoId)) {
             Auth::logSecurityEvent('tentativa_idor_mutacao', $usuario['username'] ?? $usuario['cpf'] ?? null, [
                 'motivo'         => 'Tentativa de alteração de restrições alimentares de dependente de outra família (IDOR)',
                 'responsavel_id' => $respId,
@@ -436,7 +436,7 @@ class PortalController extends Controller
 
         if (empty($itensFormatados)) {
             Session::setFlash('warning', 'Selecione pelo menos um item de lanche para agendar.');
-            $this->redirect("/portal/agendamento?aluno={$alunoId}&data={$dataConsumo}");
+            $this->redirect('/portal/agendamento?aluno=' . $alunoId . '&data=' . urlencode($dataConsumo));
             return;
         }
 
@@ -451,10 +451,10 @@ class PortalController extends Controller
             $this->redirect('/portal/pedidos');
         } catch (\DomainException $e) {
             Session::setFlash('danger', $e->getMessage());
-            $this->redirect("/portal/agendamento?aluno={$alunoId}&data={$dataConsumo}");
+            $this->redirect('/portal/agendamento?aluno=' . $alunoId . '&data=' . urlencode($dataConsumo));
         } catch (\Throwable $e) {
             Session::setFlash('danger', 'Ocorreu uma falha ao processar o agendamento. Tente novamente.');
-            $this->redirect("/portal/agendamento?aluno={$alunoId}&data={$dataConsumo}");
+            $this->redirect('/portal/agendamento?aluno=' . $alunoId . '&data=' . urlencode($dataConsumo));
         }
     }
 

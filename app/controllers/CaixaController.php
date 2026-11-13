@@ -229,7 +229,7 @@ class CaixaController extends Controller
 
         try {
             $operadorId = Auth::id() ?? 1;
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = Auth::getClientIp();
 
             $sessaoFechada = SessaoCaixa::fechar($sessaoId, $totalInformado, $observacoes, $operadorId, $ip);
 
@@ -350,7 +350,7 @@ class CaixaController extends Controller
 
         try {
             $operadorId = Auth::id() ?? 1;
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = Auth::getClientIp();
 
             $resultado = SessaoCaixa::registrarRecargaBalcao($responsavelId, $valor, $formaPagamento, $operadorId, $observacoes, $ip);
 

@@ -357,9 +357,10 @@ assertTeste(str_contains($csvConteudo, 'RELATÓRIO GERENCIAL DE MOVIMENTAÇÕES 
 // -------------------------------------------------------------------
 echo "\n12. Testando navegação e rotas integradas...\n";
 
-$hubContent = file_get_contents(dirname(__DIR__) . '/app/views/relatorios/index.php');
-assertTeste(str_contains($hubContent, 'Movimentações de Estoque'), "Card de Movimentações de Estoque presente no Hub de Relatórios");
-assertTeste(str_contains($hubContent, '/relatorios/estoque-filtros'), "Link para /relatorios/estoque-filtros presente no Hub de Relatórios");
+$sidebarContent = file_get_contents(dirname(__DIR__) . '/app/views/layouts/sidebar.php');
+assertTeste(!file_exists(dirname(__DIR__) . '/app/views/relatorios/index.php'), "View órfã relatorios/index.php removida");
+assertTeste(str_contains($sidebarContent, 'Movimentações de Estoque'), "Item de Movimentações de Estoque presente na Sidebar");
+assertTeste(str_contains($sidebarContent, '/relatorios/estoque-filtros'), "Link para /relatorios/estoque-filtros presente na Sidebar");
 
 $sidebarContent = file_get_contents(dirname(__DIR__) . '/app/views/layouts/sidebar.php');
 assertTeste(str_contains($sidebarContent, 'Movimentações'), "Link 'Movimentações' presente na seção Estoque da sidebar");

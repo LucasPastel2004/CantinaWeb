@@ -99,7 +99,9 @@ class DespesasController extends Controller
      */
     public function salvar(): void
     {
-        $this->validarCsrf();
+        if (!$this->validateCsrf(null, '/financeiro/despesas')) {
+            return;
+        }
 
         try {
             $dados = $this->sanitizarDadosFormulario();
@@ -142,7 +144,9 @@ class DespesasController extends Controller
      */
     public function atualizar(): void
     {
-        $this->validarCsrf();
+        if (!$this->validateCsrf(null, '/financeiro/despesas')) {
+            return;
+        }
 
         $id = (int)($_POST['id'] ?? 0);
         if ($id <= 0) {
@@ -173,7 +177,9 @@ class DespesasController extends Controller
      */
     public function pagar(): void
     {
-        $this->validarCsrf();
+        if (!$this->validateCsrf(null, '/financeiro/despesas')) {
+            return;
+        }
 
         $id = (int)($_POST['id'] ?? 0);
         $dataPagamento = !empty($_POST['data_pagamento']) ? trim($_POST['data_pagamento']) : date('Y-m-d');
@@ -204,7 +210,9 @@ class DespesasController extends Controller
      */
     public function excluir(): void
     {
-        $this->validarCsrf();
+        if (!$this->validateCsrf(null, '/financeiro/despesas')) {
+            return;
+        }
 
         $id = (int)($_POST['id'] ?? 0);
         $competencia = !empty($_POST['competencia_redirect']) ? trim($_POST['competencia_redirect']) : date('Y-m');
@@ -262,18 +270,5 @@ class DespesasController extends Controller
             'documento_referencia' => $documentoReferencia,
             'observacoes'          => $observacoes,
         ];
-    }
-
-    /**
-     * Valida o token CSRF obrigatório.
-     */
-    private function validarCsrf(): void
-    {
-        $token = $_POST['csrf_token'] ?? '';
-        if (!Session::validateCsrfToken($token)) {
-            Session::setFlash('danger', 'Token de segurança expirado. Por favor, reenvie o formulário.');
-            $this->redirect('/financeiro/despesas');
-            exit;
-        }
     }
 }

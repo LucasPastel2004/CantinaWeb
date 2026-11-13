@@ -113,12 +113,10 @@ function atualizarLinksExportacao() {
     
     var baseUrl = '<?php echo $baseUrl; ?>';
     var btnImp = document.getElementById('btnImprimirA4');
-    var btnPdf = document.getElementById('btnPdfA4');
     var btnCsv = document.getElementById('btnCsv');
     
     var query = '?data_inicio=' + encodeURIComponent(ini) + '&data_fim=' + encodeURIComponent(fim);
     if (btnImp) btnImp.href = baseUrl + '/relatorios/arrecadacao/imprimir' + query;
-    if (btnPdf) btnPdf.href = baseUrl + '/relatorios/arrecadacao/pdf' + query;
     if (btnCsv) btnCsv.href = baseUrl + '/relatorios/arrecadacao/csv' + query;
 }
 

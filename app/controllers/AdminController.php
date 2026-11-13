@@ -1163,7 +1163,9 @@ class AdminController extends Controller
     public function importacaoEscolarCancelar(): void
     {
         if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
-            $this->validateCsrf();
+            if (!$this->validateCsrf()) {
+                return;
+            }
         }
 
         $tempPath = Session::get('_import_temp_file');
@@ -1478,7 +1480,9 @@ class AdminController extends Controller
      */
     public function calendarioSalvar(): void
     {
-        $this->validateCsrf();
+        if (!$this->validateCsrf()) {
+            return;
+        }
 
         $data = (string)$this->input('data');
         $tipo = (string)$this->input('tipo');
@@ -1505,7 +1509,9 @@ class AdminController extends Controller
      */
     public function calendarioExcluir(): void
     {
-        $this->validateCsrf();
+        if (!$this->validateCsrf()) {
+            return;
+        }
 
         $data = (string)$this->input('data');
 
@@ -1530,7 +1536,9 @@ class AdminController extends Controller
      */
     public function calendarioEmergencial(): void
     {
-        $this->validateCsrf();
+        if (!$this->validateCsrf()) {
+            return;
+        }
 
         $data = (string)$this->input('data');
         $motivo = (string)$this->input('motivo');

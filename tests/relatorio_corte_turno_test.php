@@ -77,12 +77,13 @@ class RelatorioCorteTurnoTest
         $this->assert(str_contains($sidebarContent, '/relatorios/corte'), 'Flyout de Relatórios contém link para /relatorios/corte');
         $this->assert(str_contains($sidebarContent, 'corte_relatorio'), 'Mapeamento $isRelatoriosActive inclui corte_relatorio');
 
-        // 3. Verificação da Central de Relatórios (app/views/relatorios/index.php)
-        echo "\n--- 3. Análise da Central de Relatórios (/relatorios) ---\n";
+        // 3. Verificação da Sidebar e remoção da Central de Relatórios órfã
+        echo "\n--- 3. Análise da Navegação do Corte de Turno (Sidebar) ---\n";
         $relatoriosIndexPath = __DIR__ . '/../app/views/relatorios/index.php';
-        $relatoriosIndexContent = file_get_contents($relatoriosIndexPath);
+        $this->assert(!file_exists($relatoriosIndexPath), 'View órfã relatorios/index.php removida');
 
-        $this->assert(str_contains($relatoriosIndexContent, 'href="<?php echo $baseUrl; ?>/relatorios/corte"'), 'Card 6 aponta para /relatorios/corte');
+        $sidebarContent = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
+        $this->assert(str_contains($sidebarContent, 'href="<?php echo $baseUrl; ?>/relatorios/corte"'), 'Sidebar aponta para /relatorios/corte');
 
         // 4. Configuração de sessão para execução dos controllers
         echo "\n--- 4. Execução do Controller e View (/relatorios/corte) ---\n";

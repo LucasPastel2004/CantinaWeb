@@ -423,7 +423,7 @@ class Ticket extends Model
             WHERE {$whereClausula}
             ORDER BY 
                 t.id DESC
-            LIMIT {$limite}
+            LIMIT " . max(1, min(500, (int)$limite)) . "
         ";
 
         return self::fetchAll($sql, $params);

@@ -234,7 +234,9 @@ class PdvController extends Controller
     public function pixGerar(): void
     {
         if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
-            $this->validateCsrf();
+            if (!$this->validateCsrf()) {
+                return;
+            }
         }
 
         $valor = $this->parseMoney($_POST['valor'] ?? '0');
@@ -338,7 +340,7 @@ class PdvController extends Controller
         $motivo = trim($_POST['motivo'] ?? '');
         $justificativa = trim($_POST['justificativa'] ?? '');
         $operadorId = (int)Auth::id();
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ip = Auth::getClientIp();
 
         if (empty($codigoTicket)) {
             Session::setFlash('warning', 'Informe o código do ticket para estorno.');
@@ -402,7 +404,7 @@ class PdvController extends Controller
         }
 
         $operadorId = (int)Auth::id();
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ip = Auth::getClientIp();
 
         try {
             $resultado = Ticket::transferirSobrasNaoRetiradasParaBalcao($ticketIds, $operadorId, $ip);

@@ -69,14 +69,6 @@ $router = new \App\Core\Router();
 // Rotas do Módulo Inicial e de Status
 $router->get('/', [\App\Controllers\HomeController::class, 'index']);
 $router->get('/api/status', [\App\Controllers\HomeController::class, 'status']);
-$router->get('/teste/{id}', [\App\Controllers\HomeController::class, 'testeParametro']);
-$router->post('/teste-csrf', [\App\Controllers\HomeController::class, 'testeCsrf']);
-$router->get('/teste-erro', [\App\Controllers\HomeController::class, 'testeErro']);
-
-// Rotas de Demonstração e Homologação Visual (Fase 5 — DESIGN.md)
-$router->get('/design/portal', [\App\Controllers\ShowcaseController::class, 'portal']);
-$router->get('/design/admin', [\App\Controllers\ShowcaseController::class, 'admin']);
-$router->get('/design/components', [\App\Controllers\ShowcaseController::class, 'components']);
 
 // Rotas de Autenticação e Primeiro Acesso (Fase 6 — FSD Área 1 & RBAC)
 $router->get('/login', [\App\Controllers\AuthController::class, 'login']);
@@ -327,30 +319,6 @@ $router->post('/estoque/entrada/salvar', [\App\Controllers\EstoqueController::cl
     \App\Core\RBAC::requireRole([\App\Core\RBAC::ROLE_OPERADOR, \App\Core\RBAC::ROLE_ADMINISTRADOR])
 ]);
 $router->post('/estoque/minimo', [\App\Controllers\EstoqueController::class, 'atualizarEstoqueMinimo'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/importar-xml', [\App\Controllers\EstoqueController::class, 'importarXml'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->post('/estoque/importar-xml/analisar', [\App\Controllers\EstoqueController::class, 'importarXmlAnalisar'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->post('/estoque/importar-xml/processar', [\App\Controllers\EstoqueController::class, 'importarXmlProcessar'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/importar-xml/cancelar', [\App\Controllers\EstoqueController::class, 'importarXmlCancelar'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/notas-fiscais', [\App\Controllers\EstoqueController::class, 'notasFiscais'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/notas-fiscais/{id}', [\App\Controllers\EstoqueController::class, 'notaFiscalDetalhes'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/notas-fiscais/{id}/download', [\App\Controllers\EstoqueController::class, 'downloadXml'], [
-    \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
-]);
-$router->get('/estoque/notas-fiscais/{id}/xml', [\App\Controllers\EstoqueController::class, 'visualizarXml'], [
     \App\Core\RBAC::requireRole(\App\Core\RBAC::ROLE_ADMINISTRADOR)
 ]);
 

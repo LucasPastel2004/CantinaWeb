@@ -30,8 +30,9 @@ preg_match('/<!-- Cabeçalho Executivo -->.*?<\/div>\s*<\/div>/s', $content, $ma
 $headerBlock = $matches[0] ?? '';
 
 assertTeste(!empty($headerBlock), 'Bloco do cabeçalho executivo localizado na view');
-assertTeste(strpos($headerBlock, 'Extrato do Aluno (PDF)') !== false, 'Botão "Extrato do Aluno (PDF)" está presente');
-assertTeste(preg_match('/<a[^>]+href="[^"]*\/portal\/extrato"[^>]+class="[^"]*btn-primary[^"]*"/', $headerBlock) === 1, 'Botão "Extrato do Aluno (PDF)" utiliza o padrão azul corporativo (btn-primary)');
+assertTeste(strpos($headerBlock, 'Extrato do Aluno') !== false, 'Botão "Extrato do Aluno" está presente');
+assertTeste(strpos($headerBlock, 'Extrato do Aluno (PDF)') === false, 'Texto legado "(PDF)" removido do botão de Extrato do Aluno');
+assertTeste(preg_match('/<a[^>]+href="[^"]*\/portal\/extrato"[^>]+class="[^"]*btn-primary[^"]*"/', $headerBlock) === 1, 'Botão "Extrato do Aluno" utiliza o padrão azul corporativo (btn-primary)');
 assertTeste(strpos($headerBlock, 'Recarregar Saldo (Pix)') === false, 'Botão redundante "Recarregar Saldo (Pix)" foi removido do cabeçalho');
 assertTeste(strpos($headerBlock, 'href="#secao-recarga"') === false, 'Link âncora #secao-recarga foi removido do cabeçalho');
 assertTeste(strpos($headerBlock, 'Agendar Lanches') !== false, 'Botão "Agendar Lanches" permanece no cabeçalho');

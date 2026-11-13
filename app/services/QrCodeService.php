@@ -143,7 +143,7 @@ class QrCodeEngine
      */
     static public function svg($data, $options = [])
     {
-        return (new QRCode($data, $options))->createSVG();
+        return (new self($data, $options))->createSVG();
     }
 
     /**

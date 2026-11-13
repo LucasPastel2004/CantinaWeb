@@ -880,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(data) {
                 modLoading.style.display = 'none';
                 if (!data.sucesso || !data.dados) {
-                    modConteudo.innerHTML = '<div class="alert alert-danger py-2">' + (data.mensagem || 'Dados não localizados.') + '</div>';
+                    modConteudo.innerHTML = '<div class="alert alert-danger py-2">' + escapeHtml(data.mensagem || 'Dados não localizados.') + '</div>';
                     modConteudo.style.display = '';
                     return;
                 }
@@ -909,10 +909,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 let formaPgto = vInfo.forma_pagamento || venda.forma_pagamento || '--';
-                if (formaPgto === 'saldo_carteira') formaPgto = 'Saldo em Carteira (Familiar)';
-                else if (formaPgto === 'folha_pagamento') formaPgto = 'Folha de Pagamento (Colaborador)';
+                if (formaPgto === 'saldo' || formaPgto === 'saldo_carteira') formaPgto = 'Saldo em Carteira (Familiar)';
+                else if (formaPgto === 'desconto_folha' || formaPgto === 'folha_pagamento') formaPgto = 'Folha de Pagamento (Colaborador)';
                 else if (formaPgto === 'dinheiro') formaPgto = 'Dinheiro em Espécie';
-                else if (formaPgto === 'pix_balcao') formaPgto = 'Pix no Balcão';
+                else if (formaPgto === 'pix' || formaPgto === 'pix_balcao') formaPgto = 'Pix no Balcão';
 
                 let dataFmt = vInfo.data_hora || (venda.data_consumo ? (venda.data_consumo + (venda.turno_consumo ? ' (' + venda.turno_consumo + ')' : '')) : (venda.created_at || ''));
                 let valorFmt = parseFloat(venda.valor_total || vInfo.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -961,7 +961,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(function(err) {
                 modLoading.style.display = 'none';
-                modConteudo.innerHTML = '<div class="alert alert-danger py-2">' + err.message + '</div>';
+                modConteudo.innerHTML = '<div class="alert alert-danger py-2">' + escapeHtml(err && err.message ? err.message : 'Erro ao consultar detalhes.') + '</div>';
                 modConteudo.style.display = '';
             });
     }

@@ -97,10 +97,20 @@ class PortalIdorSecurityTest
 
         $this->testarIdorGetAlergias($resp1Id, $aluno1Id, $aluno2Id, $sufixo);
         $this->testarIdorPostAlergiasSalvar($resp1Id, $aluno1Id, $aluno2Id);
+        $this->testarCoResponsavelAlergiasSalvar($resp1Id, $aluno1Id, $aluno2Id, $sufixo);
         $this->testarIdorGetAgendamento($resp1Id, $aluno1Id, $aluno2Id);
         $this->testarIdorPostAgendamentoSalvar($resp1Id, $aluno1Id, $aluno2Id);
         $this->testarIdorGetPedidos($resp1Id, $aluno1Id, $aluno2Id);
         $this->testarAcessoLegitimo($resp1Id, $aluno1Id, $sufixo);
+
+        // Teardown dos dados de teste
+        Model::execute("DELETE FROM aluno_restricoes WHERE aluno_id IN (:a1, :a2)", ['a1' => $aluno1Id, 'a2' => $aluno2Id]);
+        Model::execute("DELETE FROM alunos WHERE id IN (:a1, :a2)", ['a1' => $aluno1Id, 'a2' => $aluno2Id]);
+        Model::execute("DELETE FROM responsaveis WHERE id = :r1 OR titular_id = :r1_tit OR id = :r2", [
+            'r1' => $resp1Id,
+            'r1_tit' => $resp1Id,
+            'r2' => $resp2Id
+        ]);
 
         echo "\n--------------------------------------------------------------------\n";
         echo " RESULTADO DOS TESTES DE SEGURANÇA IDOR:\n";
@@ -302,6 +312,66 @@ class PortalIdorSecurityTest
         $this->assert(str_contains($html, "Aluno Família A {$sufixo}"), "Acesso legítimo renderiza o próprio dependente com sucesso");
         $this->assert(!str_contains($html, 'alert-enterprise-danger'), "Nenhum alerta de perigo exibido em navegação legítima");
         $this->assert(empty(Session::getFlash('danger')), "Nenhuma mensagem flash gerada para acesso legítimo");
+    }
+
+    private function testarCoResponsavelAlergiasSalvar(int $resp1Id, int $aluno1Id, int $aluno2Id, int $sufixo): void
+    {
+        echo "\n2b. Testando Co-responsável Familiar Legítimo vs IDOR Cruzado em POST /portal/alergias/salvar:\n";
+
+        $cpfCoResp = "903" . sprintf('%06d', random_int(1, 999999)) . "33";
+        $nomeCoResp = "Co-responsável Família A {$sufixo}";
+        $coResp = \App\Models\Responsavel::localizarOuCriarPorCpf([
+            'cpf'        => $cpfCoResp,
+            'nome'       => $nomeCoResp,
+            'whatsapp'   => "(11) 98888-3333",
+            'titular_id' => $resp1Id,
+            'parentesco' => 'co_responsavel'
+        ]);
+        $coRespId = (int)$coResp['id'];
+
+        $sessaoBackup = $_SESSION;
+        $_SESSION['_auth_id'] = $coRespId;
+        $_SESSION['_auth_username'] = $cpfCoResp;
+        $_SESSION['_auth_nome'] = $nomeCoResp;
+        $_SESSION['_flash'] = [];
+
+        $ctrl = new PortalController();
+
+        // Co-responsável tenta alterar aluno de OUTRA família ($aluno2Id) -> deve ser bloqueado
+        $_POST = [
+            'csrf_token' => Session::generateCsrfToken(),
+            'aluno_id'   => $aluno2Id,
+            'alergenos'  => [1]
+        ];
+        ob_start();
+        $ctrl->alergiasSalvar();
+        ob_get_clean();
+        $this->assert(empty(\App\Models\Aluno::obterIdsAlergenos($aluno2Id)), "Co-responsável continua bloqueado contra IDOR em aluno de outra família");
+        $this->assert(!empty(Session::getFlash('danger')), "Tentativa de IDOR pelo co-responsável gera flash danger");
+
+        // Co-responsável altera dependente da PRÓPRIA conta familiar ($aluno1Id) -> deve ser permitido
+        $catalogo = \App\Models\RestricaoAlimentar::listarTodas();
+        $alergenoId = !empty($catalogo) ? (int)$catalogo[0]['id'] : null;
+
+        $_SESSION['_flash'] = [];
+        $_POST = [
+            'csrf_token' => Session::generateCsrfToken(),
+            'aluno_id'   => $aluno1Id,
+            'alergenos'  => $alergenoId ? [$alergenoId] : []
+        ];
+        ob_start();
+        $ctrl->alergiasSalvar();
+        ob_get_clean();
+
+        $flashesSuccess = Session::getFlash('success');
+        $this->assert(!empty($flashesSuccess), "Co-responsável da conta familiar consegue salvar restrições do dependente da família");
+        if ($alergenoId) {
+            $this->assert(in_array($alergenoId, \App\Models\Aluno::obterIdsAlergenos($aluno1Id), true), "Alérgeno gravado corretamente via co-responsável familiar");
+        }
+
+        // Restaura estado limpo da família A
+        Model::execute("DELETE FROM aluno_restricoes WHERE aluno_id = :a1", ['a1' => $aluno1Id]);
+        $_SESSION = $sessaoBackup;
     }
 }
 

@@ -150,9 +150,10 @@ class Fase22Test
         $this->assert(str_contains($viewContent, 'data-periodo="mes_anterior"'), "Atalho de período 'Mês Anterior' presente.");
         $this->assert(str_contains($viewContent, 'id="aluno_busca"'), "Campo de busca com autocomplete flutuante presente.");
 
-        // Validação da Sidebar e Hub de Relatórios Gerenciais
-        $hubView = file_get_contents(__DIR__ . '/../app/views/relatorios/index.php');
-        $this->assert(str_contains($hubView, 'Extrato de Consumo do Aluno') && str_contains($hubView, '/relatorios/extrato-aluno'), "Hub de Relatórios Gerenciais contém Card dedicado para Extrato de Consumo do Aluno.");
+        // Validação da Sidebar e remoção do Hub legado
+        $sidebarView = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
+        $this->assert(!file_exists(__DIR__ . '/../app/views/relatorios/index.php'), "View órfã app/views/relatorios/index.php foi removida.");
+        $this->assert(str_contains($sidebarView, '/relatorios/extrato-aluno') && str_contains($sidebarView, 'Extrato do Aluno'), "Sidebar contém link dedicado para Extrato do Aluno.");
 
         $sidebarView = file_get_contents(__DIR__ . '/../app/views/layouts/sidebar.php');
         $this->assert(!str_contains($sidebarView, '/operacional/extrato-aluno'), "Item Extrato do Aluno removido da seção Operacional da sidebar.");

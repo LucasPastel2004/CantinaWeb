@@ -37,26 +37,26 @@ class DreController extends Controller
      */
     private function resolverPeriodo(): array
     {
-        $dataInicio = isset($_GET['data_inicio']) && is_string($_GET['data_inicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['data_inicio'])
-            ? $_GET['data_inicio']
-            : null;
-        $dataFim = isset($_GET['data_fim']) && is_string($_GET['data_fim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['data_fim'])
-            ? $_GET['data_fim']
-            : null;
+        $hoje = date('Y-m-d');
+        $rawInicio = isset($_GET['data_inicio']) && is_string($_GET['data_inicio']) ? $_GET['data_inicio'] : '';
+        $rawFim    = isset($_GET['data_fim']) && is_string($_GET['data_fim']) ? $_GET['data_fim'] : '';
+
+        $dataInicio = $rawInicio !== '' ? $this->sanitizeDate($rawInicio, '') : '';
+        $dataFim    = $rawFim !== '' ? $this->sanitizeDate($rawFim, '') : '';
 
         // Se fornecido ano explicitamente via parâmetro 'ano'
         $anoParam = isset($_GET['ano']) ? (int)$_GET['ano'] : 0;
-        if ($anoParam >= 2020 && $anoParam <= 2050 && (!$dataInicio || !$dataFim)) {
+        if ($anoParam >= 2020 && $anoParam <= 2050 && ($dataInicio === '' || $dataFim === '')) {
             $dataInicio = sprintf('%04d-01-01', $anoParam);
             $dataFim    = sprintf('%04d-12-31', $anoParam);
             $ano = $anoParam;
-        } elseif ($dataInicio && $dataFim) {
-            $ano = (int)date('Y', strtotime($dataInicio));
+        } elseif ($dataInicio !== '' && $dataFim !== '') {
+            $ano = (int)substr($dataInicio, 0, 4);
         } else {
-            // Padrão: ano corrente de 01/01 até o final do ano (ou hoje)
+            // Padrão: ano corrente de 01/01 até hoje
             $ano = (int)date('Y');
             $dataInicio = sprintf('%04d-01-01', $ano);
-            $dataFim    = date('Y-m-d');
+            $dataFim    = $hoje;
         }
 
         if ($dataInicio > $dataFim) {
@@ -338,8 +338,11 @@ class DreController extends Controller
             throw new \RuntimeException("View não encontrada: {$viewPath}");
         }
 
-        extract($dados, EXTR_OVERWRITE);
-        require $viewPath;
+        $renderIsolado = function (string $__viewPath, array $__dados): void {
+            extract($__dados, EXTR_SKIP);
+            require $__viewPath;
+        };
+        $renderIsolado($viewPath, $dados);
     }
 
     /**

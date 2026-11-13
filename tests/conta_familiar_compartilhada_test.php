@@ -154,16 +154,25 @@ assertCondition((float)$maeDados['saldo_atual'] === 50.00, "Saldo da Mãe herda 
 // --------------------------------------------------------------------------
 echo "\n[3] Testando Agendamento pelo Pai e Visibilidade para a Mãe...\n";
 
-// Localiza dois dias letivos na semana corrente
+// Localiza dois dias letivos válidos na próxima semana letiva para execução determinística em qualquer dia/hora
+$diasProximaSemana = CalendarioEscolar::obterDiasSemanaLetiva('seguinte');
 $diasCorrentes = [];
-for ($offset = 1; $offset <= 4; $offset++) {
-    $d = date('Y-m-d', strtotime("+{$offset} days"));
-    if (CalendarioEscolar::isDiaLetivo($d) && date('N', strtotime($d)) <= 5) {
-        $diasCorrentes[] = $d;
+foreach ($diasProximaSemana as $infoDia) {
+    if (!empty($infoDia['is_letivo'])) {
+        $diasCorrentes[] = $infoDia['data'];
     }
 }
-$dataConsumo1 = $diasCorrentes[0] ?? date('Y-m-d', strtotime('+1 day'));
-$dataConsumo2 = $diasCorrentes[1] ?? date('Y-m-d', strtotime('+2 days'));
+if (count($diasCorrentes) < 2) {
+    for ($offset = 7; $offset <= 21 && count($diasCorrentes) < 2; $offset++) {
+        $d = date('Y-m-d', strtotime("+{$offset} days"));
+        if (CalendarioEscolar::isDiaLetivo($d) && (int)date('N', strtotime($d)) <= 5 && !in_array($d, $diasCorrentes, true)) {
+            $diasCorrentes[] = $d;
+        }
+    }
+}
+$dataConsumo1 = $diasCorrentes[0];
+$dataConsumo2 = $diasCorrentes[1];
+$agoraSimulado = new \DateTimeImmutable($dataConsumo1 . ' 07:00:00');
 
 // Localiza dois produtos disponíveis
 $produtos = Produto::fetchAll("SELECT id, preco_venda, descricao FROM produtos WHERE status_pausa = 'ativo' AND deleted_at IS NULL LIMIT 2");
@@ -180,7 +189,7 @@ $itensPai = [
     ['produto_id' => $prod1Id, 'quantidade' => 1]
 ];
 
-$pedidoCriado = Pedido::criarPedido($paiId, $alunoId, $dataConsumo1, $itensPai);
+$pedidoCriado = Pedido::criarPedido($paiId, $alunoId, $dataConsumo1, $itensPai, $agoraSimulado);
 $pedidoId = (int)$pedidoCriado['id'];
 assertCondition($pedidoId > 0, "Pai agendou o lanche com sucesso para {$dataConsumo1} (R$ {$prod1Preco})");
 
@@ -209,7 +218,7 @@ $travaFuncionou = false;
 $msgErro = '';
 
 try {
-    Pedido::criarPedido($maeId, $alunoId, $dataConsumo1, $itensPai);
+    Pedido::criarPedido($maeId, $alunoId, $dataConsumo1, $itensPai, $agoraSimulado);
 } catch (\DomainException $e) {
     $travaFuncionou = true;
     $msgErro = $e->getMessage();
@@ -232,7 +241,7 @@ $novosItensMae = [
     ['produto_id' => $prod2Id, 'quantidade' => 1]
 ];
 
-$resEdicaoMae = Pedido::editarPedido($pedidoId, $maeId, $novosItensMae);
+$resEdicaoMae = Pedido::editarPedido($pedidoId, $maeId, $novosItensMae, $agoraSimulado);
 assertCondition(!empty($resEdicaoMae['codigo_pedido']), "Mãe editou o pedido do Pai com sucesso!");
 
 $novoTotalEsperado = round($prod1Preco + $prod2Preco, 2);
@@ -259,7 +268,7 @@ $itensVoltaPai = [
     ['produto_id' => $prod1Id, 'quantidade' => 1]
 ];
 
-$resEdicaoPai = Pedido::editarPedido($pedidoId, $paiId, $itensVoltaPai);
+$resEdicaoPai = Pedido::editarPedido($pedidoId, $paiId, $itensVoltaPai, $agoraSimulado);
 assertCondition((float)$resEdicaoPai['novo_total'] === $prod1Preco, "Total voltou para R$ {$prod1Preco}");
 assertCondition((float)$resEdicaoPai['diferenca'] === -$prod2Preco, "Diferença negativa gerou estorno de R$ {$prod2Preco}");
 
@@ -272,7 +281,7 @@ assertCondition(Responsavel::consultarSaldo($paiId) === $saldoAposAgendamento, "
 // --------------------------------------------------------------------------
 echo "\n[7] Testando Cancelamento Cruzado pela Mãe: Estorno integral...\n";
 
-$resCancelMae = Pedido::cancelarPedido($pedidoId, $maeId);
+$resCancelMae = Pedido::cancelarPedido($pedidoId, $maeId, $agoraSimulado);
 assertCondition($resCancelMae['status'] === Pedido::STATUS_CANCELADO, "Mãe cancelou o pedido com sucesso!");
 assertCondition((float)$resCancelMae['valor_estorno'] === $prod1Preco, "Valor estornado de 100% (R$ {$prod1Preco})");
 
@@ -296,7 +305,8 @@ assertCondition(Responsavel::consultarSaldo($maeId) === 50.00, "Saldo da Mãe vo
 // --------------------------------------------------------------------------
 echo "\n[8] Testando Ciclo Inverso: Mãe agenda novo pedido e Pai cancela...\n";
 
-$pedidoMae = Pedido::criarPedido($maeId, $alunoId, $dataConsumo2, $itensPai);
+$agoraSimulado2 = new \DateTimeImmutable($dataConsumo2 . ' 07:00:00');
+$pedidoMae = Pedido::criarPedido($maeId, $alunoId, $dataConsumo2, $itensPai, $agoraSimulado2);
 $pedidoMaeId = (int)$pedidoMae['id'];
 assertCondition($pedidoMaeId > 0, "Mãe agendou pedido com sucesso para {$dataConsumo2}");
 
@@ -306,7 +316,7 @@ assertCondition(!empty($detalhesPai), "Pai conseguiu buscar os detalhes do pedid
 assertCondition((int)$detalhesPai['autor_responsavel_id'] === $maeId, "Autor registrado é a Mãe");
 
 // Pai cancela o pedido feito pela Mãe
-$resCancelPai = Pedido::cancelarPedido($pedidoMaeId, $paiId);
+$resCancelPai = Pedido::cancelarPedido($pedidoMaeId, $paiId, $agoraSimulado2);
 assertCondition($resCancelPai['status'] === Pedido::STATUS_CANCELADO, "Pai cancelou o pedido feito pela Mãe com sucesso!");
 assertCondition(Responsavel::consultarSaldo($maeId) === 50.00, "Saldo familiar reconstituído em R$ 50,00 após cancelamento pelo Pai");
 

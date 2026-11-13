@@ -170,10 +170,10 @@ class RelatoriosController extends Controller
         $alunoId = (int)$this->input('aluno_id', 0);
         $dataInicioInput = trim((string)$this->input('data_inicio', ''));
         $dataFimInput = trim((string)$this->input('data_fim', ''));
-        $dataInicio = $dataInicioInput;
-        $dataFim = $dataFimInput;
-        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
-        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
+        $dataInicio = $dataInicioInput !== '' ? $this->sanitizeDate($dataInicioInput, '') : '';
+        $dataFim = $dataFimInput !== '' ? $this->sanitizeDate($dataFimInput, '') : '';
+        $dataInicioBusca = $dataInicio !== '' ? $dataInicio : '2020-01-01';
+        $dataFimBusca = $dataFim !== '' ? $dataFim : date('Y-m-d');
         $apenasSaldo = ($this->input('apenas_saldo', 'nao') === 'sim');
         $saldoApenasPeriodo = ($this->input('saldo_apenas_periodo', 'nao') === 'sim');
 
@@ -183,7 +183,7 @@ class RelatoriosController extends Controller
             return;
         }
 
-        $dadosExtrato = $this->obterDadosExtratoAluno($alunoId, $dataInicio, $dataFim, $apenasSaldo, $saldoApenasPeriodo, 1, 1, 50, false);
+        $dadosExtrato = $this->obterDadosExtratoAluno($alunoId, $dataInicioBusca, $dataFimBusca, $apenasSaldo, $saldoApenasPeriodo, 1, 1, 50, false);
         if (!$dadosExtrato) {
             Session::setFlash('danger', 'Aluno não localizado.');
             $this->redirect('/relatorios/extrato-aluno');
@@ -205,10 +205,10 @@ class RelatoriosController extends Controller
         $alunoId = (int)$this->input('aluno_id', 0);
         $dataInicioInput = trim((string)$this->input('data_inicio', ''));
         $dataFimInput = trim((string)$this->input('data_fim', ''));
-        $dataInicio = $dataInicioInput;
-        $dataFim = $dataFimInput;
-        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
-        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
+        $dataInicio = $dataInicioInput !== '' ? $this->sanitizeDate($dataInicioInput, '') : '';
+        $dataFim = $dataFimInput !== '' ? $this->sanitizeDate($dataFimInput, '') : '';
+        $dataInicioBusca = $dataInicio !== '' ? $dataInicio : '2020-01-01';
+        $dataFimBusca = $dataFim !== '' ? $dataFim : date('Y-m-d');
         $apenasSaldo = ($this->input('apenas_saldo', 'nao') === 'sim');
         $saldoApenasPeriodo = ($this->input('saldo_apenas_periodo', 'nao') === 'sim');
 
@@ -218,7 +218,7 @@ class RelatoriosController extends Controller
             return;
         }
 
-        $dadosExtrato = $this->obterDadosExtratoAluno($alunoId, $dataInicio, $dataFim, $apenasSaldo, $saldoApenasPeriodo, 1, 1, 50, false);
+        $dadosExtrato = $this->obterDadosExtratoAluno($alunoId, $dataInicioBusca, $dataFimBusca, $apenasSaldo, $saldoApenasPeriodo, 1, 1, 50, false);
         if (!$dadosExtrato) {
             Session::setFlash('danger', 'Aluno não localizado.');
             $this->redirect('/relatorios/extrato-aluno');
@@ -311,15 +311,15 @@ class RelatoriosController extends Controller
     {
         $dataInicioInput = trim((string)$this->input('data_inicio', ''));
         $dataFimInput = trim((string)$this->input('data_fim', ''));
-        $dataInicio = $dataInicioInput;
-        $dataFim = $dataFimInput;
-        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
-        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
+        $dataInicio = $dataInicioInput !== '' ? $this->sanitizeDate($dataInicioInput, '') : '';
+        $dataFim = $dataFimInput !== '' ? $this->sanitizeDate($dataFimInput, '') : '';
+        $dataInicioBusca = $dataInicio !== '' ? $dataInicio : '2020-01-01';
+        $dataFimBusca = $dataFim !== '' ? $dataFim : date('Y-m-d');
         $turno = trim((string)$this->input('turno', ''));
         $categoriaId = (int)$this->input('categoria_id', 0);
         $tipo = trim((string)$this->input('tipo', ''));
 
-        $dadosRelatorio = $this->obterDadosVendasAlimento($dataInicio, $dataFim, $turno, $categoriaId, $tipo);
+        $dadosRelatorio = $this->obterDadosVendasAlimento($dataInicioBusca, $dataFimBusca, $turno, $categoriaId, $tipo);
         $categorias = Categoria::listarTodas(true);
 
         $this->render('relatorios/vendas_alimento', [
@@ -343,15 +343,15 @@ class RelatoriosController extends Controller
     {
         $dataInicioInput = trim((string)$this->input('data_inicio', ''));
         $dataFimInput = trim((string)$this->input('data_fim', ''));
-        $dataInicio = $dataInicioInput;
-        $dataFim = $dataFimInput;
-        $dataInicioBusca = !empty($dataInicio) ? $dataInicio : '2020-01-01';
-        $dataFimBusca = !empty($dataFim) ? $dataFim : date('Y-m-d');
+        $dataInicio = $dataInicioInput !== '' ? $this->sanitizeDate($dataInicioInput, '') : '';
+        $dataFim = $dataFimInput !== '' ? $this->sanitizeDate($dataFimInput, '') : '';
+        $dataInicioBusca = $dataInicio !== '' ? $dataInicio : '2020-01-01';
+        $dataFimBusca = $dataFim !== '' ? $dataFim : date('Y-m-d');
         $turno = trim((string)$this->input('turno', ''));
         $categoriaId = (int)$this->input('categoria_id', 0);
         $tipo = trim((string)$this->input('tipo', ''));
 
-        $dadosRelatorio = $this->obterDadosVendasAlimento($dataInicio, $dataFim, $turno, $categoriaId, $tipo);
+        $dadosRelatorio = $this->obterDadosVendasAlimento($dataInicioBusca, $dataFimBusca, $turno, $categoriaId, $tipo);
         $usuario = Auth::user();
         $dadosRelatorio['operador'] = $usuario['nome'] ?? 'Administração';
 
@@ -1195,6 +1195,7 @@ class RelatoriosController extends Controller
                 INNER JOIN vendas_balcao vb ON vb.id = ivb.venda_balcao_id
                 INNER JOIN sessoes_caixa sc ON sc.id = vb.sessao_caixa_id
                 WHERE DATE(vb.created_at) BETWEEN :ini2 AND :fim2
+                  AND (vb.status IS NULL OR vb.status != 'estornada')
                   {$whereTurno2}
             ) AS v
             INNER JOIN produtos p ON p.id = v.produto_id
@@ -1263,158 +1264,6 @@ class RelatoriosController extends Controller
                 'faturamento_total' => $faturamentoGeral,
                 'quantidade_total'  => $quantidadeGeral,
                 'ticket_medio'      => ($quantidadeGeral > 0) ? ($faturamentoGeral / $quantidadeGeral) : 0.0
-            ]
-        ];
-    }
-
-    /**
-     * Consolida dados para o Relatório de Desconto em Folha para RH
-     */
-    private function obterDadosDescontoFolha(string $competencia): array
-    {
-        [$ano, $mes] = explode('-', $competencia);
-        $ano = (int)$ano;
-        $mes = (int)$mes;
-
-        $pdo = \App\Core\Model::getPdo();
-
-        // Consulta unificada: total de compras, total de lanches e valor total
-        // calculados a partir dos itens reais em itens_venda_balcao (INNER JOIN),
-        // garantindo consistência com o relatório individual por colaborador.
-        $sqlColabs = "
-            SELECT 
-                c.id AS colaborador_id,
-                c.matricula_funcional,
-                c.nome AS colaborador_nome,
-                c.cargo,
-                c.foto_url,
-                COUNT(DISTINCT vb.id) AS total_compras,
-                COALESCE(SUM(ivb.subtotal), 0.00) AS total_desconto,
-                COALESCE(SUM(ivb.quantidade), 0) AS total_lanches
-            FROM colaboradores c
-            INNER JOIN vendas_balcao vb ON vb.colaborador_id = c.id
-            INNER JOIN itens_venda_balcao ivb ON ivb.venda_balcao_id = vb.id
-            WHERE vb.tipo_venda = 'desconto_folha'
-              AND YEAR(vb.created_at) = :ano
-              AND MONTH(vb.created_at) = :mes
-            GROUP BY c.id, c.matricula_funcional, c.nome, c.cargo, c.foto_url
-            ORDER BY c.nome ASC
-        ";
-        $stmt = $pdo->prepare($sqlColabs);
-        $stmt->execute(['ano' => $ano, 'mes' => $mes]);
-        $colaboradores = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        $totalDescontoGeral = 0.0;
-        $totalLanchesGeral = 0;
-        $maiorConsumo = 0.0;
-        $topColaborador = '-';
-
-        foreach ($colaboradores as &$c) {
-            $c['total_lanches'] = (int)$c['total_lanches'];
-
-            $desc = (float)$c['total_desconto'];
-            $totalDescontoGeral += $desc;
-            $totalLanchesGeral += $c['total_lanches'];
-
-            if ($desc > $maiorConsumo) {
-                $maiorConsumo = $desc;
-                $topColaborador = $c['colaborador_nome'];
-            }
-        }
-        unset($c);
-
-        $mesesNome = [
-            1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
-            5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
-            9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
-        ];
-        $competenciaExtensa = ($mesesNome[$mes] ?? 'Mês ' . $mes) . ' de ' . $ano;
-
-        return [
-            'competencia'          => $competenciaExtensa,
-            'competencia_chave'    => $competencia,
-            'colaboradores'        => $colaboradores,
-            'total_desconto'       => $totalDescontoGeral,
-            'total_lanches'        => $totalLanchesGeral,
-            'total_colaboradores'  => count($colaboradores),
-            'maior_consumo'        => $maiorConsumo,
-            'top_colaborador'      => $topColaborador
-        ];
-    }
-
-    /**
-     * Consolida dados detalhados para o Demonstrativo Individual de Desconto em Folha
-     */
-    private function obterDadosDescontoFolhaIndividual(int $colaboradorId, string $competencia): ?array
-    {
-        $colaborador = Colaborador::buscarPorId($colaboradorId);
-        if (!$colaborador) {
-            return null;
-        }
-
-        [$ano, $mes] = explode('-', $competencia);
-        $ano = (int)$ano;
-        $mes = (int)$mes;
-
-        $pdo = \App\Core\Model::getPdo();
-        $sql = "
-            SELECT 
-                vb.id AS venda_id,
-                vb.created_at,
-                vb.valor_total AS venda_valor_total,
-                sc.turno,
-                u.nome AS operador_nome,
-                ivb.id AS item_id,
-                ivb.quantidade,
-                ivb.preco_unitario,
-                ivb.subtotal,
-                p.descricao AS produto_nome,
-                p.codigo_interno AS produto_codigo
-            FROM vendas_balcao vb
-            INNER JOIN sessoes_caixa sc ON sc.id = vb.sessao_caixa_id
-            INNER JOIN usuarios u ON u.id = vb.operador_id
-            INNER JOIN itens_venda_balcao ivb ON ivb.venda_balcao_id = vb.id
-            INNER JOIN produtos p ON p.id = ivb.produto_id
-            WHERE vb.colaborador_id = :colab_id
-              AND vb.tipo_venda = 'desconto_folha'
-              AND YEAR(vb.created_at) = :ano
-              AND MONTH(vb.created_at) = :mes
-            ORDER BY vb.created_at ASC, vb.id ASC, ivb.id ASC
-        ";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['colab_id' => $colaboradorId, 'ano' => $ano, 'mes' => $mes]);
-        $itens = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        $totalGeral = 0.0;
-        $totalItens = 0;
-        $vendasIds = [];
-
-        foreach ($itens as $item) {
-            $totalGeral += (float)$item['subtotal'];
-            $totalItens += (int)$item['quantidade'];
-            $vendasIds[$item['venda_id']] = true;
-        }
-
-        $mesesNome = [
-            1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
-            5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
-            9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
-        ];
-        $competenciaExtensa = ($mesesNome[$mes] ?? 'Mês ' . $mes) . ' de ' . $ano;
-        $usuario = Auth::user();
-
-        return [
-            'colaborador'       => $colaborador,
-            'competencia'       => $competenciaExtensa,
-            'competencia_chave' => $competencia,
-            'operador'          => $usuario['nome'] ?? 'Administração Geral',
-            'emissao'           => date('d/m/Y H:i:s'),
-            'baseUrl'           => defined('BASE_URL') ? BASE_URL : '',
-            'itens'             => $itens,
-            'totais'            => [
-                'total_desconto' => $totalGeral,
-                'total_lanches'  => $totalItens,
-                'total_compras'  => count($vendasIds)
             ]
         ];
     }
@@ -1531,9 +1380,10 @@ class RelatoriosController extends Controller
                 sc.turno AS turno,
                 vb.status AS status_venda,
                 CASE 
-                    WHEN vb.tipo_venda = 'desconto_folha' THEN 'Desconto em Folha'
-                    WHEN vb.tipo_venda = 'pix' THEN 'Pix Balcão'
-                    WHEN vb.tipo_venda = 'dinheiro' THEN 'Dinheiro Balcão'
+                    WHEN vb.tipo_venda = 'desconto_folha' OR vb.forma_pagamento = 'desconto_folha' THEN 'Desconto em Folha'
+                    WHEN vb.forma_pagamento IN ('pix', 'pix_balcao') THEN 'Pix Balcão'
+                    WHEN vb.forma_pagamento = 'dinheiro' THEN 'Dinheiro Balcão'
+                    WHEN vb.forma_pagamento = 'saldo' THEN 'Saldo Cantina Web'
                     ELSE 'Balcão'
                 END AS forma_pagamento,
                 CASE 
@@ -2440,6 +2290,12 @@ class RelatoriosController extends Controller
      */
     public function obterDadosArrecadacao(string $dataInicio, string $dataFim): array
     {
+        $hoje = date('Y-m-d');
+        $dataInicio = $this->sanitizeDate($dataInicio, date('Y-m-01'));
+        $dataFim    = $this->sanitizeDate($dataFim, $hoje);
+        if ($dataInicio > $dataFim) {
+            [$dataInicio, $dataFim] = [$dataFim, $dataInicio];
+        }
         $pdo = \App\Core\Model::getPdo();
 
         // 1. Recargas Pix Online (Portal da Família / Gateway Pix)
@@ -2531,7 +2387,7 @@ class RelatoriosController extends Controller
                 COUNT(*) AS qtd,
                 COALESCE(SUM(valor), 0) AS total
             FROM transacoes_carteira
-            WHERE tipo_transacao = 'estorno_med'
+            WHERE tipo_transacao IN ('debito_contestacao_med', 'estorno_med')
               AND DATE(created_at) BETWEEN :ini AND :fim
         ";
         $stmt = $pdo->prepare($sqlMed);
@@ -2816,23 +2672,7 @@ class RelatoriosController extends Controller
      */
     public function arrecadacao(): void
     {
-        $hoje = date('Y-m-d');
-        $primeiroDiaMes = date('Y-m-01');
-
-        $dataInicio = $_GET['data_inicio'] ?? $primeiroDiaMes;
-        $dataFim    = $_GET['data_fim'] ?? $hoje;
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataInicio)) {
-            $dataInicio = $primeiroDiaMes;
-        }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataFim)) {
-            $dataFim = $hoje;
-        }
-        if ($dataInicio > $dataFim) {
-            $tmp = $dataInicio;
-            $dataInicio = $dataFim;
-            $dataFim = $tmp;
-        }
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $dados = $this->obterDadosArrecadacao($dataInicio, $dataFim);
         $dados['baseUrl'] = $this->getBaseUrl();
@@ -2883,22 +2723,7 @@ class RelatoriosController extends Controller
      */
     public function arrecadacaoImprimir(): void
     {
-        $hoje = date('Y-m-d');
-        $primeiroDiaMes = date('Y-m-01');
-        $dataInicio = $_GET['data_inicio'] ?? $primeiroDiaMes;
-        $dataFim    = $_GET['data_fim'] ?? $hoje;
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataInicio)) {
-            $dataInicio = $primeiroDiaMes;
-        }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataFim)) {
-            $dataFim = $hoje;
-        }
-        if ($dataInicio > $dataFim) {
-            $tmp = $dataInicio;
-            $dataInicio = $dataFim;
-            $dataFim = $tmp;
-        }
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $dados = $this->obterDadosArrecadacao($dataInicio, $dataFim);
         $dados['baseUrl'] = $this->getBaseUrl();
@@ -2916,22 +2741,7 @@ class RelatoriosController extends Controller
      */
     public function arrecadacaoCsv(): void
     {
-        $hoje = date('Y-m-d');
-        $primeiroDiaMes = date('Y-m-01');
-        $dataInicio = $_GET['data_inicio'] ?? $primeiroDiaMes;
-        $dataFim    = $_GET['data_fim'] ?? $hoje;
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataInicio)) {
-            $dataInicio = $primeiroDiaMes;
-        }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataFim)) {
-            $dataFim = $hoje;
-        }
-        if ($dataInicio > $dataFim) {
-            $tmp = $dataInicio;
-            $dataInicio = $dataFim;
-            $dataFim = $tmp;
-        }
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $dados = $this->obterDadosArrecadacao($dataInicio, $dataFim);
 
@@ -3025,23 +2835,7 @@ class RelatoriosController extends Controller
      */
     public function livroCaixa(): void
     {
-        $hoje = date('Y-m-d');
-        $primeiroDiaMes = date('Y-m-01');
-
-        $dataInicio = (string)$this->input('data_inicio', $primeiroDiaMes);
-        $dataFim    = (string)$this->input('data_fim', $hoje);
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataInicio)) {
-            $dataInicio = $primeiroDiaMes;
-        }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataFim)) {
-            $dataFim = $hoje;
-        }
-        if ($dataInicio > $dataFim) {
-            $tmp = $dataInicio;
-            $dataInicio = $dataFim;
-            $dataFim = $tmp;
-        }
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $usuario = \App\Core\Auth::user();
 
@@ -3062,9 +2856,7 @@ class RelatoriosController extends Controller
      */
     public function livroCaixaImprimir(): void
     {
-        $hoje = date('Y-m-d');
-        $dataInicio = (string)$this->input('data_inicio', date('Y-m-01'));
-        $dataFim = (string)$this->input('data_fim', $hoje);
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $dados = $this->obterDadosLivroCaixa($dataInicio, $dataFim);
 
@@ -3091,9 +2883,7 @@ class RelatoriosController extends Controller
      */
     public function livroCaixaCsv(): void
     {
-        $hoje = date('Y-m-d');
-        $dataInicio = (string)$this->input('data_inicio', date('Y-m-01'));
-        $dataFim = (string)$this->input('data_fim', $hoje);
+        [$dataInicio, $dataFim] = $this->resolverIntervaloDatas(date('Y-m-01'), date('Y-m-d'));
 
         $dados = $this->obterDadosLivroCaixa($dataInicio, $dataFim);
         $linhas = $dados['linhas'] ?? [];
@@ -3170,6 +2960,11 @@ class RelatoriosController extends Controller
      */
     public function obterDadosLivroCaixa(string $dataInicio, string $dataFim): array
     {
+        $dataInicio = $this->sanitizeDate($dataInicio, date('Y-m-01'));
+        $dataFim    = $this->sanitizeDate($dataFim, date('Y-m-d'));
+        if ($dataInicio > $dataFim) {
+            [$dataInicio, $dataFim] = [$dataFim, $dataInicio];
+        }
         $pdo = \App\Core\Model::getPdo();
 
         // 1. Saldo Anterior (Entradas Anteriores - Saídas Anteriores)
@@ -3470,16 +3265,16 @@ class RelatoriosController extends Controller
     }
 
     /**
-     * Retorna a URL base normalizada da aplicação
+     * Resolve e valida intervalo de datas (YYYY-MM-DD) de parâmetros GET/POST com fallback seguro
      */
-    protected function getBaseUrl(): string
+    private function resolverIntervaloDatas(string $fallbackInicio, string $fallbackFim): array
     {
-        if (defined('BASE_URL')) {
-            return BASE_URL;
+        $dataInicio = $this->sanitizeDate((string)$this->input('data_inicio', $fallbackInicio), $fallbackInicio);
+        $dataFim    = $this->sanitizeDate((string)$this->input('data_fim', $fallbackFim), $fallbackFim);
+        if ($dataInicio > $dataFim) {
+            [$dataInicio, $dataFim] = [$dataFim, $dataInicio];
         }
-        $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '');
-        $base = str_replace('\\', '/', $scriptDir);
-        return ($base === '/' || $base === '.') ? '' : rtrim($base, '/');
+        return [$dataInicio, $dataFim];
     }
 }
 

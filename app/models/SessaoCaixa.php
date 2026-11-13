@@ -380,9 +380,10 @@ class SessaoCaixa extends Model
             $params['data_fim'] = $dataFim;
         }
 
-        $sql .= " ORDER BY sc.id DESC LIMIT " . (int)$limite;
+        $limiteSeguro = max(1, min(500, (int)$limite));
+        $sql .= " ORDER BY sc.id DESC LIMIT {$limiteSeguro}";
         if ($offset !== null && $offset >= 0) {
-            $sql .= " OFFSET " . (int)$offset;
+            $sql .= " OFFSET " . max(0, (int)$offset);
         }
 
         return self::fetchAll($sql, $params);

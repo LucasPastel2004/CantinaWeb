@@ -82,11 +82,13 @@ class Responsavel extends Model
                 SET email = :email, updated_at = :updated_at 
                 WHERE id = :id";
 
-        return self::execute($sql, [
+        $afetadas = self::execute($sql, [
             'email'      => trim($email),
             'updated_at' => date('Y-m-d H:i:s'),
             'id'         => $id
-        ]) >= 0;
+        ]);
+
+        return ($afetadas > 0) || (self::buscarPorId($id) !== null);
     }
 
     /**
@@ -101,13 +103,15 @@ class Responsavel extends Model
                     updated_at = :updated_at 
                 WHERE id = :id";
 
-        return self::execute($sql, [
+        $afetadas = self::execute($sql, [
             'nome'       => trim($dados['nome'] ?? ''),
             'whatsapp'   => trim($dados['whatsapp'] ?? ''),
             'email'      => trim($dados['email'] ?? ''),
             'updated_at' => date('Y-m-d H:i:s'),
             'id'         => $id
-        ]) >= 0;
+        ]);
+
+        return ($afetadas > 0) || (self::buscarPorId($id) !== null);
     }
 
     /**
@@ -380,7 +384,7 @@ class Responsavel extends Model
 
         // Trilha em logs_seguranca
         try {
-            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ip = self::getClientIp();
             self::execute(
                 "INSERT INTO logs_seguranca (evento, cpf_ou_usuario, detalhes_json, ip_origem, created_at)
                  VALUES (:evento, :cpf, :detalhes, :ip, NOW())",
@@ -396,7 +400,7 @@ class Responsavel extends Model
         // Trilha em logs_auditoria se houver operador
         if ($operadorId) {
             try {
-                $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+                $ip = self::getClientIp();
                 self::execute(
                     "INSERT INTO logs_auditoria (operador_id, acao, tabela_afetada, registro_id, justificativa, ip_origem, created_at)
                      VALUES (:operador_id, :acao, :tabela_afetada, :registro_id, :justificativa, :ip, NOW())",
@@ -427,7 +431,7 @@ class Responsavel extends Model
 
         self::definirBloqueioMed($id, false);
 
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ip = self::getClientIp();
 
         // 1. Grava em logs_auditoria
         if ($operadorId) {
@@ -615,12 +619,13 @@ class Responsavel extends Model
             $params['t_dig'] = '%' . $digitsOnly . '%';
         }
 
+        $limiteSeguro = max(1, min(200, $limite));
         $sql = "SELECT DISTINCT r.id, r.nome, r.cpf, r.email, r.whatsapp, r.saldo_atual, r.bloqueado_med
                 FROM responsaveis r
                 LEFT JOIN alunos a ON a.responsavel_id = r.id AND a.deleted_at IS NULL
                 WHERE (r.nome LIKE :t1 OR {$cpfClause} OR r.email LIKE :t3 OR r.whatsapp LIKE :t4 OR a.nome LIKE :t5)
                 ORDER BY (r.bloqueado_med = 1 OR r.saldo_atual < 0) DESC, r.nome ASC
-                LIMIT {$limite}";
+                LIMIT {$limiteSeguro}";
 
         $linhas = self::fetchAll($sql, $params);
 

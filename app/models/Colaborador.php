@@ -42,8 +42,9 @@ class Colaborador extends Model
         $sql .= " ORDER BY nome ASC";
 
         if ($limit !== null && $limit > 0) {
-            $offset = max(0, $offset);
-            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+            $limiteSeguro = max(1, min(1000, (int)$limit));
+            $offsetSeguro = max(0, (int)$offset);
+            $sql .= " LIMIT {$limiteSeguro} OFFSET {$offsetSeguro}";
         }
 
         return self::fetchAll($sql, $params);
@@ -228,13 +229,14 @@ class Colaborador extends Model
         }
 
         $param = '%' . $termoLimpo . '%';
+        $limiteSeguro = max(1, min(100, $limite));
         $sql = "SELECT id, matricula_funcional, nome, cargo, foto_url, ativo
                 FROM colaboradores
                 WHERE deleted_at IS NULL
                   AND ativo = 1
                   AND (matricula_funcional LIKE :busca_mat OR nome LIKE :busca_nome OR cargo LIKE :busca_cargo)
                 ORDER BY nome ASC
-                LIMIT {$limite}";
+                LIMIT {$limiteSeguro}";
 
         return self::fetchAll($sql, [
             'busca_mat'   => $param,

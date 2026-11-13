@@ -787,7 +787,6 @@ function confirmarFechamento(event) {
     const etapaSelecao = document.getElementById('recargaEtapaSelecao');
     const modalFooter = document.getElementById('recargaModalFooter');
     const btnImprimirHtml = document.getElementById('recargaBtnImprimirHtml');
-    const btnBaixarPdf = document.getElementById('recargaBtnBaixarPdf');
 
     if (!inputBusca) return;
 
@@ -1006,15 +1005,10 @@ function confirmarFechamento(event) {
         document.getElementById('recargaResumoProtocolo').textContent = '#' + data.transacao_id;
 
         const urlHtml = '<?php echo $baseUrl; ?>/operacional/caixa/comprovante-recarga/' + data.transacao_id;
-        const urlPdf = '<?php echo $baseUrl; ?>/operacional/caixa/comprovante-recarga/' + data.transacao_id + '/pdf';
 
         btnImprimirHtml.onclick = function() {
             imprimirComprovanteRecargaIframe(data.transacao_id);
         };
-
-        if (btnBaixarPdf) {
-            btnBaixarPdf.href = urlPdf;
-        }
 
         const btnAba = document.getElementById('recargaBtnAba');
         if (btnAba) {

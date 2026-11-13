@@ -47,8 +47,9 @@ class Fornecedor extends Model
         $sql .= " ORDER BY nome_fantasia ASC";
 
         if ($limit !== null && $limit > 0) {
-            $offset = max(0, $offset);
-            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+            $limiteSeguro = max(1, min(1000, (int)$limit));
+            $offsetSeguro = max(0, (int)$offset);
+            $sql .= " LIMIT {$limiteSeguro} OFFSET {$offsetSeguro}";
         }
 
         return self::fetchAll($sql, $params);

@@ -185,6 +185,37 @@ class CarteiraController extends Controller
             return;
         }
 
+        // Proteção IDOR: garante que a cobrança consultada pertence à conta familiar logada
+        $respModel = new Responsavel();
+        $contaFamiliarLogada = $respModel->getContaFamiliarId($responsavelId);
+        $cobrancaOwnerCheck  = PixService::obterCobrancaCache($txid);
+        if ($cobrancaOwnerCheck && !empty($cobrancaOwnerCheck['responsavel_id'])) {
+            $donoFamilia = $respModel->getContaFamiliarId((int)$cobrancaOwnerCheck['responsavel_id']);
+            if ($donoFamilia !== $contaFamiliarLogada) {
+                Auth::logSecurityEvent('acesso_negado_idor', $user['username'] ?? $user['cpf'] ?? null, [
+                    'rota'            => '/portal/recarga/status/' . $txid,
+                    'responsavel_id'  => $responsavelId,
+                    'conta_familiar'  => $contaFamiliarLogada,
+                ]);
+                $this->json(['status' => 'negado', 'mensagem' => 'Acesso negado a esta cobrança Pix.'], 403);
+                return;
+            }
+        } else {
+            $transacaoExistente = TransacaoCarteira::buscarPorReferencia($txid);
+            if ($transacaoExistente && !empty($transacaoExistente['responsavel_id'])) {
+                $donoFamilia = $respModel->getContaFamiliarId((int)$transacaoExistente['responsavel_id']);
+                if ($donoFamilia !== $contaFamiliarLogada) {
+                    Auth::logSecurityEvent('acesso_negado_idor', $user['username'] ?? $user['cpf'] ?? null, [
+                        'rota'            => '/portal/recarga/status/' . $txid,
+                        'responsavel_id'  => $responsavelId,
+                        'conta_familiar'  => $contaFamiliarLogada,
+                    ]);
+                    $this->json(['status' => 'negado', 'mensagem' => 'Acesso negado a esta cobrança Pix.'], 403);
+                    return;
+                }
+            }
+        }
+
         $status = PixService::consultarStatus($txid);
 
         // Se o status for 'pago', atualiza o saldo na sessão imediatamente e limpa pendência
@@ -208,15 +239,25 @@ class CarteiraController extends Controller
     public function cancelarPix(array $params = []): void
     {
         if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
-            $this->validateCsrf();
+            if (!$this->validateCsrf()) {
+                return;
+            }
         }
 
         $user = Auth::user();
         $responsavelId = (int)$user['id'];
+        $respModel = new Responsavel();
+        $contaFamiliarLogada = $respModel->getContaFamiliarId($responsavelId);
         $txid = $params['txid'] ?? $_POST['txid'] ?? '';
 
         if (!empty($txid)) {
-            PixService::cancelarCobranca($txid, $responsavelId);
+            $cobranca = PixService::obterCobrancaCache($txid);
+            if ($cobranca && !empty($cobranca['responsavel_id']) && $respModel->getContaFamiliarId((int)$cobranca['responsavel_id']) !== $contaFamiliarLogada) {
+                $this->json(['sucesso' => false, 'mensagem' => 'Acesso negado: cobrança não pertence à sua família.'], 403);
+                return;
+            }
+            $donoId = !empty($cobranca['responsavel_id']) ? (int)$cobranca['responsavel_id'] : $responsavelId;
+            PixService::cancelarCobranca($txid, $donoId);
         } else {
             $pendente = PixService::obterCobrancaPendenteResponsavel($responsavelId);
             if ($pendente && !empty($pendente['txid'])) {
@@ -247,11 +288,15 @@ class CarteiraController extends Controller
 
         // Validação de token CSRF
         if (!defined('CANTINA_TEST_MODE') || !CANTINA_TEST_MODE) {
-            $this->validateCsrf();
+            if (!$this->validateCsrf()) {
+                return;
+            }
         }
 
         $user = Auth::user();
         $responsavelId = (int)$user['id'];
+        $respModel = new Responsavel();
+        $contaFamiliarLogada = $respModel->getContaFamiliarId($responsavelId);
         $txid = $params['txid'] ?? $_POST['txid'] ?? '';
 
         if (empty($txid)) {
@@ -260,7 +305,7 @@ class CarteiraController extends Controller
         }
 
         $cobranca = PixService::obterCobrancaCache($txid);
-        if ($cobranca && isset($cobranca['responsavel_id']) && (int)$cobranca['responsavel_id'] !== $responsavelId) {
+        if ($cobranca && isset($cobranca['responsavel_id']) && $respModel->getContaFamiliarId((int)$cobranca['responsavel_id']) !== $contaFamiliarLogada) {
             $this->json(['sucesso' => false, 'erro' => 'Acesso negado: cobrança não pertence à sua família.'], 403);
             return;
         }

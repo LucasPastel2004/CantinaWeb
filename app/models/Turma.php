@@ -131,7 +131,7 @@ class Turma extends Model
                     updated_at = :updated_at
                 WHERE id = :id AND deleted_at IS NULL";
 
-        return self::execute($sql, [
+        $afetadas = self::execute($sql, [
             'id'              => $id,
             'serie'           => trim($dados['serie'] ?? ''),
             'nome_turma'      => trim($dados['nome_turma'] ?? ''),
@@ -139,7 +139,9 @@ class Turma extends Model
             'ordem_impressao' => (int)($dados['ordem_impressao'] ?? 0),
             'updated_by'      => $usuarioId,
             'updated_at'      => date('Y-m-d H:i:s')
-        ]) >= 0;
+        ]);
+
+        return ($afetadas > 0) || (self::buscarPorId($id) !== null);
     }
 
     /**

@@ -194,8 +194,8 @@ $baseUrl = $baseUrl ?? '';
                             </td>
                             <td class="text-center">
                                 <?php if ($s['status'] === 'fechado'): ?>
-                                    <a href="<?php echo $baseUrl; ?>/operacional/caixa/espelho/<?php echo (int)$s['id']; ?>/pdf" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" title="Baixar Comprovante Oficial A4 / Bobina" target="_blank">
-                                        PDF A4
+                                    <a href="<?php echo $baseUrl; ?>/operacional/caixa/espelho/<?php echo (int)$s['id']; ?>" class="btn btn-enterprise btn-secondary btn-sm py-0.5 px-2" title="Imprimir / Salvar PDF A4 (Fechamento de Caixa)" target="_blank">
+                                        Imprimir A4
                                     </a>
                                 <?php else: ?>
                                     <span class="text-muted text-microcopy font-tabular">—</span>

@@ -17,7 +17,7 @@ abstract class Controller
     /**
      * Versão unificada dos assets (Cache Busting)
      */
-    public const ASSET_VERSION = '7.5.0';
+    public const ASSET_VERSION = '7.6.0';
 
     /**
      * Erros acumulados de validação
@@ -133,8 +133,11 @@ abstract class Controller
      */
     protected function redirect(string $path, int $statusCode = 302): void
     {
+        $path = str_replace(["\r", "\n"], '', trim($path));
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            $target = $path;
+            $hostAtual = strtolower(explode(':', (string)($_SERVER['HTTP_HOST'] ?? ''))[0]);
+            $hostDestino = strtolower((string)parse_url($path, PHP_URL_HOST));
+            $target = ($hostAtual !== '' && $hostDestino === $hostAtual) ? $path : ($this->getBaseUrl() . '/');
         } else {
             $target = $this->getBaseUrl() . '/' . ltrim($path, '/');
         }
@@ -390,5 +393,30 @@ abstract class Controller
             $limpo = str_replace(',', '.', $limpo);
         }
         return round((float)$limpo, 2);
+    }
+
+    /**
+     * Valida se uma URL de redirecionamento é estritamente interna (proteção contra Open Redirect)
+     */
+    protected function sanitizarDestinoInterno(?string $url, string $fallback = '/'): string
+    {
+        $url = str_replace(["\r", "\n"], '', trim((string)$url));
+        if ($url === '' || str_starts_with($url, '//') || preg_match('#^[a-z][a-z0-9+\-.]*://#i', $url)) {
+            return $fallback;
+        }
+        return str_starts_with($url, '/') ? $url : '/' . $url;
+    }
+
+    /**
+     * Valida e normaliza uma data no formato YYYY-MM-DD (rejeitando datas inexistentes como 2026-99-99)
+     */
+    protected function sanitizeDate(?string $date, string $fallback): string
+    {
+        $date = trim((string)$date);
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $fallback;
+        }
+        $dt = \DateTime::createFromFormat('Y-m-d', $date);
+        return ($dt !== false && $dt->format('Y-m-d') === $date) ? $date : $fallback;
     }
 }

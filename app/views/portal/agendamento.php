@@ -738,9 +738,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (current >= max) {
                 if (typeof window.alertaAcao === 'function') {
-                    window.alertaAcao('Limite Máximo', 'Limite máximo disponível atingido para este item.');
+                    window.alertaAcao({
+                        titulo: 'Limite Máximo',
+                        mensagem: 'Limite máximo disponível atingido para este item.',
+                        tipo: 'warning'
+                    });
                 } else if (typeof window.confirmarAcao === 'function') {
-                    window.confirmarAcao('Limite Máximo', 'Limite máximo disponível atingido para este item.');
+                    window.confirmarAcao({
+                        titulo: 'Limite Máximo',
+                        mensagem: 'Limite máximo disponível atingido para este item.',
+                        tipo: 'warning'
+                    });
                 }
                 return;
             }
@@ -749,7 +757,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (current === 0 && input.dataset.conflito === '1') {
                 produtoPendente = input;
                 const conflitos = input.dataset.conflitosMsg || 'ingredientes restritos';
-                modalTexto.innerHTML = `Atenção: Este produto contém <strong>${conflitos}</strong>, incompatível com o cadastro de <strong>${nomeAluno}</strong>. Deseja realmente incluir este item?`;
+                const esc = window.escapeHtml || function (s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); };
+                modalTexto.innerHTML = `Atenção: Este produto contém <strong>${esc(conflitos)}</strong>, incompatível com o cadastro de <strong>${esc(nomeAluno)}</strong>. Deseja realmente incluir este item?`;
                 modalAlergia.show();
                 return;
             }

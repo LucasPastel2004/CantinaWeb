@@ -847,6 +847,7 @@ function validarGravacaoLote(e) {
         window.confirmarAcao({
             titulo: 'Confirmar Entrada em Estoque',
             mensagem: msgHtml,
+            html: true,
             tipo: 'primary',
             textoConfirmar: 'Sim, Gravar Entrada',
             textoCancelar: 'Voltar e Revisar'

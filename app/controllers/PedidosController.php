@@ -198,7 +198,7 @@ class PedidosController extends Controller
 
         $user = Auth::user();
         $operadorId = (int)($user['id'] ?? 1);
-        $ipOrigem = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ipOrigem = Auth::getClientIp();
 
         // Coleta os itens entregues
         $itensPost = $_POST['itens'] ?? [];

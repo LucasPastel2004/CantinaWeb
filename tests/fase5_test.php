@@ -64,7 +64,7 @@ class Fase5Test
         $this->testarRenderizacaoLayoutAdmin();
         $this->testarRenderizacaoLayoutAuth();
         $this->testarRenderizacaoComponentesParciais();
-        $this->testarShowcaseController();
+        $this->testarRemocaoShowcaseLegado();
 
         echo "\n----------------------------------------------------------------------\n";
         echo "RESULTADO FINAL: {$this->sucessos} de {$this->totalAssercoes} asserções passaram.\n";
@@ -97,10 +97,6 @@ class Fase5Test
             'app/views/partials/empty_state.php',
             'app/views/partials/loading.php',
             'app/views/partials/stat_strip.php',
-            'app/controllers/ShowcaseController.php',
-            'app/views/showcase/portal.php',
-            'app/views/showcase/admin.php',
-            'app/views/showcase/components.php',
             'assets/css/custom.css',
             'assets/js/app.js',
             'assets/img/logo-colegio.jpg',
@@ -128,10 +124,6 @@ class Fase5Test
             'app/views/partials/empty_state.php',
             'app/views/partials/loading.php',
             'app/views/partials/stat_strip.php',
-            'app/controllers/ShowcaseController.php',
-            'app/views/showcase/portal.php',
-            'app/views/showcase/admin.php',
-            'app/views/showcase/components.php',
         ];
 
         foreach ($arquivosPhp as $relPath) {
@@ -184,16 +176,13 @@ class Fase5Test
         $testController = new class extends \App\Core\Controller {
             public function renderTest(): string {
                 ob_start();
-                $this->render('showcase/portal', [
+                $this->render('partials/empty_state', [
                     'pageTitle' => 'Teste Portal',
                     'activeMenu' => 'inicio',
                     'saldoAtual' => 250.75,
                     'saldoReservado' => 15.00,
                     'responsavelNome' => 'Responsável Teste',
-                    'dependentes' => [
-                        ['nome' => 'Filho 1', 'turma' => '5º A', 'turno' => 'Matutino', 'alergias' => ['Glúten']]
-                    ],
-                    'pedidosSemana' => []
+                    'emptyMessage' => 'Portal da Família ativo'
                 ], 'portal');
                 return ob_get_clean();
             }
@@ -215,17 +204,13 @@ class Fase5Test
         $testController = new class extends \App\Core\Controller {
             public function renderTest(): string {
                 ob_start();
-                $this->render('showcase/admin', [
+                $this->render('partials/empty_state', [
                     'pageTitle' => 'Painel Cantina Teste',
-                    'pageHeading' => 'Título de Teste',
                     'activeMenu' => 'corte',
                     'turnoAtivo' => 'Matutino',
                     'statusCaixa' => 'Aberto',
                     'user' => ['nome' => 'Operador Teste', 'usuario' => 'operador-teste', 'perfil' => 'operador'],
-                    'statItems' => [
-                        ['label' => 'Total', 'value' => '50 un', 'status' => 'primary']
-                    ],
-                    'demandasSalgados' => []
+                    'emptyMessage' => 'Painel administrativo carregado'
                 ], 'admin');
                 return ob_get_clean();
             }
@@ -244,13 +229,13 @@ class Fase5Test
     {
         echo "\n[6] Teste de Renderização do Layout Auth...\n";
 
-        // Cria uma view temporária de teste para auth
         $testController = new class extends \App\Core\Controller {
             public function renderTest(): string {
                 ob_start();
-                // Renderizamos uma view de teste existente dentro do layout auth
-                $this->render('showcase/components', [
+                $this->render('auth/login', [
                     'pageTitle' => 'Acesso Seguro',
+                    'tab' => 'familia',
+                    'csrf_field' => '<input type="hidden" name="csrf_token" value="teste">'
                 ], 'auth');
                 return ob_get_clean();
             }
@@ -261,6 +246,7 @@ class Fase5Test
         $this->assert(str_contains($html, 'auth-wrapper'), "Layout auth renderiza container auth-wrapper");
         $this->assert(str_contains($html, 'auth-logo'), "Layout auth renderiza classe auth-logo para imagem de 84px");
         $this->assert(str_contains($html, 'Colégio Monteiro Lobato'), "Layout auth exibe identificação institucional");
+        $this->assert(str_contains($html, 'csrf_token'), "View de login renderizada dentro do layout auth contém token CSRF");
     }
 
     private function testarRenderizacaoComponentesParciais(): void
@@ -323,15 +309,12 @@ class Fase5Test
         $this->assert(str_contains($statHtml, 'font-tabular'), "Componente stat_strip.php aplica fonte tabular ao valor");
     }
 
-    private function testarShowcaseController(): void
+    private function testarRemocaoShowcaseLegado(): void
     {
-        echo "\n[8] Teste do Controlador ShowcaseController...\n";
+        echo "\n[8] Verificação de Remoção do Showcase Legado...\n";
 
-        $controller = new \App\Controllers\ShowcaseController();
-        $this->assert(is_subclass_of($controller, \App\Core\Controller::class), "ShowcaseController herda de App\\Core\\Controller");
-        $this->assert(method_exists($controller, 'portal'), "ShowcaseController possui método portal()");
-        $this->assert(method_exists($controller, 'admin'), "ShowcaseController possui método admin()");
-        $this->assert(method_exists($controller, 'components'), "ShowcaseController possui método components()");
+        $this->assert(!file_exists(__DIR__ . '/../app/controllers/ShowcaseController.php'), "ShowcaseController.php foi removido");
+        $this->assert(!is_dir(__DIR__ . '/../app/views/showcase'), "Diretório app/views/showcase/ foi removido");
     }
 }
 

@@ -80,30 +80,59 @@ class FornecedorRecibo extends Model
         // Garante que se o usuário não for válido na tabela, seja null
         $usuarioId = self::validarUsuarioId($usuarioId, false);
 
-        $numeroRecibo = self::gerarNumeroRecibo();
-
         $pdo = self::getConnection();
-        $sql = "INSERT INTO `fornecedor_recibos` (
-            `numero_recibo`, `fornecedor_id`, `valor`, `data_pagamento`, `forma_pagamento`,
-            `descricao`, `observacoes`, `created_by`
-        ) VALUES (
-            :numero_recibo, :fornecedor_id, :valor, :data_pagamento, :forma_pagamento,
-            :descricao, :observacoes, :created_by
-        )";
+        $iniciouTransacao = !$pdo->inTransaction();
+        if ($iniciouTransacao) {
+            $pdo->beginTransaction();
+        }
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':numero_recibo'   => $numeroRecibo,
-            ':fornecedor_id'   => $fornecedorId,
-            ':valor'           => $valor,
-            ':data_pagamento'  => $dataPagamento,
-            ':forma_pagamento' => $formaPagamento,
-            ':descricao'       => $descricao,
-            ':observacoes'     => !empty($observacoes) ? $observacoes : null,
-            ':created_by'      => $usuarioId,
-        ]);
+        try {
+            $stmtLock = $pdo->prepare("
+                SELECT numero_recibo
+                FROM fornecedor_recibos
+                WHERE numero_recibo LIKE :prefixo
+                ORDER BY id DESC
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $hoje = date('Ymd');
+            $prefixo = "REC-{$hoje}-";
+            $stmtLock->execute(['prefixo' => "{$prefixo}%"]);
+            $ultimo = $stmtLock->fetchColumn();
+            $seq = $ultimo ? (int)substr((string)$ultimo, -4) : 0;
+            $numeroRecibo = $prefixo . str_pad((string)($seq + 1), 4, '0', STR_PAD_LEFT);
 
-        return (int)$pdo->lastInsertId();
+            $sql = "INSERT INTO `fornecedor_recibos` (
+                `numero_recibo`, `fornecedor_id`, `valor`, `data_pagamento`, `forma_pagamento`,
+                `descricao`, `observacoes`, `created_by`
+            ) VALUES (
+                :numero_recibo, :fornecedor_id, :valor, :data_pagamento, :forma_pagamento,
+                :descricao, :observacoes, :created_by
+            )";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':numero_recibo'   => $numeroRecibo,
+                ':fornecedor_id'   => $fornecedorId,
+                ':valor'           => $valor,
+                ':data_pagamento'  => $dataPagamento,
+                ':forma_pagamento' => $formaPagamento,
+                ':descricao'       => $descricao,
+                ':observacoes'     => !empty($observacoes) ? $observacoes : null,
+                ':created_by'      => $usuarioId,
+            ]);
+
+            $reciboId = (int)$pdo->lastInsertId();
+            if ($iniciouTransacao) {
+                $pdo->commit();
+            }
+            return $reciboId;
+        } catch (\Throwable $e) {
+            if ($iniciouTransacao && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -170,8 +199,8 @@ class FornecedorRecibo extends Model
         $sql .= " ORDER BY r.data_pagamento DESC, r.id DESC";
 
         if (!empty($filtros['limit'])) {
-            $limit = (int)$filtros['limit'];
-            $offset = (int)($filtros['offset'] ?? 0);
+            $limit = max(1, min(1000, (int)$filtros['limit']));
+            $offset = max(0, (int)($filtros['offset'] ?? 0));
             $sql .= " LIMIT {$limit} OFFSET {$offset}";
         }
 
@@ -183,6 +212,7 @@ class FornecedorRecibo extends Model
      */
     public static function excluir(int $id, ?int $usuarioId = null): bool
     {
+        $usuarioId = self::validarUsuarioId($usuarioId, false);
         $pdo = self::getConnection();
         $stmt = $pdo->prepare("
             UPDATE `fornecedor_recibos` 

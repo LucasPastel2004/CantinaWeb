@@ -17,7 +17,7 @@ abstract class Controller
     /**
      * Versão unificada dos assets (Cache Busting)
      */
-    public const ASSET_VERSION = '7.6.0';
+    public const ASSET_VERSION = '7.6.2';
 
     /**
      * Erros acumulados de validação

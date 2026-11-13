@@ -42,7 +42,7 @@ $nomeFormatadoTopo = implode(' ', array_map(function($p) use ($preposicoesLayout
 $inicialTopo = mb_strtoupper(mb_substr($nomeFormatadoTopo !== '' ? $nomeFormatadoTopo : 'R', 0, 1, 'UTF-8'), 'UTF-8');
 
 $isSaldoBaixo = ($saldoAtual < 5.00);
-$assetVersion = $assetVersion ?? '7.6.1';
+$assetVersion = $assetVersion ?? '7.6.2';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -224,6 +224,6 @@ $assetVersion = $assetVersion ?? '7.6.1';
 <script src="<?php echo $baseUrl; ?>/assets/js/bootstrap.bundle.min.js"></script>
 
 <!-- Scripts Vanilla JS Locais -->
-<script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.6.1'; ?>"></script>
+<script src="<?php echo $baseUrl; ?>/assets/js/app.js?v=<?php echo $assetVersion ?? '7.6.2'; ?>"></script>
 </body>
 </html>

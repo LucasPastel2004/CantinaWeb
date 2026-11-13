@@ -106,7 +106,6 @@ $dataExtenso = "{$diaSemanaStr}, {$diaStr} de {$mesStr} de {$anoStr}";
     <div class="mb-4 pb-2 border-bottom">
         <div class="d-flex align-items-center gap-2 mb-1">
             <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Operacional & Gestão da Cantina</span>
-            <span class="badge bg-light text-secondary border font-tabular">Padrão Escolar Manager</span>
         </div>
         <h1 class="h5 font-weight-bold text-dark mb-1">Painel da Cantina &mdash; Visão Geral</h1>
         <p class="text-microcopy text-muted mb-0">

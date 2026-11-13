@@ -18,7 +18,6 @@ $baseUrl = $baseUrl ?? '';
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Módulo Financeiro</span>
-                <span class="badge bg-light text-secondary border">Fase 24</span>
             </div>
             <h1 class="h5 font-weight-bold text-dark mb-1">
                 Despesas Operacionais da Cantina
@@ -378,7 +377,7 @@ $baseUrl = $baseUrl ?? '';
                 <input type="hidden" name="id" id="pagarId" value="">
                 <input type="hidden" name="competencia_redirect" value="<?php echo htmlspecialchars($competenciaAtual, ENT_QUOTES, 'UTF-8'); ?>">
 
-                <div class="modal-header py-2 px-3" style="background: #f0fdf4; border-bottom: 1px solid #bbf7d0;">
+                <div class="modal-header card-enterprise-header py-2 px-3">
                     <h6 class="modal-title font-weight-bold text-success mb-0" style="font-size: 14px;">Confirmar Pagamento</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -419,7 +418,7 @@ $baseUrl = $baseUrl ?? '';
                 <input type="hidden" name="id" id="excluirId" value="">
                 <input type="hidden" name="competencia_redirect" value="<?php echo htmlspecialchars($competenciaAtual, ENT_QUOTES, 'UTF-8'); ?>">
 
-                <div class="modal-header py-2 px-3" style="background: #fef2f2; border-bottom: 1px solid #fecaca;">
+                <div class="modal-header card-enterprise-header py-2 px-3">
                     <h6 class="modal-title font-weight-bold text-danger mb-0" style="font-size: 14px;">Remover Despesa</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>

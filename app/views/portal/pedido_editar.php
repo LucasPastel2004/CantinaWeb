@@ -19,22 +19,21 @@ $corte = $pedido['status_corte'];
     <!-- Cabeçalho Executivo -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between pb-3 mb-4 border-bottom border-subtle gap-3">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="text-secondary text-decoration-none" title="Voltar para Meus Pedidos">
-                    &larr; Voltar
-                </a>
-                <span class="text-muted">/</span>
-                <h1 class="page-title mb-0" style="font-size: 18px;">
-                    Editar Pedido <code class="code-tag font-tabular" style="font-size: 14px;"><?php echo htmlspecialchars($pedido['codigo_pedido'], ENT_QUOTES, 'UTF-8'); ?></code>
-                </h1>
-            </div>
+            <h1 class="page-title mb-1">
+                Editar Pedido <code class="code-tag font-tabular" style="font-size: 14px;"><?php echo htmlspecialchars($pedido['codigo_pedido'], ENT_QUOTES, 'UTF-8'); ?></code>
+            </h1>
             <p class="text-secondary mb-0" style="font-size: 13px;">
                 Adicione ou remova itens do pedido. A diferença financeira será compensada automaticamente na sua Carteira Familiar.
             </p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <span class="text-secondary" style="font-size: 12px;">Saldo Disponível:</span>
-            <strong class="font-tabular text-dark" style="font-size: 13px; color: #0f172a;">R$ <?php echo number_format($saldoDisponivel, 2, ',', '.'); ?></strong>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary" style="font-size: 12px;">Saldo Disponível:</span>
+                <strong class="font-tabular text-dark" style="font-size: 13px; color: #0f172a;">R$ <?php echo number_format($saldoDisponivel, 2, ',', '.'); ?></strong>
+            </div>
+            <a href="<?php echo $baseUrl; ?>/portal/pedidos" class="btn btn-enterprise btn-secondary btn-sm" title="Voltar para Meus Pedidos">
+                &larr; Voltar
+            </a>
         </div>
     </div>
 

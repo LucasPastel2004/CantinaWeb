@@ -20,21 +20,19 @@ $produtoPreSel = $produtoPreSel ?? null;
     <!-- Cabeçalho de Módulo (Padrão Unificado com Lançamento de Perdas - Redirecionamento na mesma aba) -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="<?php echo $baseUrl; ?>/estoque" class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
-                    Voltar ao Estoque
-                </a>
-            </div>
+            <span class="text-microcopy text-uppercase font-weight-bold text-secondary d-block mb-1">Estoque &amp; Armazenamento</span>
             <h1 class="h5 fw-bold text-slate-900 mb-0">Entrada de Mercadorias</h1>
         </div>
-        <div class="d-flex gap-2">
-            <a href="<?php echo $baseUrl; ?>/relatorios/estoque-filtros?tipo_movimentacao=entrada" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5" title="Abrir Relatório de Movimentações de Estoque">
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="<?php echo $baseUrl; ?>/relatorios/estoque-filtros?tipo_movimentacao=entrada" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5" title="Abrir Relatório de Movimentações de Estoque">
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
                     <path d="M4.5 10.5A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
                 </svg>
                 <span>Relatório de Movimentações de Estoque</span>
+            </a>
+            <a href="<?php echo $baseUrl; ?>/estoque" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+                ← Voltar ao Estoque
             </a>
         </div>
     </div>

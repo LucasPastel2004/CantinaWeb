@@ -45,12 +45,7 @@ $queryParams = http_build_query([
     <!-- Cabeçalho de Módulo e Ações -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="<?php echo $baseUrl; ?>/estoque/perdas" class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
-                    Voltar ao Registro de Perdas
-                </a>
-            </div>
+            <span class="text-microcopy text-uppercase font-weight-bold text-secondary d-block mb-1">Relatórios Gerenciais</span>
             <h1 class="h5 fw-bold text-slate-900 mb-0">Relatório de Baixas de Mercadorias (Perdas & Descarte)</h1>
         </div>
 
@@ -62,6 +57,9 @@ $queryParams = http_build_query([
                     <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
                 </svg>
                 <span>Imprimir / Salvar PDF (A4)</span>
+            </a>
+            <a href="<?php echo $baseUrl; ?>/estoque/perdas" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+                ← Voltar ao Registro de Perdas
             </a>
 
             <!-- Exportar Planilha (CSV) -->

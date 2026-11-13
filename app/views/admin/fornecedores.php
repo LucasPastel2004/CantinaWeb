@@ -286,17 +286,17 @@ $csrfToken = $csrf_token ?? '';
                 <?php echo $csrfField; ?>
                 <input type="hidden" name="id" id="forn_id" value="0">
 
-                <div class="modal-header py-3 px-4" style="background-color: #0f172a; color: #ffffff;">
-                    <div class="d-flex align-items-center gap-2">
+                <div class="modal-header card-enterprise-header py-3 px-4">
+                    <div class="d-flex align-items-center gap-2 text-dark">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                         </svg>
-                        <h5 class="modal-title font-weight-bold text-white mb-0" id="modalFornecedorLabel" style="font-size: 14px; letter-spacing: 0.02em;">
+                        <h5 class="modal-title font-weight-bold text-dark mb-0" id="modalFornecedorLabel" style="font-size: 14px; letter-spacing: 0.02em;">
                             Novo Fornecedor Parceiro
                         </h5>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
 
                 <div class="modal-body p-4 bg-white">

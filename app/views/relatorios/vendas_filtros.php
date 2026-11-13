@@ -80,7 +80,6 @@ $ordPor       = $filtros['ordenar_por'] ?? 'maior_consumo';
             <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
                     <span class="text-microcopy text-uppercase font-weight-bold text-secondary">Relatórios Gerenciais</span>
-                    <span class="badge bg-light text-secondary border font-tabular">Padrão Escolar Manager</span>
                 </div>
                 <h1 class="h5 font-weight-bold text-dark mb-0">Filtros de Vendas & Relatório por Alimento</h1>
             </div>

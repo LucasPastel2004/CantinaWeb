@@ -253,9 +253,9 @@ input[type="number"].text-end {
 
 .btn-check:checked + .btn-outline-secondary,
 .btn-check:checked + .btn.btn-outline-secondary {
-  background-color: #334155 !important;
-  border-color: #1e293b !important;
-  color: #ffffff !important;
+  background-color: var(--primary-blue) !important;
+  border-color: var(--primary-blue-hover) !important;
+  color: var(--text-on-primary) !important;
   font-weight: 600 !important;
 }
 
@@ -3065,18 +3065,18 @@ h1.page-title,
 
 /* Abas corporativas compartilhadas (Relatórios com Filtros) */
 .nav-tabs-enterprise {
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: 2px solid var(--border-subtle) !important;
   gap: 4px;
 }
 
 .nav-tabs-enterprise .nav-link {
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-secondary);
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  color: var(--text-secondary) !important;
   font-size: 13px;
   font-weight: 600;
   padding: 8px 18px;
-  background: transparent;
+  background: transparent !important;
   border-radius: 4px 4px 0 0;
   display: inline-flex;
   align-items: center;
@@ -3085,14 +3085,15 @@ h1.page-title,
 }
 
 .nav-tabs-enterprise .nav-link:hover {
-  color: var(--primary-blue);
-  background: var(--surface-header);
+  color: var(--primary-blue) !important;
+  background: var(--surface-header) !important;
 }
 
-.nav-tabs-enterprise .nav-link.active {
-  color: #ffffff;
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
+.nav-tabs-enterprise .nav-link.active,
+.nav-tabs-enterprise .nav-item.show .nav-link {
+  color: #ffffff !important;
+  background-color: var(--primary-blue) !important;
+  border-color: var(--primary-blue) !important;
   border-radius: 6px 6px 0 0;
   box-shadow: 0 1px 3px rgba(29, 78, 216, 0.25);
 }
@@ -3106,33 +3107,38 @@ h1.page-title,
   overflow: hidden;
 }
 
-.btn-toggle-group-escolar .btn-escolar-segment {
-  background-color: #ffffff;
-  border: none;
-  border-right: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
+.btn-toggle-group-escolar .btn-escolar-segment,
+.btn-toggle-group-escolar .btn.btn-escolar-segment {
+  background-color: #ffffff !important;
+  border: none !important;
+  border-right: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
   font-size: 12px;
+  font-weight: 500;
   padding: 6px 14px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  border-radius: 0;
+  border-radius: 0 !important;
 }
 
-.btn-toggle-group-escolar .btn-escolar-segment:last-child {
-  border-right: none;
+.btn-toggle-group-escolar .btn-escolar-segment:last-child,
+.btn-toggle-group-escolar .btn.btn-escolar-segment:last-child {
+  border-right: none !important;
 }
 
-.btn-toggle-group-escolar .btn-escolar-segment:hover:not(.disabled):not(:disabled) {
-  background-color: #f1f5f9;
-  color: var(--text-primary);
+.btn-toggle-group-escolar .btn-escolar-segment:hover:not(.disabled):not(:disabled),
+.btn-toggle-group-escolar .btn.btn-escolar-segment:hover:not(.disabled):not(:disabled) {
+  background-color: #f1f5f9 !important;
+  color: var(--text-primary) !important;
 }
 
 .btn-toggle-group-escolar .btn-check:checked + .btn-escolar-segment,
+.btn-toggle-group-escolar .btn-check:checked + .btn.btn-escolar-segment,
 .btn-toggle-blue .btn-check:checked + .btn-outline-custom {
   background-color: var(--primary-blue) !important;
   border-color: var(--primary-blue) !important;
   color: #ffffff !important;
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
 /* ==========================================================================

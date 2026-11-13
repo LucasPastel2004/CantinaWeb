@@ -30,12 +30,8 @@ $carregado = $carregado ?? false;
 <!-- Cabeçalho da Página (Título limpo, sem botões soltos no topo, padrão Nutre) -->
 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
     <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <h1 class="h5 font-weight-bold text-dark mb-0">Estorno de Venda da Cantina</h1>
-            <span class="badge bg-white text-primary border border-primary-subtle font-tabular" style="font-size: 11px; font-weight: 600;">
-                Módulo Operacional
-            </span>
-        </div>
+        <span class="text-microcopy text-uppercase font-weight-bold text-secondary d-block mb-1">Módulo Operacional</span>
+        <h1 class="h5 font-weight-bold text-dark mb-0">Estorno de Venda da Cantina</h1>
     </div>
 </div>
 
@@ -51,15 +47,15 @@ $carregado = $carregado ?? false;
             <!-- Linha 1 de Filtros: Venda avulsa, Filtrar por, Aluno/Pessoa -->
             <div class="row g-3 align-items-end mb-2" style="overflow: visible !important;">
                 
-                <!-- Venda Avulsa (Sim / Não) - Segmented Control estilo Nutre -->
+                <!-- Venda Avulsa (Sim / Não) - Segmented Control Corporativo -->
                 <div class="col-12 col-sm-4 col-md-2">
                     <label class="form-label text-microcopy text-uppercase font-weight-bold text-secondary mb-1">Venda avulsa</label>
-                    <div class="btn-group btn-group-sm w-100" role="group" aria-label="Venda Avulsa">
+                    <div class="btn-toggle-group-escolar w-100" role="group" aria-label="Venda Avulsa">
                         <input type="radio" class="btn-check" name="venda_avulsa" id="vaSim" value="sim" autocomplete="off" <?php echo ($vendaAvulsa === 'sim') ? 'checked' : ''; ?>>
-                        <label class="btn btn-outline-secondary" for="vaSim" style="font-weight: 500;">Sim</label>
+                        <label class="btn btn-escolar-segment flex-fill text-center" for="vaSim">Sim</label>
 
                         <input type="radio" class="btn-check" name="venda_avulsa" id="vaNao" value="nao" autocomplete="off" <?php echo ($vendaAvulsa === 'nao') ? 'checked' : ''; ?>>
-                        <label class="btn btn-outline-secondary" for="vaNao" style="font-weight: 500;">Não</label>
+                        <label class="btn btn-escolar-segment flex-fill text-center" for="vaNao">Não</label>
                     </div>
                 </div>
 
@@ -318,15 +314,15 @@ $carregado = $carregado ?? false;
 <div class="modal fade" id="modalDetalhesVenda" tabindex="-1" aria-labelledby="modalDetalhesVendaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header py-2" style="background-color: #0f172a; color: #ffffff;">
-                <h5 class="modal-title fs-6 font-weight-bold d-flex align-items-center gap-2" id="modalDetalhesVendaLabel">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <div class="modal-header card-enterprise-header py-2 px-3">
+                <h5 class="modal-title fs-6 font-weight-bold text-dark d-flex align-items-center gap-2" id="modalDetalhesVendaLabel">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="text-primary">
                         <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                         <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
                     </svg>
                     <span id="modTitulo">Informações VENDAS</span>
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-3" id="modCorpoDetalhes">
                 <div class="text-center py-4" id="modLoading">
@@ -350,11 +346,11 @@ $carregado = $carregado ?? false;
 <div class="modal fade" id="modalConfirmarEstorno" tabindex="-1" aria-labelledby="modalConfirmarEstornoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header py-2" style="background-color: #0f172a; color: #ffffff;">
-                <h5 class="modal-title fs-6 font-weight-bold" id="modalConfirmarEstornoLabel">
+            <div class="modal-header card-enterprise-header py-2 px-3">
+                <h5 class="modal-title fs-6 font-weight-bold text-dark" id="modalConfirmarEstornoLabel">
                     Confirmação de Estorno
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-3">
                 <div class="d-flex align-items-start gap-3">
@@ -379,12 +375,12 @@ $carregado = $carregado ?? false;
                         <div class="small mt-2" id="boxProdutoConsumidoModal" style="display: none !important;">
                             <strong>Produto consumido?</strong>
                             <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
-                                <div class="btn-group btn-group-sm" role="group" aria-label="Produto consumido modal">
+                                <div class="btn-toggle-group-escolar" role="group" aria-label="Produto consumido modal">
                                     <input type="radio" class="btn-check radio-consumido-modal" name="modal_produto_consumido" id="modPcNao" value="nao" checked>
-                                    <label class="btn btn-enterprise btn-outline-secondary btn-sm px-3" for="modPcNao">Não</label>
+                                    <label class="btn btn-escolar-segment px-3" for="modPcNao">Não</label>
 
                                     <input type="radio" class="btn-check radio-consumido-modal" name="modal_produto_consumido" id="modPcSim" value="sim">
-                                    <label class="btn btn-enterprise btn-outline-secondary btn-sm px-3" for="modPcSim">Sim</label>
+                                    <label class="btn btn-escolar-segment px-3" for="modPcSim">Sim</label>
                                 </div>
                                 <span class="text-microcopy text-secondary" id="txtDicaConsumoModal">
                                     (Não consumido: itens de vendas de hoje retornam ao estoque)

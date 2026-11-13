@@ -18,21 +18,19 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
     <!-- Cabeçalho de Módulo -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="<?php echo $baseUrl; ?>/estoque" class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
-                    Voltar ao Estoque
-                </a>
-            </div>
+            <span class="text-microcopy text-uppercase font-weight-bold text-secondary d-block mb-1">Estoque &amp; Armazenamento</span>
             <h1 class="h5 fw-bold text-slate-900 mb-0">Registro Operacional de Perdas & Descarte</h1>
         </div>
-        <div class="d-flex gap-2">
-            <a href="<?php echo $baseUrl; ?>/relatorios/estoque-filtros?tipo_movimentacao=saida_perda" class="btn btn-enterprise btn-primary btn-sm d-inline-flex align-items-center gap-1.5" title="Abrir Emissão de Relatório de Movimentações e Baixas">
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="<?php echo $baseUrl; ?>/relatorios/estoque-filtros?tipo_movimentacao=saida_perda" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1.5" title="Abrir Emissão de Relatório de Movimentações e Baixas">
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
                     <path d="M4.5 10.5A.5.5 0 0 1 5 10h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/>
                 </svg>
                 <span>Relatório de Baixas de Mercadorias</span>
+            </a>
+            <a href="<?php echo $baseUrl; ?>/estoque" class="btn btn-enterprise btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+                ← Voltar ao Estoque
             </a>
         </div>
     </div>
@@ -58,7 +56,7 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
             <div class="row g-3">
                 <!-- Seleção do Produto -->
                 <div class="col-12 col-lg-8">
-                    <label for="selectProduto" class="form-label small fw-semibold text-muted">Produto Avariado / Descartado: *</label>
+                    <label for="selectProduto" class="form-label small fw-semibold text-secondary">Produto Avariado / Descartado: *</label>
                     <select name="produto_id" id="selectProduto" class="form-select form-select-sm" required onchange="atualizarEstoqueDisponivel(this)">
                         <option value="">Selecione o produto...</option>
                         <?php foreach ($produtos as $p): ?>
@@ -77,21 +75,21 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
 
                 <!-- Quantidade Baixada -->
                 <div class="col-12 col-lg-4">
-                    <label for="inputQuantidade" class="form-label small fw-semibold text-muted">Quantidade a Baixar (unidades): *</label>
+                    <label for="inputQuantidade" class="form-label small fw-semibold text-secondary">Quantidade a Baixar (unidades): *</label>
                     <input type="number" name="quantidade" id="inputQuantidade" class="form-control form-control-sm font-tabular" min="1" step="1" required>
                     <div class="form-text" style="font-size: 11px;">A quantidade não pode ultrapassar o saldo físico existente.</div>
                 </div>
 
                 <!-- Motivo Padronizado Obrigatório (RN-15) -->
                 <div class="col-12">
-                    <label class="form-label small fw-semibold text-muted mb-1">Motivo Padronizado da Perda: *</label>
+                    <label class="form-label small fw-semibold text-secondary mb-1">Motivo Padronizado da Perda: *</label>
                     <div class="p-3 rounded border bg-light">
                         <div class="row g-2">
                             <?php foreach ($motivosPerda as $kMotivo => $lblMotivo): ?>
                                 <div class="col-12 col-sm-6 col-lg-3">
                                     <div class="form-check p-2 bg-white rounded border h-100 d-flex align-items-center gap-2">
                                         <input class="form-check-input ms-0 me-2 mt-0" type="radio" name="motivo_perda" id="motivo_<?php echo $kMotivo; ?>" value="<?php echo $kMotivo; ?>" required>
-                                        <label class="form-check-label small text-slate-800 fw-medium cursor-pointer flex-fill mb-0" for="motivo_<?php echo $kMotivo; ?>">
+                                        <label class="form-check-label small text-dark fw-semibold cursor-pointer flex-fill mb-0" for="motivo_<?php echo $kMotivo; ?>">
                                             <?php echo htmlspecialchars($lblMotivo, ENT_QUOTES, 'UTF-8'); ?>
                                         </label>
                                     </div>
@@ -103,7 +101,7 @@ $motivosPerda = !empty($motivosPerda) ? $motivosPerda : \App\Models\Estoque::MOT
 
                 <!-- Justificativa Obrigatória -->
                 <div class="col-12">
-                    <label for="textareaJustificativa" class="form-label small fw-semibold text-muted">Justificativa Operacional: *</label>
+                    <label for="textareaJustificativa" class="form-label small fw-semibold text-secondary">Justificativa Operacional: *</label>
                     <textarea name="justificativa" id="textareaJustificativa" rows="3" class="form-control form-control-sm" required minlength="5"></textarea>
                     <div class="form-text" style="font-size: 11px;">Mínimo de 5 caracteres. Ficará registrado permanentemente no log de auditoria técnica.</div>
                 </div>
